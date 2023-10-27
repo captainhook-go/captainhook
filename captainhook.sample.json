@@ -1,0 +1,111 @@
+{
+    "config": {
+        "verbosity": "normal",
+        "fail-on-first-error": false,
+        "ansi-colors": true,
+        "git-directory": ".git",
+        "includes": [],
+        "run-mode": "local",
+        "custom": {
+            "foo": "bar",
+            "fiz": "baz"
+        }
+    },
+    "hooks": {
+        "commit-msg": {
+            "actions": [
+                {
+                    "action": "CaptainHook::Message.Beams",
+                    "options": {
+                        "subjectLength": 50,
+                        "bodyLineLength": 72
+                    }
+                },
+                {
+                    "action": "CaptainHook::Message.Regex",
+                    "options": {
+                        "regex": "#.*#"
+                    }
+                },
+                {
+                    "action": "CaptainHook::Message.CacheOnFail",
+                    "options": {
+                        "file": ".git/CH_COMMIT_MESSAGE.tmp"
+                    }
+                }
+            ]
+        },
+        "pre-push": {
+            "actions": [
+                {
+                    "action": "CaptainHook::Branch.BlockFixupAndSquashCommits"
+                },
+                {
+                    "action": "echo foo"
+                }
+            ]
+        },
+        "pre-commit": {
+            "actions": [
+                {
+                    "action": "echo foo"
+                },
+                {
+                    "action": "CaptainHook::File.DoesNotContainRegex",
+                    "options": {
+                        "regex": "#fooooooooooooooooooooo#i"
+                    }
+                },
+                {
+                    "action": "CaptainHook::File.IsNotEmpty",
+                    "options": {
+                        "files": [
+                            "src/CH.php",
+                            "src/Hook/Debug.php"
+                        ]
+                    }
+                },
+                {
+                    "action": "CaptainHook::File.MaxSize",
+                    "config": {
+                        "allow-failure": true
+                    },
+                    "options": {
+                        "maxSize": "1M"
+                    }
+                },
+                {
+                    "action": "echo bar"
+                },
+                {
+                    "action": "echo \"{$STAGED_FILES|of-type:php|separated-by: }\"",
+                    "conditions": [
+                        {
+                            "exec": "CaptainHook::FileStaged.OfType",
+                            "args": [
+                                "go"
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        "prepare-commit-msg": {
+            "actions": [
+                {
+                    "action": "CaptainHook::Message.PrepareFromFile",
+                    "options": {
+                        "file": ".git/CH_COMMIT_MESSAGE.tmp"
+                    }
+                }
+            ]
+        },
+        "post-change": {
+            "actions": [
+                {
+                    "action": "CaptainHook::Notify.Notify"
+                }
+            ]
+        }
+    }
+}

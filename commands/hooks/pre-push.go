@@ -1,0 +1,29 @@
+package hooks
+
+import (
+	"fmt"
+	"github.com/captainhook-go/captainhook/cli"
+	"github.com/captainhook-go/captainhook/config"
+	"github.com/spf13/cobra"
+)
+
+func SetupHookPrePushCommand() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "pre-push",
+		Short: "Execute pre-push actions",
+		Long:  "Execute all actions configured for pre-push",
+		Run: func(cmd *cobra.Command, args []string) {
+
+			var path string = ""
+			var settings = map[string]string{}
+			config.CreateConfiguration(path, settings)
+
+			fmt.Println("PRE PUSH HOOK")
+		},
+	}
+
+	cli.ConfigurationAware(cmd)
+	cli.RepositoryAware(cmd)
+
+	return cmd
+}
