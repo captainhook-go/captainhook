@@ -1,5 +1,5 @@
-## Warning ##
-Nothing here works, this still in development and not really working so far.
+# Warning #
+Nothing here works, this is still in very early development stages and not really working so far.
 This README is kind of a declaration of intent and shows what captainhook could or should be one day.
 
 # CaptainHook
