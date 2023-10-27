@@ -1,0 +1,5 @@
+# ignore the compile binary
+captainhook
+
+# ignore the local captainhook.json configuration
+captainhook.json
