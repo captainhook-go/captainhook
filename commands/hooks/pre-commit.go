@@ -12,6 +12,7 @@ func SetupHookPreCommitCommand() *cobra.Command {
 		Short: "Execute pre-commit actions",
 		Long:  "Execute all actions configured for pre-commit",
 		Run: func(cmd *cobra.Command, args []string) {
+
 			fmt.Println("PRE COMMIT HOOK")
 		},
 	}

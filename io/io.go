@@ -9,12 +9,13 @@ const (
 )
 
 type IO interface {
-	GetArguments() map[string]string
-	GetArgument(arg string) string
-	GetStandardInput() []string
+	Arguments() map[string]string
+	Argument(arg string) string
+	StandardInput() []string
+	IsQuiet() bool
 	IsDebug() bool
 	IsVeryVerbose() bool
 	IsVerbose() bool
 	IsInteractive() bool
-	Write(message string, verbosity int)
+	Write(message string, newline bool, verbosity int)
 }

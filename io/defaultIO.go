@@ -13,11 +13,14 @@ func NewDefaultIO(verbosity int, arguments map[string]string) *DefaultIO {
 }
 
 func (d *DefaultIO) Arguments() map[string]string {
-	myMap := map[string]string{}
-	return myMap
+	return d.arguments
 }
 func (d *DefaultIO) Argument(name string) string {
 	return d.arguments[name]
+}
+
+func (d *DefaultIO) StandardInput() []string {
+	return make([]string, 0)
 }
 
 func (d *DefaultIO) IsQuiet() bool {
@@ -36,11 +39,19 @@ func (d *DefaultIO) IsVerbose() bool {
 	return d.verbosity >= VERBOSE
 }
 
-func (d *DefaultIO) Write(message string, verbosity int) {
+func (d *DefaultIO) IsInteractive() bool {
+	return false
+}
+
+func (d *DefaultIO) Write(message string, newline bool, verbosity int) {
 	if d.IsQuiet() {
 		return
 	}
+	var linebreak = ""
+	if newline {
+		linebreak = "\n"
+	}
 	if verbosity <= d.verbosity {
-		fmt.Print(message)
+		fmt.Print(message + linebreak)
 	}
 }

@@ -64,7 +64,7 @@ func (c *Configuration) IsFailureAllowed() bool {
 func (c *Configuration) FailOnFirstError() bool {
 	return c.settings.FailOnFirstError
 }
-func (c *Configuration) getHookConfig(hook string) *Hook {
+func (c *Configuration) HookConfig(hook string) *Hook {
 	return c.hooks[hook]
 }
 
@@ -79,7 +79,7 @@ func (c *Configuration) load() error {
 	}
 
 	for hookName, hookConfigJson := range configurationJson.Hooks {
-		hookConfig := c.getHookConfig(hookName)
+		hookConfig := c.HookConfig(hookName)
 		for _, actionJson := range hookConfigJson.Actions {
 			hookConfig.AddAction(CreateActionFromJson(*actionJson))
 		}

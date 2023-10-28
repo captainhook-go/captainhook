@@ -3,6 +3,7 @@ package commands
 import (
 	"github.com/captainhook-go/captainhook/commands/hooks"
 	"github.com/spf13/cobra"
+	"os"
 )
 
 type Response struct {
@@ -27,8 +28,10 @@ var (
 
 func Execute([]string) Response {
 
-	rootCmd.Execute()
-
+	err := rootCmd.Execute()
+	if err != nil {
+		os.Exit(1)
+	}
 	var resp Response
 	resp.Cmd = rootCmd
 
