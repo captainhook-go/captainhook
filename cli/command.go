@@ -16,7 +16,8 @@ func RepositoryAware(cmd *cobra.Command) {
 	cmd.Flags().StringP("repository", "r", repoPath, "path to your git repository")
 }
 
-func SetUpConfig(confPath string) (*config.Configuration, error) {
+func SetUpConfig(cmd *cobra.Command) (*config.Configuration, error) {
+	confPath, _ := cmd.Flags().GetString("config")
 	settings := config.Settings{}
 	conf, confErr := config.NewConfiguration(confPath, true, settings)
 	if confErr != nil {
@@ -25,7 +26,8 @@ func SetUpConfig(confPath string) (*config.Configuration, error) {
 	return conf, nil
 }
 
-func SetUpRepo(repoPath string) (*git.Repository, error) {
+func SetUpRepo(cmd *cobra.Command) (*git.Repository, error) {
+	repoPath, _ := cmd.Flags().GetString("repository")
 	repo, repoErr := git.NewRepository(repoPath)
 	if repoErr != nil {
 		return nil, repoErr
@@ -33,12 +35,12 @@ func SetUpRepo(repoPath string) (*git.Repository, error) {
 	return repo, nil
 }
 
-func SetUpConfigAndRepo(confPath string, repoPath string) (*config.Configuration, *git.Repository, error) {
-	conf, confErr := SetUpConfig(confPath)
+func SetUpConfigAndRepo(cmd *cobra.Command) (*config.Configuration, *git.Repository, error) {
+	conf, confErr := SetUpConfig(cmd)
 	if confErr != nil {
 		return nil, nil, confErr
 	}
-	repo, repoErr := SetUpRepo(repoPath)
+	repo, repoErr := SetUpRepo(cmd)
 	if repoErr != nil {
 		return nil, nil, repoErr
 	}

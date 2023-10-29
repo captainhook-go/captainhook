@@ -1,9 +1,9 @@
 package hooks
 
 import (
-	"fmt"
 	"github.com/captainhook-go/captainhook/cli"
-	"github.com/captainhook-go/captainhook/config"
+	"github.com/captainhook-go/captainhook/exec"
+	"github.com/captainhook-go/captainhook/io"
 	"github.com/spf13/cobra"
 )
 
@@ -13,12 +13,18 @@ func SetupHookPrePushCommand() *cobra.Command {
 		Short: "Execute pre-push actions",
 		Long:  "Execute all actions configured for pre-push",
 		Run: func(cmd *cobra.Command, args []string) {
+			appIO := io.NewDefaultIO(io.NORMAL, cli.MapArgs([]string{}, args))
 
-			var path string = ""
-			var settings = map[string]string{}
-			config.CreateConfiguration(path, settings)
+			conf, repo, err := cli.SetUpConfigAndRepo(cmd)
+			if err != nil {
+				cli.DisplayCommandError(err)
+			}
 
-			fmt.Println("PRE PUSH HOOK")
+			runner := exec.NewPrePushRunner(appIO, conf, repo)
+			errRun := runner.Run()
+			if errRun != nil {
+				cli.DisplayCommandError(errRun)
+			}
 		},
 	}
 

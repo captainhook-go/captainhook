@@ -28,7 +28,10 @@ func (h *HookRunner) Run() error {
 		return errBefore
 	}
 
-	h.runActions()
+	errActions := h.runActions()
+	if errActions != nil {
+		return errActions
+	}
 
 	errAfter := h.AfterHook()
 	if errAfter != nil {

@@ -15,10 +15,7 @@ func SetupHookPrepareCommitMsgCommand() *cobra.Command {
 		Run: func(cmd *cobra.Command, args []string) {
 			appIO := io.NewDefaultIO(io.NORMAL, cli.MapArgs([]string{"file", "mode", "hash"}, args))
 
-			confPath, _ := cmd.Flags().GetString("config")
-			repoPath, _ := cmd.Flags().GetString("repository")
-
-			conf, repo, err := cli.SetUpConfigAndRepo(confPath, repoPath)
+			conf, repo, err := cli.SetUpConfigAndRepo(cmd)
 			if err != nil {
 				cli.DisplayCommandError(err)
 			}

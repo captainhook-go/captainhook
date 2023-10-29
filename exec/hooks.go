@@ -8,6 +8,44 @@ import (
 	"github.com/captainhook-go/captainhook/io"
 )
 
+func newDefaultHookRunner(hookName string, appIO io.IO, conf *config.Configuration, repo *git.Repository) *HookRunner {
+	h := HookRunner{
+		hook:         hookName,
+		appIO:        appIO,
+		config:       conf,
+		repo:         repo,
+		beforeHook:   func(appIO io.IO, config *config.Configuration, repo *git.Repository) error { return nil },
+		beforeAction: func(appIO io.IO, config *config.Action, repo *git.Repository) error { return nil },
+		afterAction:  func(appIO io.IO, config *config.Action, repo *git.Repository) error { return nil },
+		afterHook:    func(appIO io.IO, config *config.Configuration, repo *git.Repository) error { return nil },
+	}
+	return &h
+}
+
+func NewCommitMsgRunner(appIO io.IO, conf *config.Configuration, repo *git.Repository) *HookRunner {
+	return newDefaultHookRunner(hooks.COMMIT_MSG, appIO, conf, repo)
+}
+
+func NewPostCheckoutRunner(appIO io.IO, conf *config.Configuration, repo *git.Repository) *HookRunner {
+	return newDefaultHookRunner(hooks.POST_CHECKOUT, appIO, conf, repo)
+}
+
+func NewPostCommitRunner(appIO io.IO, conf *config.Configuration, repo *git.Repository) *HookRunner {
+	return newDefaultHookRunner(hooks.POST_COMMIT, appIO, conf, repo)
+}
+
+func NewPostMergeRunner(appIO io.IO, conf *config.Configuration, repo *git.Repository) *HookRunner {
+	return newDefaultHookRunner(hooks.POST_MERGE, appIO, conf, repo)
+}
+
+func NewPostRewriteRunner(appIO io.IO, conf *config.Configuration, repo *git.Repository) *HookRunner {
+	return newDefaultHookRunner(hooks.POST_REWRITE, appIO, conf, repo)
+}
+
+func NewPreCommitRunner(appIO io.IO, conf *config.Configuration, repo *git.Repository) *HookRunner {
+	return newDefaultHookRunner(hooks.PRE_COMMIT, appIO, conf, repo)
+}
+
 func NewPrepareCommitMsgRunner(appIO io.IO, conf *config.Configuration, repo *git.Repository) *HookRunner {
 	h := HookRunner{
 		hook:   hooks.PREPARE_COMMIT_MSG,
@@ -38,4 +76,8 @@ func NewPrepareCommitMsgRunner(appIO io.IO, conf *config.Configuration, repo *gi
 		},
 	}
 	return &h
+}
+
+func NewPrePushRunner(appIO io.IO, conf *config.Configuration, repo *git.Repository) *HookRunner {
+	return newDefaultHookRunner(hooks.PRE_PUSH, appIO, conf, repo)
 }

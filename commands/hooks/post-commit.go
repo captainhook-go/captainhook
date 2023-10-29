@@ -1,8 +1,9 @@
 package hooks
 
 import (
-	"fmt"
 	"github.com/captainhook-go/captainhook/cli"
+	"github.com/captainhook-go/captainhook/exec"
+	"github.com/captainhook-go/captainhook/io"
 	"github.com/spf13/cobra"
 )
 
@@ -12,7 +13,18 @@ func SetupHookPostCommitCommand() *cobra.Command {
 		Short: "Execute post-commit actions",
 		Long:  "Execute all actions configured for post-commit",
 		Run: func(cmd *cobra.Command, args []string) {
-			fmt.Println("POST COMMIT HOOK")
+			appIO := io.NewDefaultIO(io.NORMAL, cli.MapArgs([]string{}, args))
+
+			conf, repo, err := cli.SetUpConfigAndRepo(cmd)
+			if err != nil {
+				cli.DisplayCommandError(err)
+			}
+
+			runner := exec.NewPostCommitRunner(appIO, conf, repo)
+			errRun := runner.Run()
+			if errRun != nil {
+				cli.DisplayCommandError(errRun)
+			}
 		},
 	}
 
