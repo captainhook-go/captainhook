@@ -1,7 +1,5 @@
 package config
 
-import "github.com/captainhook-go/captainhook/config/json"
-
 type Settings struct {
 	AllowFailure     bool
 	AnsiColors       bool
@@ -13,7 +11,7 @@ type Settings struct {
 	Verbosity        string
 }
 
-func createSettingsFromJson(json json.SettingsJson) *Settings {
+func createSettingsFromJson(json JsonSettings) *Settings {
 	return &Settings{
 		AllowFailure:     *json.AllowFailure,
 		AnsiColors:       *json.AnsiColors,

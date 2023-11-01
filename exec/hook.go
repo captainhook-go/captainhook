@@ -1,67 +1,85 @@
 package exec
 
 import (
+	"fmt"
+	"github.com/captainhook-go/captainhook/app"
 	"github.com/captainhook-go/captainhook/config"
+	"github.com/captainhook-go/captainhook/events"
+	"github.com/captainhook-go/captainhook/exec/printer"
 	"github.com/captainhook-go/captainhook/git"
+	"github.com/captainhook-go/captainhook/hooks"
 	"github.com/captainhook-go/captainhook/io"
 )
 
 type HookRunner struct {
-	hook         string
-	appIO        io.IO
-	config       *config.Configuration
-	repo         *git.Repository
-	beforeHook   func(appIO io.IO, config *config.Configuration, repo *git.Repository) error
-	beforeAction func(appIO io.IO, config *config.Action, repo *git.Repository) error
-	afterAction  func(appIO io.IO, config *config.Action, repo *git.Repository) error
-	afterHook    func(appIO io.IO, config *config.Configuration, repo *git.Repository) error
+	hook            string
+	appIO           io.IO
+	config          *config.Configuration
+	repo            *git.Repository
+	eventDispatcher *events.Dispatcher
+	actionLog       *hooks.ActionLog
 }
 
 func NewHookRunner(hook string, appIO io.IO, config *config.Configuration, repo *git.Repository) *HookRunner {
-	h := HookRunner{hook: hook, appIO: appIO, config: config, repo: repo}
+	h := HookRunner{
+		hook:            hook,
+		appIO:           appIO,
+		config:          config,
+		repo:            repo,
+		eventDispatcher: events.NewDispatcher(),
+		actionLog:       hooks.NewActionLog(),
+	}
+
+	defaultPrinter := printer.NewDefaultPrinter(appIO)
+	defaultPrinter.RegisterSubscribers(h.eventDispatcher)
+
 	return &h
 }
 
 func (h *HookRunner) Run() error {
-	errBefore := h.BeforeHook()
-	if errBefore != nil {
-		return errBefore
-	}
-
 	errActions := h.runActions()
 	if errActions != nil {
 		return errActions
 	}
-
-	errAfter := h.AfterHook()
-	if errAfter != nil {
-		return errAfter
-	}
 	return nil
-}
-
-func (h *HookRunner) BeforeHook() error {
-	return h.beforeHook(h.appIO, h.config, h.repo)
-}
-
-func (h *HookRunner) AfterHook() error {
-	return h.afterHook(h.appIO, h.config, h.repo)
 }
 
 func (h *HookRunner) runActions() error {
 	var err error
 	hookConfig := h.config.HookConfig(h.hook)
 
-	if h.config.FailOnFirstError() {
-		err = h.runActionsFailFirst(hookConfig)
-	} else {
-		err = h.runActionsFailLast(hookConfig)
+	err = h.eventDispatcher.DispatchHookStartedEvent(
+		events.NewHookStartedEvent(app.NewContext(h.appIO, h.config, h.repo), hookConfig),
+	)
+	// TODO: trigger failed event
+	if err != nil {
+		h.appIO.Write(err.Error(), true, io.NORMAL)
+		return err
 	}
 
+	if h.config.FailOnFirstError() {
+		err = h.runActionsFailFast(hookConfig)
+	} else {
+		err = h.runActionsFailLate(hookConfig)
+	}
+
+	if err != nil {
+		// TODO: trigger failed event
+		h.appIO.Write(err.Error(), true, io.NORMAL)
+		return err
+	}
+
+	err = h.eventDispatcher.DispatchHookSucceededEvent(
+		events.NewHookSucceededEvent(app.NewContext(h.appIO, h.config, h.repo), hookConfig, h.actionLog),
+	)
+	// TODO: trigger failed event
+	if err != nil {
+		h.appIO.Write(err.Error(), true, io.NORMAL)
+	}
 	return err
 }
 
-func (h *HookRunner) runActionsFailFirst(hookConfig *config.Hook) error {
+func (h *HookRunner) runActionsFailFast(hookConfig *config.Hook) error {
 	for _, action := range hookConfig.GetActions() {
 		err := h.runAction(action)
 		if err != nil {
@@ -71,26 +89,21 @@ func (h *HookRunner) runActionsFailFirst(hookConfig *config.Hook) error {
 	return nil
 }
 
-func (h *HookRunner) runActionsFailLast(hookConfig *config.Hook) error {
+func (h *HookRunner) runActionsFailLate(hookConfig *config.Hook) error {
 	for _, action := range hookConfig.GetActions() {
 		err := h.runAction(action)
 		if err != nil {
-
+			fmt.Println(err.Error())
 		}
 	}
 	return nil
 }
 
 func (h *HookRunner) runAction(action *config.Action) error {
-	errBefore := h.beforeAction(h.appIO, action, h.repo)
-	if errBefore != nil {
-		return errBefore
-	}
-	h.appIO.Write(action.Action(), true, io.NORMAL)
-
-	errAfter := h.afterAction(h.appIO, action, h.repo)
-	if errAfter != nil {
-		return errAfter
+	actionRunner := NewActionRunner(h.appIO, h.config, h.repo, h.eventDispatcher, h.actionLog)
+	errAction := actionRunner.Run(h.hook, action)
+	if errAction != nil {
+		return errAction
 	}
 	return nil
 }

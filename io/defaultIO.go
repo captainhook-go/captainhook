@@ -1,6 +1,8 @@
 package io
 
-import "fmt"
+import (
+	"fmt"
+)
 
 type DefaultIO struct {
 	verbosity int
@@ -12,31 +14,23 @@ func NewDefaultIO(verbosity int, arguments map[string]string) *DefaultIO {
 	return &io
 }
 
+func (d *DefaultIO) Verbosity() int {
+	return d.verbosity
+}
+
 func (d *DefaultIO) Arguments() map[string]string {
 	return d.arguments
 }
 func (d *DefaultIO) Argument(name string) string {
-	return d.arguments[name]
+	value, ok := d.arguments[name]
+	if !ok {
+		value = ""
+	}
+	return value
 }
 
 func (d *DefaultIO) StandardInput() []string {
 	return make([]string, 0)
-}
-
-func (d *DefaultIO) IsQuiet() bool {
-	return !(d.verbosity > QUIET)
-}
-
-func (d *DefaultIO) IsDebug() bool {
-	return d.verbosity >= DEBUG
-}
-
-func (d *DefaultIO) IsVeryVerbose() bool {
-	return d.verbosity >= VERY_VERBOSE
-}
-
-func (d *DefaultIO) IsVerbose() bool {
-	return d.verbosity >= VERBOSE
 }
 
 func (d *DefaultIO) IsInteractive() bool {
@@ -44,14 +38,19 @@ func (d *DefaultIO) IsInteractive() bool {
 }
 
 func (d *DefaultIO) Write(message string, newline bool, verbosity int) {
-	if d.IsQuiet() {
+	if d.isQuiet() {
 		return
 	}
 	var linebreak = ""
 	if newline {
 		linebreak = "\n"
 	}
-	if verbosity <= d.verbosity {
-		fmt.Print(message + linebreak)
+
+	if verbosity >= d.verbosity {
+		fmt.Print(Colorize(message + linebreak))
 	}
+}
+
+func (d *DefaultIO) isQuiet() bool {
+	return !(d.verbosity > QUIET)
 }

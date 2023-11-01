@@ -1,6 +1,11 @@
+
+
 # Warning #
 Nothing here works, this is still in very early development stages and not really working so far.
 This README is kind of a declaration of intent and shows what captainhook could or should be one day.
+
+[![Go Report Card](https://goreportcard.com/badge/github.com/captainhook-go/captainhook?style=flat-square)](https://goreportcard.com/report/github.com/captainhook.go/captainhook)
+![Go Version](https://img.shields.io/badge/go%20version-%3E=1.17-61CFDD.svg?style=flat-square)
 
 # CaptainHook
 
@@ -13,7 +18,7 @@ You can use *CaptainHook* to validate or prepare your commit messages, ensure co
 or run unit tests before you commit or push changes to git. You can automatically clear
 local caches or install the correct dependencies after pulling the latest changes.
 
-You can run any cli command, use loads of built in functionality.
+You can run any cli command, use loads of built-in functionality.
 For more information have a look at the [documentation](https://captainhook-go.github.io/captainhook/ "CaptainHook Documentation").
 
 ## Installation

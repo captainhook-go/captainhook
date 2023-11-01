@@ -1,7 +1,6 @@
 package config
 
 import (
-	"github.com/captainhook-go/captainhook/config/json"
 	"strconv"
 )
 
@@ -12,7 +11,7 @@ type Action struct {
 	options    Options
 }
 
-func CreateActionFromJson(json json.ActionJson) *Action {
+func CreateActionFromJson(json JsonAction) *Action {
 	return &Action{
 		action: *json.Action,
 	}

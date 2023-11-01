@@ -1,7 +1,6 @@
 package commands
 
 import (
-	"github.com/captainhook-go/captainhook/commands/hooks"
 	"github.com/spf13/cobra"
 	"os"
 )
@@ -19,6 +18,7 @@ func (r Response) IsUserError() bool {
 
 var (
 	verboseFlag bool
+	colorFlag   bool
 	rootCmd     = &cobra.Command{
 		Use:   "captainhook",
 		Short: "Git hook manager",
@@ -39,22 +39,20 @@ func Execute([]string) Response {
 }
 
 func init() {
-	rootCmd.PersistentFlags().BoolVarP(
-		&verboseFlag,
-		"verbose",
-		"v", false,
-		"verbose output",
-	)
+	rootCmd.PersistentFlags().BoolVarP(&verboseFlag, "quiet", "q", false, "verbose output")
+	rootCmd.PersistentFlags().BoolVarP(&verboseFlag, "verbose", "v", false, "verbose output")
+	rootCmd.PersistentFlags().BoolVarP(&verboseFlag, "debug", "d", false, "verbose output")
+	rootCmd.PersistentFlags().BoolVarP(&colorFlag, "no-color", "", false, "disable colored output")
 
 	hookCommand := setupHookCommand()
-	hookCommand.AddCommand(hooks.SetupHookCommitMsgCommand())
-	hookCommand.AddCommand(hooks.SetupHookPrepareCommitMsgCommand())
-	hookCommand.AddCommand(hooks.SetupHookPreCommitCommand())
-	hookCommand.AddCommand(hooks.SetupHookPrePushCommand())
-	hookCommand.AddCommand(hooks.SetupHookPostCommitCommand())
-	hookCommand.AddCommand(hooks.SetupHookPostRewriteCommand())
-	hookCommand.AddCommand(hooks.SetupHookPostCheckoutCommand())
-	hookCommand.AddCommand(hooks.SetupHookPostMergeCommand())
+	hookCommand.AddCommand(SetupHookCommitMsgCommand())
+	hookCommand.AddCommand(SetupHookPrepareCommitMsgCommand())
+	hookCommand.AddCommand(SetupHookPreCommitCommand())
+	hookCommand.AddCommand(SetupHookPrePushCommand())
+	hookCommand.AddCommand(SetupHookPostCommitCommand())
+	hookCommand.AddCommand(SetupHookPostRewriteCommand())
+	hookCommand.AddCommand(SetupHookPostCheckoutCommand())
+	hookCommand.AddCommand(SetupHookPostMergeCommand())
 
 	rootCmd.AddCommand(setupInstallCommand())
 	rootCmd.AddCommand(hookCommand)

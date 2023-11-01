@@ -1,12 +1,17 @@
 package config
 
 type Hook struct {
+	name      string
 	isEnabled bool
 	actions   []*Action
 }
 
-func NewHook(isEnabled bool) *Hook {
-	return &Hook{isEnabled: isEnabled}
+func NewHook(name string, isEnabled bool) *Hook {
+	return &Hook{name: name, isEnabled: isEnabled}
+}
+
+func (h *Hook) Name() string {
+	return h.name
 }
 
 func (h *Hook) IsEnabled() bool {

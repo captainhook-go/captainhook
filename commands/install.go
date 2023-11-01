@@ -1,7 +1,6 @@
 package commands
 
 import (
-	"github.com/captainhook-go/captainhook/cli"
 	"github.com/captainhook-go/captainhook/exec"
 	"github.com/captainhook-go/captainhook/io"
 	"github.com/spf13/cobra"
@@ -18,9 +17,9 @@ func setupInstallCommand() *cobra.Command {
 			force, _ := cmd.Flags().GetBool("force")
 			skip, _ := cmd.Flags().GetBool("skip-existing")
 
-			conf, repo, err := cli.SetUpConfigAndRepo(cmd)
+			conf, repo, err := setUpConfigAndRepo(cmd)
 			if err != nil {
-				cli.DisplayCommandError(err)
+				DisplayCommandError(err)
 			}
 
 			installer := exec.NewInstaller(appIO, conf, repo)
@@ -28,14 +27,14 @@ func setupInstallCommand() *cobra.Command {
 			installer.Force(force)
 			instError := installer.Run()
 			if instError != nil {
-				cli.DisplayCommandError(instError)
+				DisplayCommandError(instError)
 			}
 		},
 	}
 
 	setUpFlags(cmd)
-	cli.ConfigurationAware(cmd)
-	cli.RepositoryAware(cmd)
+	configurationAware(cmd)
+	repositoryAware(cmd)
 
 	return cmd
 }

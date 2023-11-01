@@ -3,8 +3,7 @@ package config
 import (
 	"encoding/json"
 	"fmt"
-	json2 "github.com/captainhook-go/captainhook/config/json"
-	"github.com/captainhook-go/captainhook/hooks"
+	"github.com/captainhook-go/captainhook/info"
 	"os"
 )
 
@@ -45,8 +44,8 @@ func NewConfiguration(path string, fileExists bool, settings Settings) (*Configu
 }
 func (c *Configuration) init() {
 	c.hooks = map[string]*Hook{}
-	for _, hook := range hooks.GetValidHooks() {
-		c.hooks[hook] = NewHook(false)
+	for _, hook := range info.GetValidHooks() {
+		c.hooks[hook] = NewHook(hook, false)
 	}
 }
 func (c *Configuration) IsLoadedFromFile() bool {
@@ -75,7 +74,7 @@ func (c *Configuration) load() error {
 	}
 	configurationJson, decodeErr := c.decodeConfigJson(jsonBytes)
 	if decodeErr != nil {
-		return fmt.Errorf("unable to parse json: %s %s", c.path, decodeErr.Error())
+		return fmt.Errorf("unable to parse load: %s %s", c.path, decodeErr.Error())
 	}
 
 	for hookName, hookConfigJson := range configurationJson.Hooks {
@@ -113,14 +112,14 @@ func (c *Configuration) readConfigFile() ([]byte, error) {
 	return jsonData, nil
 }
 
-func (c *Configuration) decodeConfigJson(jsonInBytes []byte) (json2.ConfigurationJson, error) {
-	var config json2.ConfigurationJson
+func (c *Configuration) decodeConfigJson(jsonInBytes []byte) (JsonConfiguration, error) {
+	var config JsonConfiguration
 	if !json.Valid(jsonInBytes) {
-		return config, fmt.Errorf("json configuration is invalid: %s", c.path)
+		return config, fmt.Errorf("load configuration is invalid: %s", c.path)
 	}
 	marshalError := json.Unmarshal(jsonInBytes, &config)
 	if marshalError != nil {
-		return config, fmt.Errorf("could not load json to struct: %s %s", c.path, marshalError.Error())
+		return config, fmt.Errorf("could not load load to struct: %s %s", c.path, marshalError.Error())
 	}
 	return config, nil
 }
