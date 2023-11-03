@@ -5,7 +5,7 @@
         "ansi-colors": true,
         "git-directory": ".git",
         "includes": [],
-        "run-mode": "local",
+        "run-path": "tools/captainhook",
         "custom": {
             "foo": "bar",
             "fiz": "baz"
