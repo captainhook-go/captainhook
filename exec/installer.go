@@ -150,7 +150,7 @@ func (i *Installer) shouldHookBeMoved() bool {
 }
 
 func (i *Installer) backupHook(hook string) {
-
+	// TODO: add backup functionality
 }
 
 func (i *Installer) HookTemplate() string {
