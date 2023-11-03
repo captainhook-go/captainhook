@@ -1,30 +1,31 @@
 package config
 
-type JsonAction struct {
-	Action     *string
-	Settings   *JsonActionConfig `load:"config,omitempty"`
-	Conditions *[]JsonCondition  `load:"conditions,omitempty"`
-	Options    *JsonOptions      `load:"options ons,omitempty"`
+type JsonConfiguration struct {
+	Settings *JsonAppSettings      `json:"config,omitempty"`
+	Hooks    *map[string]*JsonHook `json:"hooks,omitempty"`
 }
 
-type JsonActionConfig struct {
-	AllowFailure *bool `load:"allow-failure,omitempty"`
-	RunAsync     *bool `load:"run-async,omitempty"`
-	WorkingDir   *bool `load:"working-dir,omitempty"`
+type JsonHook struct {
+	Actions []*JsonAction `load:"actions,omitempty"`
+}
+
+type JsonAction struct {
+	Action     *string
+	Conditions *[]JsonCondition    `json:"conditions,omitempty"`
+	Options    *JsonOptions        `json:"options,omitempty"`
+	Settings   *JsonActionSettings `json:"config,omitempty"`
+}
+
+type JsonActionSettings struct {
+	Label        *string `json:"label,omitempty"`
+	AllowFailure *bool   `json:"allow-failure,omitempty"`
+	RunAsync     *bool   `json:"run-async,omitempty"`
+	WorkingDir   *string `json:"working-dir,omitempty"`
 }
 
 type JsonCondition struct {
 	Exec *string
 	Args *[]string
-}
-
-type JsonConfiguration struct {
-	Settings JsonSettings         `load:"config,omitempty"`
-	Hooks    map[string]*JsonHook `load:"hooks,omitempty"`
-}
-
-type JsonHook struct {
-	Actions []*JsonAction `load:"actions,omitempty"`
 }
 
 type JsonOptions struct {
@@ -43,13 +44,13 @@ func (o JsonOptions) all() interface{} {
 	return o.options
 }
 
-type JsonSettings struct {
-	AllowFailure     *bool              `load:"allow-failure,omitempty"`
-	AnsiColors       *bool              `load:"ansi-colors,omitempty"`
-	Custom           *map[string]string `load:"custom,omitempty"`
-	FailOnFirstError *bool              `load:"fail-on-first-error,omitempty"`
-	GitDirectory     *string            `load:"git-directory,omitempty"`
-	Includes         *[]string          `load:"includes,omitempty"`
-	IncludeLevel     *int               `load:"includes-level,omitempty"`
-	Verbosity        *string            `load:"verbosity,omitempty"`
+type JsonAppSettings struct {
+	AllowFailure     *bool              `json:"allow-failure,omitempty"`
+	AnsiColors       *bool              `json:"ansi-colors,omitempty"`
+	Custom           *map[string]string `json:"custom,omitempty"`
+	FailOnFirstError *bool              `json:"fail-on-first-error,omitempty"`
+	GitDirectory     *string            `json:"git-directory,omitempty"`
+	Includes         *[]string          `json:"includes,omitempty"`
+	IncludeLevel     *int               `json:"includes-level,omitempty"`
+	Verbosity        *string            `json:"verbosity,omitempty"`
 }

@@ -2,67 +2,83 @@ package config
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"github.com/captainhook-go/captainhook/info"
+	"github.com/captainhook-go/captainhook/io"
 	"os"
-)
-
-const (
-	SETTING_ALLOW_FAILURE       = "allow-failure"
-	SETTING_BOOTSTRAP           = "bootstrap"
-	SETTING_COLORS              = "ansi-colors"
-	SETTING_CUSTOM              = "custom"
-	SETTING_GIT_DIR             = "git-directory"
-	SETTING_INCLUDES            = "includes"
-	SETTING_INCLUDES_LEVEL      = "includes-level"
-	SETTING_RUN_PATH            = "run-path"
-	SETTING_VERBOSITY           = "verbosity"
-	SETTING_FAIL_ON_FIRST_ERROR = "fail-on-first-error"
 )
 
 type Configuration struct {
 	size       int64
 	path       string
 	fileExists bool
-	settings   Settings
+	settings   *AppSettings
 	custom     map[string]string
 	hooks      map[string]*Hook
 }
 
-func NewConfiguration(path string, fileExists bool, settings Settings) (*Configuration, error) {
-	c := Configuration{path: path, fileExists: fileExists, settings: settings}
+func NewConfiguration(path string, fileExists bool, settings *AppSettings) (*Configuration, error) {
+	var err error
+	c := Configuration{path: path, fileExists: fileExists, settings: NewDefaultAppSettings()}
 	c.path = path
 	c.fileExists = fileExists
 	c.init()
+	conf := &c
+
 	if c.fileExists {
-		err := c.load()
+		err = c.load()
 		if err != nil {
 			println(err.Error())
 		}
 	}
-	return &c, nil
+	c.mergeSettings(settings)
+	return conf, err
 }
+
 func (c *Configuration) init() {
 	c.hooks = map[string]*Hook{}
 	for _, hook := range info.GetValidHooks() {
 		c.hooks[hook] = NewHook(hook, false)
 	}
 }
+
 func (c *Configuration) IsLoadedFromFile() bool {
 	return c.fileExists
 }
+
 func (c *Configuration) Path() string {
 	return c.path
 }
+
 func (c *Configuration) CustomSettings() map[string]string {
 	return c.custom
 }
+
+func (c *Configuration) GitDirectory() string {
+	gitDir := c.settings.GitDirectory
+	if len(gitDir) < 1 {
+		gitDir = ".git"
+	}
+	return gitDir
+}
+
+func (c *Configuration) AnsiColors() bool {
+	return c.settings.AnsiColors
+}
+
+func (c *Configuration) Verbosity() int {
+	return mapVerbosity(c.settings.Verbosity)
+}
+
 func (c *Configuration) IsFailureAllowed() bool {
 	return c.settings.AllowFailure
 }
+
 func (c *Configuration) FailOnFirstError() bool {
 	return c.settings.FailOnFirstError
 }
+
 func (c *Configuration) HookConfig(hook string) *Hook {
 	return c.hooks[hook]
 }
@@ -77,14 +93,19 @@ func (c *Configuration) load() error {
 		return fmt.Errorf("unable to parse load: %s %s", c.path, decodeErr.Error())
 	}
 
-	for hookName, hookConfigJson := range configurationJson.Hooks {
-		hookConfig := c.HookConfig(hookName)
-		for _, actionJson := range hookConfigJson.Actions {
-			hookConfig.AddAction(CreateActionFromJson(*actionJson))
-		}
+	settings := createAppSettingsFromJson(configurationJson.Settings)
+	c.mergeSettings(settings)
+
+	if configurationJson.Hooks == nil {
+		return errors.New("no hooks config found")
 	}
 
-	//fmt.Printf("config file: %s", configurationJson)
+	for hookName, hookConfigJson := range *configurationJson.Hooks {
+		hookConfig := c.HookConfig(hookName)
+		for _, actionJson := range hookConfigJson.Actions {
+			hookConfig.AddAction(CreateActionFromJson(actionJson))
+		}
+	}
 
 	return nil
 }
@@ -103,10 +124,13 @@ func (c *Configuration) readConfigFile() ([]byte, error) {
 	}
 
 	c.size = stats.Size()
-	file.Close()
+	closeErr := file.Close()
+	if closeErr != nil {
+		return nil, fmt.Errorf("could not read configuration file at: %s", c.path)
+	}
 
-	jsonData, err := os.ReadFile(c.path)
-	if err != nil {
+	jsonData, readErr := os.ReadFile(c.path)
+	if readErr != nil {
 		return nil, fmt.Errorf("could not read configuration file at: %s", c.path)
 	}
 	return jsonData, nil
@@ -122,4 +146,38 @@ func (c *Configuration) decodeConfigJson(jsonInBytes []byte) (JsonConfiguration,
 		return config, fmt.Errorf("could not load load to struct: %s %s", c.path, marshalError.Error())
 	}
 	return config, nil
+}
+
+func (c *Configuration) mergeSettings(settings *AppSettings) {
+	if settings.AllowFailure == true {
+		c.settings.AllowFailure = settings.AllowFailure
+	}
+	if settings.AnsiColors == false {
+		c.settings.AnsiColors = settings.AnsiColors
+	}
+	if settings.FailOnFirstError == true {
+		c.settings.FailOnFirstError = settings.FailOnFirstError
+	}
+	if mapVerbosity(settings.Verbosity) > c.Verbosity() {
+		c.settings.Verbosity = settings.Verbosity
+	}
+	if len(settings.GitDirectory) > 0 {
+		c.settings.GitDirectory = settings.GitDirectory
+	}
+	for key, value := range settings.Custom {
+		c.settings.Custom[key] = value
+	}
+}
+
+func mapVerbosity(verbosity string) int {
+	verbosityMap := map[string]int{
+		"normal":  io.NORMAL,
+		"verbose": io.VERBOSE,
+		"debug":   io.DEBUG,
+	}
+	verbosityIO, ok := verbosityMap[verbosity]
+	if !ok {
+		verbosityIO = io.NORMAL
+	}
+	return verbosityIO
 }

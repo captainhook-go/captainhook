@@ -33,17 +33,16 @@ func (a *ActionRunner) Run(hook string, action *config.Action) error {
 		return err
 	}
 
+	status := info.ACTION_SUCCEEDED
 	cIO := io.NewCollectorIO(a.appIO.Verbosity(), a.appIO.Arguments())
 	err = a.runAction(hook, action, cIO)
 
-	var status int
-
+	// TODO: fix dispatcher action error mess
 	if err != nil {
 		err = a.eventDispatcher.DispatchActionFailedEvent(events.NewActionFailedEvent(app.NewContext(a.appIO, a.conf, a.repo), action, err))
 		status = info.ACTION_FAILED
 	} else {
 		err = a.eventDispatcher.DispatchActionSucceededEvent(events.NewActionSucceededEvent(app.NewContext(a.appIO, a.conf, a.repo), action))
-		status = info.ACTION_SUCCEEDED
 	}
 	a.appendActionLog(action, cIO, status)
 	return err
@@ -76,9 +75,7 @@ func (a *ActionRunner) runInternalAction(hook string, action *config.Action, aIO
 	}
 
 	if !actionToExecute.IsApplicableFor(hook) {
-		// TODO: trigger action skipped event
-		a.appIO.Write("skipped", true, io.NORMAL)
-		return nil
+		return a.eventDispatcher.DispatchActionSkippedEvent(events.NewActionSkippedEvent(app.NewContext(a.appIO, a.conf, a.repo), action))
 	}
 	return actionToExecute.Run(action)
 }

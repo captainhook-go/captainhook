@@ -1,44 +1,38 @@
 package config
 
-import (
-	"strconv"
-)
-
 type Action struct {
 	action     string
-	settings   map[string]string
+	settings   *ActionSettings
 	conditions []Condition
 	options    Options
 }
 
-func CreateActionFromJson(json JsonAction) *Action {
+func CreateActionFromJson(json *JsonAction) *Action {
 	return &Action{
-		action: *json.Action,
+		action:   *json.Action,
+		settings: createActionSettingsFromJson(json.Settings),
 	}
 }
 
-func (a Action) IsFailureAllowed() bool {
-	return a.getSettingBool(SETTING_ALLOW_FAILURE, false)
-}
-
-func (a Action) getSettingBool(name string, defaultValue bool) bool {
-	if a.settings == nil {
-		return defaultValue
-	}
-	var valString, existed = a.settings[name]
-	if existed {
-		valBool, err := strconv.ParseBool(valString)
-		if err == nil {
-			return valBool
-		}
-	}
-	return defaultValue
-}
-
-func (a Action) Action() string {
+func (a *Action) Action() string {
 	return a.action
 }
 
-func (a Action) Options() Options {
+func (a *Action) Options() Options {
 	return a.options
+}
+
+func (a *Action) Label() string {
+	if len(a.settings.Label) > 0 {
+		return a.settings.Label
+	}
+	return a.Action()
+}
+
+func (a *Action) IsFailureAllowed() bool {
+	return a.settings.AllowFailure
+}
+
+func (a *Action) WorkingDir() string {
+	return a.settings.WorkingDir
 }
