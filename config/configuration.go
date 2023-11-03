@@ -47,6 +47,10 @@ func (c *Configuration) IsLoadedFromFile() bool {
 	return c.fileExists
 }
 
+func (c *Configuration) IsHookEnabled(hook string) bool {
+	return c.HookConfig(hook).IsEnabled()
+}
+
 func (c *Configuration) Path() string {
 	return c.path
 }
@@ -102,6 +106,7 @@ func (c *Configuration) load() error {
 
 	for hookName, hookConfigJson := range *configurationJson.Hooks {
 		hookConfig := c.HookConfig(hookName)
+		hookConfig.isEnabled = true
 		for _, actionJson := range hookConfigJson.Actions {
 			hookConfig.AddAction(CreateActionFromJson(actionJson))
 		}

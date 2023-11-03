@@ -37,6 +37,18 @@ func (d *DefaultIO) IsInteractive() bool {
 	return false
 }
 
+func (d *DefaultIO) isQuiet() bool {
+	return !(d.verbosity > QUIET)
+}
+
+func (d *DefaultIO) IsDebug() bool {
+	return d.verbosity == DEBUG
+}
+
+func (d *DefaultIO) IsVerbose() bool {
+	return d.verbosity == VERBOSE
+}
+
 func (d *DefaultIO) Write(message string, newline bool, verbosity int) {
 	if d.isQuiet() {
 		return
@@ -51,6 +63,13 @@ func (d *DefaultIO) Write(message string, newline bool, verbosity int) {
 	}
 }
 
-func (d *DefaultIO) isQuiet() bool {
-	return !(d.verbosity > QUIET)
+func (d *DefaultIO) Ask(message string, defaultValue string) string {
+	value, err := getUserInput(message)
+	if err != nil {
+		value = defaultValue
+	}
+	if len(value) == 0 {
+		value = defaultValue
+	}
+	return value
 }

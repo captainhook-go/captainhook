@@ -23,6 +23,22 @@ func (r *Repository) Path() string {
 	return r.path
 }
 
+func (r *Repository) HookExists(hook string) bool {
+	file, err := os.Open(r.HooksDir() + "/" + hook)
+	if err != nil {
+		return false
+	}
+	_, err = file.Stat()
+	if err != nil {
+		return false
+	}
+	return true
+}
+
+func (r *Repository) HooksDir() string {
+	return r.path + "/hooks"
+}
+
 func isPathARepository(repoPath string) bool {
 	// check at least the two most obvious files
 	pathSlice := []string{

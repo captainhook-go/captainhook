@@ -13,5 +13,8 @@ type IO interface {
 	Argument(arg string) string
 	StandardInput() []string
 	IsInteractive() bool
+	IsDebug() bool
+	IsVerbose() bool
 	Write(message string, newline bool, verbosity int)
+	Ask(message string, defaultValue string) string
 }

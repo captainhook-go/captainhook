@@ -39,12 +39,31 @@ func (c *CollectorIO) IsInteractive() bool {
 	return false
 }
 
+func (c *CollectorIO) IsDebug() bool {
+	return c.verbosity == DEBUG
+}
+
+func (c *CollectorIO) IsVerbose() bool {
+	return c.verbosity == VERBOSE
+}
+
 func (c *CollectorIO) Write(message string, newline bool, verbosity int) {
 	var linebreak = ""
 	if newline {
 		linebreak = "\n"
 	}
 	c.messages = append(c.messages, &CollectedMessage{verbosity, message + linebreak})
+}
+
+func (c *CollectorIO) Ask(message string, defaultValue string) string {
+	value, err := getUserInput(message)
+	if err != nil {
+		c.Write("can't read from std input", true, NORMAL)
+	}
+	if len(value) == 0 {
+		value = defaultValue
+	}
+	return value
 }
 
 func (c *CollectorIO) HasCollectedMessages() bool {

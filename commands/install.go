@@ -17,6 +17,7 @@ func setupInstallCommand() *cobra.Command {
 
 			force, _ := cmd.Flags().GetBool("force")
 			skip, _ := cmd.Flags().GetBool("skip-existing")
+			onlyEnabled, _ := cmd.Flags().GetBool("only-enabled")
 
 			conf, err := setUpConfig(cmd)
 			if err != nil {
@@ -30,6 +31,7 @@ func setupInstallCommand() *cobra.Command {
 
 			installer := exec.NewInstaller(appIO, conf, repo)
 			installer.SkipExisting(skip)
+			installer.OnlyEnabled(onlyEnabled)
 			installer.Force(force)
 			instError := installer.Run()
 			if instError != nil {
@@ -46,8 +48,7 @@ func setupInstallCommand() *cobra.Command {
 }
 
 func setUpFlags(cmd *cobra.Command) {
-	var skip = false
-	cmd.Flags().BoolP("skip-existing", "s", skip, "skip existing hooks")
-	var force = false
-	cmd.Flags().BoolP("force", "f", force, "force installation, overwrite existing hooks")
+	cmd.Flags().BoolP("skip-existing", "s", false, "skip existing hooks")
+	cmd.Flags().BoolP("force", "f", false, "force installation, overwrite existing hooks")
+	cmd.Flags().BoolP("only-enabled", "e", false, "install only enabled hooks")
 }
