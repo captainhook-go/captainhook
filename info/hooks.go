@@ -35,3 +35,14 @@ func GetVirtualHooks() []string {
 		POST_CHANGE,
 	}
 }
+
+func VirtualHook(hook string) (string, bool) {
+	var vHook string
+	mapping := map[string]string{
+		POST_CHECKOUT: POST_CHANGE,
+		POST_MERGE:    POST_CHANGE,
+		POST_REWRITE:  POST_CHANGE,
+	}
+	vHook, ok := mapping[hook]
+	return vHook, ok
+}

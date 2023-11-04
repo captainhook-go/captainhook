@@ -7,6 +7,7 @@ import (
 	"github.com/captainhook-go/captainhook/info"
 	"github.com/captainhook-go/captainhook/io"
 	"github.com/spf13/cobra"
+	"os"
 	"strings"
 )
 
@@ -84,7 +85,7 @@ func setupHookSubCommand(hook string, argMap []string) *cobra.Command {
 			runner := exec.NewHookRunner(hook, appIO, conf, repo)
 			errRun := runner.Run()
 			if errRun != nil {
-				DisplayCommandError(errRun)
+				os.Exit(1)
 			}
 		},
 	}

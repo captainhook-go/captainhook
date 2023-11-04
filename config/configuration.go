@@ -32,7 +32,7 @@ func NewConfiguration(path string, fileExists bool, settings *AppSettings) (*Con
 			println(err.Error())
 		}
 	}
-	c.mergeSettings(settings)
+	c.mergeSettings(settings, false)
 	return conf, err
 }
 
@@ -97,8 +97,7 @@ func (c *Configuration) load() error {
 		return fmt.Errorf("unable to parse load: %s %s", c.path, decodeErr.Error())
 	}
 
-	settings := createAppSettingsFromJson(configurationJson.Settings)
-	c.mergeSettings(settings)
+	c.settings = createAppSettingsFromJson(configurationJson.Settings)
 
 	if configurationJson.Hooks == nil {
 		return errors.New("no hooks config found")
@@ -153,24 +152,22 @@ func (c *Configuration) decodeConfigJson(jsonInBytes []byte) (JsonConfiguration,
 	return config, nil
 }
 
-func (c *Configuration) mergeSettings(settings *AppSettings) {
-	if settings.AllowFailure == true {
+func (c *Configuration) mergeSettings(settings *AppSettings, complete bool) {
+	if complete {
 		c.settings.AllowFailure = settings.AllowFailure
+		c.settings.FailOnFirstError = settings.FailOnFirstError
+		for key, value := range settings.Custom {
+			c.settings.Custom[key] = value
+		}
 	}
 	if settings.AnsiColors == false {
 		c.settings.AnsiColors = settings.AnsiColors
-	}
-	if settings.FailOnFirstError == true {
-		c.settings.FailOnFirstError = settings.FailOnFirstError
 	}
 	if mapVerbosity(settings.Verbosity) > c.Verbosity() {
 		c.settings.Verbosity = settings.Verbosity
 	}
 	if len(settings.GitDirectory) > 0 {
 		c.settings.GitDirectory = settings.GitDirectory
-	}
-	for key, value := range settings.Custom {
-		c.settings.Custom[key] = value
 	}
 }
 

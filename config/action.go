@@ -3,14 +3,15 @@ package config
 type Action struct {
 	action     string
 	settings   *ActionSettings
-	conditions []Condition
-	options    Options
+	conditions []*Condition
+	options    *Options
 }
 
 func CreateActionFromJson(json *JsonAction) *Action {
 	return &Action{
-		action:   *json.Action,
-		settings: createActionSettingsFromJson(json.Settings),
+		action:     *json.Action,
+		settings:   createActionSettingsFromJson(json.Settings),
+		conditions: createConditionsFromJson(json.Conditions),
 	}
 }
 
@@ -18,7 +19,7 @@ func (a *Action) Action() string {
 	return a.action
 }
 
-func (a *Action) Options() Options {
+func (a *Action) Options() *Options {
 	return a.options
 }
 
@@ -35,4 +36,8 @@ func (a *Action) IsFailureAllowed() bool {
 
 func (a *Action) WorkingDir() string {
 	return a.settings.WorkingDir
+}
+
+func (a *Action) Conditions() []*Condition {
+	return a.conditions
 }

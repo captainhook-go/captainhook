@@ -26,26 +26,32 @@ func NewActionRunner(appIO io.IO, conf *config.Configuration, repo *git.Reposito
 	return &a
 }
 
-func (a *ActionRunner) Run(hook string, action *config.Action) error {
-
-	err := a.eventDispatcher.DispatchActionStartedEvent(events.NewActionStartedEvent(app.NewContext(a.appIO, a.conf, a.repo), action))
-	if err != nil {
-		return err
-	}
-
+func (a *ActionRunner) Run(hook string, action *config.Action) (error, error) {
+	var errDispatchResult error
 	status := info.ACTION_SUCCEEDED
 	cIO := io.NewCollectorIO(a.appIO.Verbosity(), a.appIO.Arguments())
-	err = a.runAction(hook, action, cIO)
+	errDispatchStart := a.eventDispatcher.DispatchActionStartedEvent(events.NewActionStartedEvent(app.NewContext(a.appIO, a.conf, a.repo), action))
+	if errDispatchStart != nil {
+		return nil, errDispatchStart
+	}
+	if !a.doConditionsApply(hook, action.Conditions(), cIO) {
+		errDispatchSkipped := a.eventDispatcher.DispatchActionSkippedEvent(events.NewActionSkippedEvent(app.NewContext(a.appIO, a.conf, a.repo), action))
+		status = info.ACTION_SKIPPED
+		a.appendActionLog(action, cIO, status)
+		return nil, errDispatchSkipped
+	}
 
-	// TODO: fix dispatcher action error mess
+	err := a.runAction(hook, action, cIO)
+
 	if err != nil {
-		err = a.eventDispatcher.DispatchActionFailedEvent(events.NewActionFailedEvent(app.NewContext(a.appIO, a.conf, a.repo), action, err))
+		errDispatchResult = a.eventDispatcher.DispatchActionFailedEvent(events.NewActionFailedEvent(app.NewContext(a.appIO, a.conf, a.repo), action, err))
 		status = info.ACTION_FAILED
 	} else {
-		err = a.eventDispatcher.DispatchActionSucceededEvent(events.NewActionSucceededEvent(app.NewContext(a.appIO, a.conf, a.repo), action))
+		errDispatchResult = a.eventDispatcher.DispatchActionSucceededEvent(events.NewActionSucceededEvent(app.NewContext(a.appIO, a.conf, a.repo), action))
+		status = info.ACTION_SKIPPED
 	}
 	a.appendActionLog(action, cIO, status)
-	return err
+	return err, errDispatchResult
 
 }
 
@@ -57,7 +63,7 @@ func (a *ActionRunner) runAction(hook string, action *config.Action, cIO *io.Col
 	return a.runExternalAction(hook, action, cIO)
 }
 
-func (a *ActionRunner) runInternalAction(hook string, action *config.Action, aIO *io.CollectorIO) error {
+func (a *ActionRunner) runInternalAction(hook string, action *config.Action, cIO *io.CollectorIO) error {
 	actionPath := strings.Split(action.Action(), "::")[1]
 	path := strings.Split(actionPath, ".")
 
@@ -67,14 +73,10 @@ func (a *ActionRunner) runInternalAction(hook string, action *config.Action, aIO
 	}
 
 	var actionToExecute hooks.Action
-	actionToExecute = actionGenerator(aIO, a.conf, a.repo)
-
-	_, ok := actionToExecute.(events.Subscriber)
-	if ok {
-
-	}
+	actionToExecute = actionGenerator(cIO, a.conf, a.repo)
 
 	if !actionToExecute.IsApplicableFor(hook) {
+		cIO.Write("action not applicable for hook: "+hook, true, io.VERBOSE)
 		return a.eventDispatcher.DispatchActionSkippedEvent(events.NewActionSkippedEvent(app.NewContext(a.appIO, a.conf, a.repo), action))
 	}
 	return actionToExecute.Run(action)
@@ -100,6 +102,18 @@ func (a *ActionRunner) runExternalAction(hook string, action *config.Action, aIO
 		aIO.Write(string(out), false, io.VERBOSE)
 	}
 	return nil
+}
+
+func (a *ActionRunner) doConditionsApply(hook string, conditions []*config.Condition, cIO *io.CollectorIO) bool {
+	conditionRunner := NewCondition(cIO, a.conf, a.repo)
+	for _, condition := range conditions {
+		err := conditionRunner.Run(hook, condition)
+		if err != nil {
+			cIO.Write(err.Error(), true, io.NORMAL)
+			return false
+		}
+	}
+	return true
 }
 
 func (a *ActionRunner) appendActionLog(action *config.Action, cIO *io.CollectorIO, status int) {

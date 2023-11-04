@@ -1,10 +1,37 @@
 package config
 
 type Condition struct {
-	Exec string
-	Args []string
+	exec string
+	args []string
 }
 
-func NewCondition(exec string, args []string) *Condition {
-	return &Condition{Exec: exec, Args: args}
+func (c *Condition) Exec() string {
+	return c.exec
+}
+
+func (c *Condition) Args() []string {
+	return c.args
+}
+
+func createConditionsFromJson(jsonConditions []*JsonCondition) []*Condition {
+	var conditions []*Condition
+	if jsonConditions == nil {
+		return conditions
+	}
+	for _, condition := range jsonConditions {
+		conditions = append(conditions, createConditionFromJson(condition))
+	}
+	return conditions
+}
+
+func createConditionFromJson(json *JsonCondition) *Condition {
+	var args []string
+
+	if json.Args != nil {
+		args = *json.Args
+	}
+
+	c := Condition{exec: *json.Exec, args: args}
+
+	return &c
 }

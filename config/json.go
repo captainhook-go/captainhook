@@ -11,7 +11,7 @@ type JsonHook struct {
 
 type JsonAction struct {
 	Action     *string
-	Conditions *[]JsonCondition    `json:"conditions,omitempty"`
+	Conditions []*JsonCondition    `json:"conditions,omitempty"`
 	Options    *JsonOptions        `json:"options,omitempty"`
 	Settings   *JsonActionSettings `json:"config,omitempty"`
 }

@@ -8,6 +8,7 @@ import (
 	"github.com/captainhook-go/captainhook/exec/printer"
 	"github.com/captainhook-go/captainhook/git"
 	"github.com/captainhook-go/captainhook/hooks"
+	"github.com/captainhook-go/captainhook/info"
 	"github.com/captainhook-go/captainhook/io"
 )
 
@@ -46,7 +47,7 @@ func (h *HookRunner) Run() error {
 
 func (h *HookRunner) runActions() error {
 	var err error
-	hookConfig := h.config.HookConfig(h.hook)
+	hookConfig := h.getHookConfig()
 
 	err = h.eventDispatcher.DispatchHookStartedEvent(
 		events.NewHookStartedEvent(app.NewContext(h.appIO, h.config, h.repo), hookConfig),
@@ -63,19 +64,17 @@ func (h *HookRunner) runActions() error {
 		err = h.runActionsFailLate(hookConfig)
 	}
 
+	// TODO: handle dispatcher errors
 	if err != nil {
-		// TODO: trigger failed event
-		h.appIO.Write(err.Error(), true, io.NORMAL)
+		_ = h.eventDispatcher.DispatchHookFailedEvent(
+			events.NewHookFailedEvent(app.NewContext(h.appIO, h.config, h.repo), hookConfig, h.actionLog, err),
+		)
 		return err
 	}
 
-	err = h.eventDispatcher.DispatchHookSucceededEvent(
+	_ = h.eventDispatcher.DispatchHookSucceededEvent(
 		events.NewHookSucceededEvent(app.NewContext(h.appIO, h.config, h.repo), hookConfig, h.actionLog),
 	)
-	// TODO: handle dispatcher errors
-	if err != nil {
-		h.appIO.Write(err.Error(), true, io.NORMAL)
-	}
 	return err
 }
 
@@ -90,21 +89,46 @@ func (h *HookRunner) runActionsFailFast(hookConfig *config.Hook) error {
 }
 
 func (h *HookRunner) runActionsFailLate(hookConfig *config.Hook) error {
+	failed := 0
 	for _, action := range hookConfig.GetActions() {
 		err := h.runAction(action)
 		if err != nil {
-			// TODO: handle dispatcher errors
-			fmt.Println(err.Error())
+			failed++
 		}
+	}
+	if failed > 0 {
+		plural := ""
+		if failed > 1 {
+			plural = "s"
+		}
+		return fmt.Errorf("%d action%s failed", failed, plural)
 	}
 	return nil
 }
 
 func (h *HookRunner) runAction(action *config.Action) error {
 	actionRunner := NewActionRunner(h.appIO, h.config, h.repo, h.eventDispatcher, h.actionLog)
-	errAction := actionRunner.Run(h.hook, action)
-	if errAction != nil {
-		return errAction
+	actionErr, dispatchErr := actionRunner.Run(h.hook, action)
+	// TODO: propagate dispatch error
+	if dispatchErr != nil {
+		h.appIO.Write(fmt.Sprintf("error dispatching events: %s", dispatchErr.Error()), true, io.NORMAL)
 	}
-	return nil
+	return actionErr
+}
+
+func (h *HookRunner) getHookConfig() *config.Hook {
+	hookConfig := h.config.HookConfig(h.hook)
+	vHook, ok := info.VirtualHook(h.hook)
+	if ok {
+		vHookConfig := h.config.HookConfig(vHook)
+		hookConfig = config.NewHook(
+			h.hook+" ("+vHook+")",
+			true,
+		)
+		for _, action := range vHookConfig.GetActions() {
+			hookConfig.AddAction(action)
+		}
+	}
+
+	return hookConfig
 }
