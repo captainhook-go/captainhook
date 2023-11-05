@@ -10,10 +10,10 @@ type JsonHook struct {
 }
 
 type JsonAction struct {
-	Action     *string
-	Conditions []*JsonCondition    `json:"conditions,omitempty"`
-	Options    *JsonOptions        `json:"options,omitempty"`
-	Settings   *JsonActionSettings `json:"config,omitempty"`
+	Run        *string                 `json:"run,omitempty"`
+	Conditions []*JsonCondition        `json:"conditions,omitempty"`
+	Options    *map[string]interface{} `json:"options,omitempty"`
+	Settings   *JsonActionSettings     `json:"config,omitempty"`
 }
 
 type JsonActionSettings struct {
@@ -24,24 +24,8 @@ type JsonActionSettings struct {
 }
 
 type JsonCondition struct {
-	Exec *string
-	Args *[]string
-}
-
-type JsonOptions struct {
-	options map[string]interface{}
-}
-
-func (o JsonOptions) valueOf(option string, defaultValue string) interface{} {
-	var value, ok = o.options[option]
-	if ok {
-		return value
-	}
-	return defaultValue
-}
-
-func (o JsonOptions) all() interface{} {
-	return o.options
+	Run     *string                 `json:"run,omitempty"`
+	Options *map[string]interface{} `json:"options,omitempty"`
 }
 
 type JsonAppSettings struct {

@@ -17,7 +17,9 @@ func (r Response) IsUserError() bool {
 }
 
 var (
+	quietFlag   bool
 	verboseFlag bool
+	debugFlag   bool
 	colorFlag   bool
 	rootCmd     = &cobra.Command{
 		Use:   "captainhook",
@@ -39,9 +41,9 @@ func Execute([]string) Response {
 }
 
 func init() {
-	rootCmd.PersistentFlags().BoolVarP(&verboseFlag, "quiet", "q", false, "verbose output")
+	rootCmd.PersistentFlags().BoolVarP(&quietFlag, "quiet", "q", false, "verbose output")
 	rootCmd.PersistentFlags().BoolVarP(&verboseFlag, "verbose", "v", false, "verbose output")
-	rootCmd.PersistentFlags().BoolVarP(&verboseFlag, "debug", "d", false, "verbose output")
+	rootCmd.PersistentFlags().BoolVarP(&debugFlag, "debug", "d", false, "verbose output")
 	rootCmd.PersistentFlags().BoolVarP(&colorFlag, "no-color", "", false, "disable colored output")
 
 	hookCommand := setupHookCommand()

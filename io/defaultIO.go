@@ -58,7 +58,7 @@ func (d *DefaultIO) Write(message string, newline bool, verbosity int) {
 		linebreak = "\n"
 	}
 
-	if verbosity >= d.verbosity {
+	if d.verbosity >= verbosity {
 		fmt.Print(Colorize(message + linebreak))
 	}
 }

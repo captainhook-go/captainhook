@@ -94,12 +94,12 @@ func NewDefaultActionStartedSubscriber(appIO io.IO) events.ActionStartedSubscrib
 }
 
 func (s *DefaultActionStartedSubscriber) Handle(event *events.ActionStarted) error {
-	actionLength := len(event.Config.Action())
+	actionLength := len(event.Config.Run())
 	action := " - <info>"
 	if actionLength > 60 {
-		action = action + event.Config.Action()[0:60] + "..."
+		action = action + event.Config.Run()[0:60] + "..."
 	} else {
-		action = action + event.Config.Action() + strings.Repeat(" ", 60-actionLength)
+		action = action + event.Config.Run() + strings.Repeat(" ", 60-actionLength)
 	}
 	action = action + "</info> : "
 	s.AppIO.Write(action, false, io.NORMAL)
@@ -169,7 +169,7 @@ func PrintActionLog(appIO io.IO, log *hooks.ActionLog) {
 			}
 			if log.CollectorIO.HasCollectedMessagesForVerbosity(appIO.Verbosity()) {
 				appIO.Write("", true, io.NORMAL)
-				appIO.Write(fmt.Sprintf("%sAction: "+log.Conf.Action()+"%s", opening, closing), true, io.NORMAL)
+				appIO.Write(fmt.Sprintf("%sAction: "+log.Conf.Run()+"%s", opening, closing), true, io.NORMAL)
 				for _, message := range log.CollectorIO.Messages() {
 					appIO.Write(message.Message, false, message.Verbosity)
 				}

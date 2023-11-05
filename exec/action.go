@@ -56,16 +56,14 @@ func (a *ActionRunner) Run(hook string, action *config.Action) (error, error) {
 }
 
 func (a *ActionRunner) runAction(hook string, action *config.Action, cIO *io.CollectorIO) error {
-	if strings.HasPrefix(action.Action(), "CaptainHook::") {
+	if isInternalFunctionality(action.Run()) {
 		return a.runInternalAction(hook, action, cIO)
 	}
-
 	return a.runExternalAction(hook, action, cIO)
 }
 
 func (a *ActionRunner) runInternalAction(hook string, action *config.Action, cIO *io.CollectorIO) error {
-	actionPath := strings.Split(action.Action(), "::")[1]
-	path := strings.Split(actionPath, ".")
+	path := splitInternalPath(action.Run())
 
 	actionGenerator, err := actions.GetActionHookFunc(path)
 	if err != nil {
@@ -83,7 +81,7 @@ func (a *ActionRunner) runInternalAction(hook string, action *config.Action, cIO
 }
 
 func (a *ActionRunner) runExternalAction(hook string, action *config.Action, aIO *io.CollectorIO) error {
-	splits := strings.Split(action.Action(), " ")
+	splits := strings.Split(action.Run(), " ")
 
 	cmd := exec.Command(splits[0], splits[1:]...)
 	out, err := cmd.CombinedOutput()
@@ -107,9 +105,8 @@ func (a *ActionRunner) runExternalAction(hook string, action *config.Action, aIO
 func (a *ActionRunner) doConditionsApply(hook string, conditions []*config.Condition, cIO *io.CollectorIO) bool {
 	conditionRunner := NewCondition(cIO, a.conf, a.repo)
 	for _, condition := range conditions {
-		err := conditionRunner.Run(hook, condition)
-		if err != nil {
-			cIO.Write(err.Error(), true, io.NORMAL)
+		isTrue := conditionRunner.Run(hook, condition)
+		if !isTrue {
 			return false
 		}
 	}

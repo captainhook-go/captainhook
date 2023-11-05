@@ -94,7 +94,7 @@ func (c *Configuration) load() error {
 	}
 	configurationJson, decodeErr := c.decodeConfigJson(jsonBytes)
 	if decodeErr != nil {
-		return fmt.Errorf("unable to parse load: %s %s", c.path, decodeErr.Error())
+		return fmt.Errorf("unable to parse json: %s %s", c.path, decodeErr.Error())
 	}
 
 	c.settings = createAppSettingsFromJson(configurationJson.Settings)
@@ -143,11 +143,11 @@ func (c *Configuration) readConfigFile() ([]byte, error) {
 func (c *Configuration) decodeConfigJson(jsonInBytes []byte) (JsonConfiguration, error) {
 	var config JsonConfiguration
 	if !json.Valid(jsonInBytes) {
-		return config, fmt.Errorf("load configuration is invalid: %s", c.path)
+		return config, fmt.Errorf("json configuration is invalid: %s", c.path)
 	}
 	marshalError := json.Unmarshal(jsonInBytes, &config)
 	if marshalError != nil {
-		return config, fmt.Errorf("could not load load to struct: %s %s", c.path, marshalError.Error())
+		return config, fmt.Errorf("could not load json to struct: %s %s", c.path, marshalError.Error())
 	}
 	return config, nil
 }

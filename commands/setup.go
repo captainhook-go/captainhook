@@ -34,6 +34,7 @@ func setUpConfig(cmd *cobra.Command) (*config.Configuration, error) {
 		GitDirectory: repoPath,
 		Verbosity:    getVerbosity(cmd),
 	}
+
 	conf, confErr := config.NewConfiguration(confPath, true, settings)
 	if confErr != nil {
 		return nil, confErr

@@ -1,16 +1,16 @@
 package config
 
 type Condition struct {
-	exec string
-	args []string
+	run     string
+	options *Options
 }
 
 func (c *Condition) Exec() string {
-	return c.exec
+	return c.run
 }
 
-func (c *Condition) Args() []string {
-	return c.args
+func (c *Condition) Options() *Options {
+	return c.options
 }
 
 func createConditionsFromJson(jsonConditions []*JsonCondition) []*Condition {
@@ -25,13 +25,13 @@ func createConditionsFromJson(jsonConditions []*JsonCondition) []*Condition {
 }
 
 func createConditionFromJson(json *JsonCondition) *Condition {
-	var args []string
+	var o *Options
 
-	if json.Args != nil {
-		args = *json.Args
+	if json.Options != nil {
+		o = createOptionsFromJson(json.Options)
 	}
 
-	c := Condition{exec: *json.Exec, args: args}
+	c := Condition{run: *json.Run, options: o}
 
 	return &c
 }

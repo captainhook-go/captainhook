@@ -1,7 +1,7 @@
 package config
 
 type Action struct {
-	action     string
+	run        string
 	settings   *ActionSettings
 	conditions []*Condition
 	options    *Options
@@ -9,14 +9,15 @@ type Action struct {
 
 func CreateActionFromJson(json *JsonAction) *Action {
 	return &Action{
-		action:     *json.Action,
+		run:        *json.Run,
 		settings:   createActionSettingsFromJson(json.Settings),
 		conditions: createConditionsFromJson(json.Conditions),
+		options:    createOptionsFromJson(json.Options),
 	}
 }
 
-func (a *Action) Action() string {
-	return a.action
+func (a *Action) Run() string {
+	return a.run
 }
 
 func (a *Action) Options() *Options {
@@ -27,7 +28,7 @@ func (a *Action) Label() string {
 	if len(a.settings.Label) > 0 {
 		return a.settings.Label
 	}
-	return a.Action()
+	return a.Run()
 }
 
 func (a *Action) IsFailureAllowed() bool {
