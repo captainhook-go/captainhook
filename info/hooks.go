@@ -1,15 +1,15 @@
 package info
 
 const (
-	PRE_COMMIT         = "pre-commit"
-	PRE_PUSH           = "pre-push"
-	COMMIT_MSG         = "commit-msg"
-	PREPARE_COMMIT_MSG = "prepare-commit-msg"
-	POST_COMMIT        = "post-commit"
-	POST_MERGE         = "post-merge"
-	POST_CHECKOUT      = "post-checkout"
-	POST_REWRITE       = "post-rewrite"
-	POST_CHANGE        = "post-change"
+	PreCommit        = "pre-commit"
+	PrePush          = "pre-push"
+	CommitMsg        = "commit-msg"
+	PrepareCommitMsg = "prepare-commit-msg"
+	PostCommit       = "post-commit"
+	PostMerge        = "post-merge"
+	PostCheckout     = "post-checkout"
+	PostRewrite      = "post-rewrite"
+	PostChange       = "post-change"
 )
 
 func GetValidHooks() []string {
@@ -19,29 +19,29 @@ func GetValidHooks() []string {
 
 func GetNativeHooks() []string {
 	return []string{
-		PRE_COMMIT,
-		PRE_PUSH,
-		COMMIT_MSG,
-		PREPARE_COMMIT_MSG,
-		POST_COMMIT,
-		POST_MERGE,
-		POST_CHECKOUT,
-		POST_REWRITE,
+		PreCommit,
+		PrePush,
+		CommitMsg,
+		PrepareCommitMsg,
+		PostCommit,
+		PostMerge,
+		PostCheckout,
+		PostRewrite,
 	}
 }
 
 func GetVirtualHooks() []string {
 	return []string{
-		POST_CHANGE,
+		PostChange,
 	}
 }
 
 func VirtualHook(hook string) (string, bool) {
 	var vHook string
 	mapping := map[string]string{
-		POST_CHECKOUT: POST_CHANGE,
-		POST_MERGE:    POST_CHANGE,
-		POST_REWRITE:  POST_CHANGE,
+		PostCheckout: PostChange,
+		PostMerge:    PostChange,
+		PostRewrite:  PostChange,
 	}
 	vHook, ok := mapping[hook]
 	return vHook, ok
