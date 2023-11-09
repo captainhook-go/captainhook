@@ -1,7 +1,7 @@
 package hooks
 
 import (
-	"github.com/captainhook-go/captainhook/config"
+	"github.com/captainhook-go/captainhook/configuration"
 	"github.com/captainhook-go/captainhook/io"
 )
 
@@ -31,11 +31,11 @@ func (a *ActionLog) HasLogs() bool {
 }
 
 type ActionLogItem struct {
-	Conf        *config.Action
+	Conf        *configuration.Action
 	CollectorIO *io.CollectorIO
 	Status      int
 }
 
-func NewActionLogItem(action *config.Action, collectorIO *io.CollectorIO, status int) *ActionLogItem {
+func NewActionLogItem(action *configuration.Action, collectorIO *io.CollectorIO, status int) *ActionLogItem {
 	return &ActionLogItem{action, collectorIO, status}
 }

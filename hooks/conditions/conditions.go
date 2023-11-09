@@ -2,7 +2,7 @@ package conditions
 
 import (
 	"errors"
-	"github.com/captainhook-go/captainhook/config"
+	"github.com/captainhook-go/captainhook/configuration"
 	"github.com/captainhook-go/captainhook/git"
 	"github.com/captainhook-go/captainhook/hooks"
 	"github.com/captainhook-go/captainhook/hooks/conditions/fileChanged"
@@ -12,7 +12,7 @@ import (
 	"strings"
 )
 
-func GetConditionFunc(path []string) (func(appIO io.IO, conf *config.Configuration, repo *git.Repository) hooks.Condition, error) {
+func GetConditionFunc(path []string) (func(appIO io.IO, conf *configuration.Configuration, repo *git.Repository) hooks.Condition, error) {
 	if len(path) != 2 {
 		return nil, errors.New("invalid condition functionality")
 	}
@@ -21,22 +21,20 @@ func GetConditionFunc(path []string) (func(appIO io.IO, conf *config.Configurati
 		path[index] = strings.ToLower(value)
 	}
 
-	data := map[string]map[string]func(appIO io.IO, conf *config.Configuration, repo *git.Repository) hooks.Condition{
+	data := map[string]map[string]func(appIO io.IO, conf *configuration.Configuration, repo *git.Repository) hooks.Condition{
 		"inconfig": {
-			"customvalueistruthy": inConfig.NewCustomValueIsTruthy,
-			"customvalueisfalsy":  inConfig.NewCustomValueIsFalsy,
+			"customvalueistruthy": inconfig.NewCustomValueIsTruthy,
+			"customvalueisfalsy":  inconfig.NewCustomValueIsFalsy,
 		},
 		"filechanged": {
-			"any":    fileChanged.NewAny,
-			"all":    fileChanged.NewAll,
-			"oftype": fileChanged.NewOfType,
+			"any":    filechanged.NewAny,
+			"all":    filechanged.NewAll,
+			"oftype": filechanged.NewOfType,
 		},
 		"filestaged": {
-			"all":         fileStaged.NewAll,
-			"any":         fileStaged.NewAny,
-			"indirectory": fileStaged.NewInDirectory,
-			"oftype":      fileStaged.NewOfType,
-			"thatis":      fileStaged.NewThatIs,
+			"all":    filestaged.NewAll,
+			"any":    filestaged.NewAny,
+			"thatis": filestaged.NewThatIs,
 		},
 	}
 

@@ -2,7 +2,7 @@ package actions
 
 import (
 	"errors"
-	"github.com/captainhook-go/captainhook/config"
+	"github.com/captainhook-go/captainhook/configuration"
 	"github.com/captainhook-go/captainhook/git"
 	"github.com/captainhook-go/captainhook/hooks"
 	"github.com/captainhook-go/captainhook/hooks/actions/branch"
@@ -12,7 +12,7 @@ import (
 	"strings"
 )
 
-func GetActionHookFunc(path []string) (func(appIO io.IO, conf *config.Configuration, repo *git.Repository) hooks.Action, error) {
+func GetActionHookFunc(path []string) (func(appIO io.IO, conf *configuration.Configuration, repo *git.Repository) hooks.Action, error) {
 	if len(path) != 2 {
 		return nil, errors.New("invalid actions functionality")
 	}
@@ -21,7 +21,7 @@ func GetActionHookFunc(path []string) (func(appIO io.IO, conf *config.Configurat
 		path[index] = strings.ToLower(value)
 	}
 
-	data := map[string]map[string]func(appIO io.IO, conf *config.Configuration, repo *git.Repository) hooks.Action{
+	data := map[string]map[string]func(appIO io.IO, conf *configuration.Configuration, repo *git.Repository) hooks.Action{
 		"branch": {
 			"preventpushoffixupandsquashcommits": branch.NewPreventPushOfFixupAndSquashCommits,
 		},
