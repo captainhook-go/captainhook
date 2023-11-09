@@ -1,6 +1,7 @@
 package io
 
 import (
+	"bufio"
 	"fmt"
 	"strings"
 )
@@ -24,4 +25,13 @@ func AnswerToBool(answer string) bool {
 		}
 	}
 	return false
+}
+
+func SplitLines(s string) []string {
+	var lines []string
+	sc := bufio.NewScanner(strings.NewReader(s))
+	for sc.Scan() {
+		lines = append(lines, sc.Text())
+	}
+	return lines
 }

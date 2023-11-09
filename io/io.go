@@ -10,7 +10,7 @@ const (
 type IO interface {
 	Verbosity() int
 	Arguments() map[string]string
-	Argument(arg string) string
+	Argument(name, defaultValue string) string
 	StandardInput() []string
 	IsInteractive() bool
 	IsDebug() bool

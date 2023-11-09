@@ -23,10 +23,10 @@ func (c *CollectorIO) Verbosity() int {
 func (c *CollectorIO) Arguments() map[string]string {
 	return c.arguments
 }
-func (c *CollectorIO) Argument(name string) string {
+func (c *CollectorIO) Argument(name, defaultValue string) string {
 	value, ok := c.arguments[name]
 	if !ok {
-		value = ""
+		value = defaultValue
 	}
 	return value
 }

@@ -14,7 +14,7 @@ func (n *NullIO) Arguments() map[string]string {
 	return myMap
 }
 
-func (n *NullIO) Argument(name string) string {
+func (n *NullIO) Argument(name, defaultValue string) string {
 	return ""
 }
 

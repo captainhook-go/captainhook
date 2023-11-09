@@ -21,10 +21,10 @@ func (d *DefaultIO) Verbosity() int {
 func (d *DefaultIO) Arguments() map[string]string {
 	return d.arguments
 }
-func (d *DefaultIO) Argument(name string) string {
+func (d *DefaultIO) Argument(name, defaultValue string) string {
 	value, ok := d.arguments[name]
 	if !ok {
-		value = ""
+		value = defaultValue
 	}
 	return value
 }
