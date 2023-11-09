@@ -33,35 +33,35 @@ func setupHookCommand() *cobra.Command {
 }
 
 func SetupHookCommitMsgCommand() *cobra.Command {
-	return setupHookSubCommand(info.COMMIT_MSG, []string{})
+	return setupHookSubCommand(info.CommitMsg, []string{"file"})
 }
 
 func SetupHookPrepareCommitMsgCommand() *cobra.Command {
-	return setupHookSubCommand(info.PREPARE_COMMIT_MSG, []string{})
+	return setupHookSubCommand(info.PrepareCommitMsg, []string{"file", "mode", "hash"})
 }
 
 func SetupHookPostCheckoutCommand() *cobra.Command {
-	return setupHookSubCommand(info.POST_CHECKOUT, []string{})
+	return setupHookSubCommand(info.PostCheckout, []string{"previousHead", "newHead", "mode"})
 }
 
 func SetupHookPostCommitCommand() *cobra.Command {
-	return setupHookSubCommand(info.POST_COMMIT, []string{})
+	return setupHookSubCommand(info.PostCommit, []string{})
 }
 
 func SetupHookPostMergeCommand() *cobra.Command {
-	return setupHookSubCommand(info.POST_MERGE, []string{})
+	return setupHookSubCommand(info.PostMerge, []string{"squash"})
 }
 
 func SetupHookPostRewriteCommand() *cobra.Command {
-	return setupHookSubCommand(info.POST_REWRITE, []string{})
+	return setupHookSubCommand(info.PostRewrite, []string{"gitCommand"})
 }
 
 func SetupHookPreCommitCommand() *cobra.Command {
-	return setupHookSubCommand(info.PRE_COMMIT, []string{})
+	return setupHookSubCommand(info.PreCommit, []string{})
 }
 
 func SetupHookPrePushCommand() *cobra.Command {
-	return setupHookSubCommand(info.PRE_PUSH, []string{})
+	return setupHookSubCommand(info.PrePush, []string{"target", "url"})
 }
 
 func setupHookSubCommand(hook string, argMap []string) *cobra.Command {
@@ -81,7 +81,7 @@ func setupHookSubCommand(hook string, argMap []string) *cobra.Command {
 			}
 
 			io.ColorStatus(conf.AnsiColors())
-			appIO := io.NewDefaultIO(conf.Verbosity(), mapArgs(argMap, args))
+			appIO := io.NewDefaultIO(conf.Verbosity(), mapArgs(argMap, args, hook))
 			runner := exec.NewHookRunner(hook, appIO, conf, repo)
 			errRun := runner.Run()
 			if errRun != nil {

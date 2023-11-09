@@ -1,7 +1,7 @@
 package commands
 
 import (
-	"github.com/captainhook-go/captainhook/config"
+	"github.com/captainhook-go/captainhook/configuration"
 	"github.com/captainhook-go/captainhook/info"
 	"github.com/spf13/cobra"
 )
@@ -16,7 +16,7 @@ func repositoryAware(cmd *cobra.Command) {
 	cmd.Flags().StringP("repository", "r", repoPath, "path to your git repository")
 }
 
-func setUpConfig(cmd *cobra.Command) (*config.Configuration, error) {
+func setUpConfig(cmd *cobra.Command) (*configuration.Configuration, error) {
 	noColor, _ := cmd.Flags().GetBool("no-color")
 	repoPath := ""
 	confPath := info.CONFIG
@@ -29,13 +29,13 @@ func setUpConfig(cmd *cobra.Command) (*config.Configuration, error) {
 	if len(confOption) > 0 {
 		confPath = confOption
 	}
-	settings := &config.AppSettings{
+	settings := &configuration.AppSettings{
 		AnsiColors:   !noColor,
 		GitDirectory: repoPath,
 		Verbosity:    getVerbosity(cmd),
 	}
 
-	conf, confErr := config.NewConfiguration(confPath, true, settings)
+	conf, confErr := configuration.NewConfiguration(confPath, true, settings)
 	if confErr != nil {
 		return nil, confErr
 	}
@@ -59,12 +59,13 @@ func getVerbosity(cmd *cobra.Command) string {
 	return verbosity
 }
 
-func mapArgs(names []string, args []string) map[string]string {
+func mapArgs(names []string, args []string, cmd string) map[string]string {
 	m := make(map[string]string)
 	for index, name := range names {
 		if len(args) > index {
 			m[name] = args[index]
 		}
 	}
+	m["command"] = cmd
 	return m
 }
