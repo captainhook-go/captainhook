@@ -3,7 +3,7 @@ package exec
 import (
 	"fmt"
 	"github.com/captainhook-go/captainhook/app"
-	"github.com/captainhook-go/captainhook/config"
+	"github.com/captainhook-go/captainhook/configuration"
 	"github.com/captainhook-go/captainhook/events"
 	"github.com/captainhook-go/captainhook/exec/printer"
 	"github.com/captainhook-go/captainhook/git"
@@ -15,13 +15,13 @@ import (
 type HookRunner struct {
 	hook            string
 	appIO           io.IO
-	config          *config.Configuration
+	config          *configuration.Configuration
 	repo            *git.Repository
 	eventDispatcher *events.Dispatcher
 	actionLog       *hooks.ActionLog
 }
 
-func NewHookRunner(hook string, appIO io.IO, config *config.Configuration, repo *git.Repository) *HookRunner {
+func NewHookRunner(hook string, appIO io.IO, config *configuration.Configuration, repo *git.Repository) *HookRunner {
 	h := HookRunner{
 		hook:            hook,
 		appIO:           appIO,
@@ -78,7 +78,7 @@ func (h *HookRunner) runActions() error {
 	return err
 }
 
-func (h *HookRunner) runActionsFailFast(hookConfig *config.Hook) error {
+func (h *HookRunner) runActionsFailFast(hookConfig *configuration.Hook) error {
 	for _, action := range hookConfig.GetActions() {
 		err := h.runAction(action)
 		if err != nil {
@@ -88,7 +88,7 @@ func (h *HookRunner) runActionsFailFast(hookConfig *config.Hook) error {
 	return nil
 }
 
-func (h *HookRunner) runActionsFailLate(hookConfig *config.Hook) error {
+func (h *HookRunner) runActionsFailLate(hookConfig *configuration.Hook) error {
 	failed := 0
 	for _, action := range hookConfig.GetActions() {
 		err := h.runAction(action)
@@ -106,7 +106,7 @@ func (h *HookRunner) runActionsFailLate(hookConfig *config.Hook) error {
 	return nil
 }
 
-func (h *HookRunner) runAction(action *config.Action) error {
+func (h *HookRunner) runAction(action *configuration.Action) error {
 	actionRunner := NewActionRunner(h.appIO, h.config, h.repo, h.eventDispatcher, h.actionLog)
 	actionErr, dispatchErr := actionRunner.Run(h.hook, action)
 	// TODO: propagate dispatch error
@@ -116,12 +116,12 @@ func (h *HookRunner) runAction(action *config.Action) error {
 	return actionErr
 }
 
-func (h *HookRunner) getHookConfig() *config.Hook {
+func (h *HookRunner) getHookConfig() *configuration.Hook {
 	hookConfig := h.config.HookConfig(h.hook)
 	vHook, ok := info.VirtualHook(h.hook)
 	if ok {
 		vHookConfig := h.config.HookConfig(vHook)
-		hookConfig = config.NewHook(
+		hookConfig = configuration.NewHook(
 			h.hook+" ("+vHook+")",
 			true,
 		)

@@ -1,7 +1,7 @@
 package exec
 
 import (
-	"github.com/captainhook-go/captainhook/config"
+	"github.com/captainhook-go/captainhook/configuration"
 	"github.com/captainhook-go/captainhook/git"
 	"github.com/captainhook-go/captainhook/info"
 	"github.com/captainhook-go/captainhook/io"
@@ -12,14 +12,14 @@ import (
 
 type Installer struct {
 	appIO        io.IO
-	config       *config.Configuration
+	config       *configuration.Configuration
 	repo         *git.Repository
 	force        bool
 	skipExisting bool
 	onlyEnabled  bool
 }
 
-func NewInstaller(appIO io.IO, config *config.Configuration, repo *git.Repository) *Installer {
+func NewInstaller(appIO io.IO, config *configuration.Configuration, repo *git.Repository) *Installer {
 	i := Installer{appIO: appIO, config: config, repo: repo, force: false, skipExisting: false}
 	return &i
 }
