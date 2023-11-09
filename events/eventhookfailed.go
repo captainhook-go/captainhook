@@ -2,18 +2,18 @@ package events
 
 import (
 	"github.com/captainhook-go/captainhook/app"
-	"github.com/captainhook-go/captainhook/config"
+	"github.com/captainhook-go/captainhook/configuration"
 	"github.com/captainhook-go/captainhook/hooks"
 )
 
 type HookFailed struct {
 	Context *app.Context
-	Config  *config.Hook
+	Config  *configuration.Hook
 	Log     *hooks.ActionLog
 	Error   error
 }
 
-func NewHookFailedEvent(context *app.Context, hook *config.Hook, log *hooks.ActionLog, err error) *HookFailed {
+func NewHookFailedEvent(context *app.Context, hook *configuration.Hook, log *hooks.ActionLog, err error) *HookFailed {
 	e := HookFailed{
 		Context: context,
 		Config:  hook,

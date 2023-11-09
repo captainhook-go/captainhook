@@ -2,15 +2,15 @@ package events
 
 import (
 	"github.com/captainhook-go/captainhook/app"
-	"github.com/captainhook-go/captainhook/config"
+	"github.com/captainhook-go/captainhook/configuration"
 )
 
 type ActionStarted struct {
 	Context *app.Context
-	Config  *config.Action
+	Config  *configuration.Action
 }
 
-func NewActionStartedEvent(context *app.Context, action *config.Action) *ActionStarted {
+func NewActionStartedEvent(context *app.Context, action *configuration.Action) *ActionStarted {
 	e := ActionStarted{
 		Context: context,
 		Config:  action,
