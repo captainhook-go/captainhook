@@ -1,4 +1,4 @@
-package config
+package configuration
 
 type JsonConfiguration struct {
 	Settings *JsonAppSettings      `json:"config,omitempty"`

@@ -1,4 +1,4 @@
-package config
+package configuration
 
 type Hook struct {
 	name      string

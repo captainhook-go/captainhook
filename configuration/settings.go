@@ -1,4 +1,4 @@
-package config
+package configuration
 
 type AppSettings struct {
 	AllowFailure     bool

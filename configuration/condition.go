@@ -1,11 +1,11 @@
-package config
+package configuration
 
 type Condition struct {
 	run     string
 	options *Options
 }
 
-func (c *Condition) Exec() string {
+func (c *Condition) Run() string {
 	return c.run
 }
 

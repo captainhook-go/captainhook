@@ -1,4 +1,4 @@
-package config
+package configuration
 
 type Action struct {
 	run        string
