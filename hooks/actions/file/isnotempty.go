@@ -19,7 +19,7 @@ func (a *IsNotEmpty) IsApplicableFor(hook string) bool {
 func (a *IsNotEmpty) Run(action *configuration.Action) error {
 	a.hookBundle.AppIO.Write("checking if file is empty", true, io.VERBOSE)
 
-	for _, file := range action.Options().SliceOfStringsOf("files") {
+	for _, file := range action.Options().AsSliceOfStrings("files") {
 		content, err := io.ReadFile(file)
 		if err != nil {
 			return fmt.Errorf("file not found: %s", file)

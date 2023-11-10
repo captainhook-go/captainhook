@@ -35,7 +35,7 @@ func (c *ThatIs) IsTrue(condition *configuration.Condition) bool {
 }
 
 func (c *ThatIs) filterByType(condition *configuration.Condition, files []string) []string {
-	ofType := condition.Options().StringValueOf("of-type", "")
+	ofType := condition.Options().AsString("of-type", "")
 	if ofType == "" {
 		return files
 	}
@@ -46,7 +46,7 @@ func (c *ThatIs) filterByType(condition *configuration.Condition, files []string
 }
 
 func (c *ThatIs) filterByDirectory(condition *configuration.Condition, files []string) []string {
-	inDir := condition.Options().StringValueOf("in-directory", "")
+	inDir := condition.Options().AsString("in-directory", "")
 	if inDir == "" {
 		return files
 	}

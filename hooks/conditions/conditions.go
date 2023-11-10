@@ -29,7 +29,7 @@ func GetConditionFunc(path []string) (func(appIO io.IO, conf *configuration.Conf
 		"filechanged": {
 			"any":    filechanged.NewAny,
 			"all":    filechanged.NewAll,
-			"oftype": filechanged.NewOfType,
+			"thatis": filechanged.NewThatIs,
 		},
 		"filestaged": {
 			"all":    filestaged.NewAll,

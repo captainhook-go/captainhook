@@ -1,7 +1,7 @@
 package types
 
 import (
-	"regexp"
+	"github.com/captainhook-go/captainhook/io"
 	"strings"
 )
 
@@ -16,8 +16,23 @@ func (m *CommitMessage) CommentChar() string {
 	return m.commentChar
 }
 
-func (m *CommitMessage) Message() string {
+func (m *CommitMessage) Raw() string {
 	return m.raw
+}
+
+func (m *CommitMessage) Message() string {
+	subject := m.Subject()
+	body := m.Body()
+	glue := ""
+
+	if body != "" {
+		glue = "\n\n"
+	}
+	return subject + glue + body
+}
+
+func (m *CommitMessage) Lines() []string {
+	return m.contentLines
 }
 
 func (m *CommitMessage) Subject() string {
@@ -47,7 +62,7 @@ func (m *CommitMessage) IsSquash() bool {
 }
 
 func NewCommitMessage(msg string, commentChar string) *CommitMessage {
-	rawLines := regexp.MustCompile("\r?\n").Split(msg, -1)
+	rawLines := io.SplitLines(msg)
 
 	m := CommitMessage{
 		commentChar:  commentChar,
@@ -56,6 +71,14 @@ func NewCommitMessage(msg string, commentChar string) *CommitMessage {
 		contentLines: extractContentLines(rawLines, commentChar),
 	}
 	return &m
+}
+
+func NewCommitMessageFromFile(file, commentChar string) (*CommitMessage, error) {
+	data, err := io.ReadFile(file)
+	if err != nil {
+		return nil, err
+	}
+	return NewCommitMessage(string(data), commentChar), nil
 }
 
 func extractContentLines(rawLines []string, commentChar string) []string {

@@ -22,7 +22,7 @@ func (a *DoesNotContainRegex) IsApplicableFor(hook string) bool {
 func (a *DoesNotContainRegex) Run(action *configuration.Action) error {
 	a.hookBundle.AppIO.Write("checking if file does not contain regex", true, io.VERBOSE)
 
-	reg := action.Options().StringValueOf("regex", "")
+	reg := action.Options().AsString("regex", "")
 	if reg == "" {
 		return errors.New("the 'regex' option is missing or empty")
 	}

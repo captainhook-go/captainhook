@@ -9,7 +9,7 @@ type Options struct {
 	options map[string]interface{}
 }
 
-func (o Options) IntValueOf(option string, defaultValue int) int {
+func (o Options) AsInt(option string, defaultValue int) int {
 	var value, ok = o.options[option]
 	if ok {
 		switch value := value.(type) {
@@ -31,7 +31,7 @@ func (o Options) IntValueOf(option string, defaultValue int) int {
 	return defaultValue
 }
 
-func (o Options) StringValueOf(option string, defaultValue string) string {
+func (o Options) AsString(option string, defaultValue string) string {
 	var value, ok = o.options[option]
 	if ok {
 		switch value := value.(type) {
@@ -46,6 +46,23 @@ func (o Options) StringValueOf(option string, defaultValue string) string {
 		}
 	}
 	return defaultValue
+}
+
+func (o Options) AsSliceOfStrings(option string) []string {
+	var data, ok = o.options[option]
+	var strings []string
+	if ok {
+		switch v := data.(type) {
+		case []interface{}:
+			for _, item := range v {
+				// Use type assertion to convert each element to a string
+				if str, ok := item.(string); ok {
+					strings = append(strings, str)
+				}
+			}
+		}
+	}
+	return strings
 }
 
 func (o Options) All() map[string]interface{} {

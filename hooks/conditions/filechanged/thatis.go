@@ -20,7 +20,7 @@ func (c *ThatIs) IsTrue(condition *configuration.Condition) bool {
 	return false
 }
 
-func NewOfType(appIO io.IO, conf *configuration.Configuration, repo *git.Repository) hooks.Condition {
+func NewThatIs(appIO io.IO, conf *configuration.Configuration, repo *git.Repository) hooks.Condition {
 	return &ThatIs{
 		hookBundle: hooks.NewHookBundle(appIO, conf, repo, []string{info.PrePush}),
 	}

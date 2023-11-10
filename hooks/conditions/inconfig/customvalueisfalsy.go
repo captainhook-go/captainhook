@@ -12,10 +12,17 @@ type CustomValueIsFalsy struct {
 }
 
 func (c *CustomValueIsFalsy) IsApplicableFor(hook string) bool {
-	return true
+	return c.hookBundle.Restriction.IsApplicableFor(hook)
 }
 
 func (c *CustomValueIsFalsy) IsTrue(condition *configuration.Condition) bool {
+	value, ok := c.hookBundle.Conf.CustomSettings()["foo"]
+	if !ok {
+		return true
+	}
+	if value == "false" {
+		return true
+	}
 	return false
 }
 

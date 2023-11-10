@@ -24,7 +24,7 @@ func (c *Any) IsTrue(condition *configuration.Condition) bool {
 		c.hookBundle.AppIO.Write("Condition All failed: "+err.Error(), true, io.NORMAL)
 		return false
 	}
-	files := condition.Options().StringValueOf("files", "")
+	files := condition.Options().AsString("files", "")
 	mustContain := strings.Split(files, ",")
 	return util.ContainsAnyString(stagedFiles, mustContain)
 }

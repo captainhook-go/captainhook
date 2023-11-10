@@ -25,7 +25,7 @@ func (a *MaxSize) IsApplicableFor(hook string) bool {
 func (a *MaxSize) Run(action *configuration.Action) error {
 	a.hookBundle.AppIO.Write("checking max file size", true, io.VERBOSE)
 
-	size := action.Options().StringValueOf("max-size", "0")
+	size := action.Options().AsString("max-size", "0")
 	sizeInBytes := a.toBytes(size)
 	if sizeInBytes == 0 {
 		return errors.New("the 'size' option is missing or wrong")
