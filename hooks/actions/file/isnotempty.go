@@ -1,6 +1,7 @@
 package file
 
 import (
+	"fmt"
 	"github.com/captainhook-go/captainhook/configuration"
 	"github.com/captainhook-go/captainhook/git"
 	"github.com/captainhook-go/captainhook/hooks"
@@ -16,9 +17,17 @@ func (a *IsNotEmpty) IsApplicableFor(hook string) bool {
 }
 
 func (a *IsNotEmpty) Run(action *configuration.Action) error {
-	// read configured file
-	// check if file is empty
 	a.hookBundle.AppIO.Write("checking if file is empty", true, io.VERBOSE)
+
+	for _, file := range action.Options().SliceOfStringsOf("files") {
+		content, err := io.ReadFile(file)
+		if err != nil {
+			return fmt.Errorf("file not found: %s", file)
+		}
+		if len(content) < 1 {
+			return fmt.Errorf("file '%s' can't be empty", file)
+		}
+	}
 	return nil
 }
 
