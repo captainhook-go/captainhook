@@ -94,12 +94,12 @@ func NewDefaultActionStartedSubscriber(appIO io.IO) events.ActionStartedSubscrib
 }
 
 func (s *DefaultActionStartedSubscriber) Handle(event *events.ActionStarted) error {
-	actionLength := len(event.Config.Run())
+	actionLength := len(event.Config.Label())
 	action := " - <info>"
 	if actionLength > 60 {
-		action = action + event.Config.Run()[0:60] + "..."
+		action = action + event.Config.Label()[0:60] + "..."
 	} else {
-		action = action + event.Config.Run() + strings.Repeat(" ", 60-actionLength)
+		action = action + event.Config.Label() + strings.Repeat(" ", 60-actionLength)
 	}
 	action = action + "</info> : "
 	s.AppIO.Write(action, false, io.NORMAL)
