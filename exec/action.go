@@ -44,6 +44,7 @@ func (a *ActionRunner) Run(hook string, action *configuration.Action) (error, er
 	err := a.runAction(hook, action, cIO)
 
 	if err != nil {
+		cIO.Write(err.Error(), true, io.NORMAL)
 		errDispatchResult = a.eventDispatcher.DispatchActionFailedEvent(events.NewActionFailedEvent(app.NewContext(a.appIO, a.conf, a.repo), action, err))
 		status = info.ACTION_FAILED
 	} else {
@@ -86,12 +87,9 @@ func (a *ActionRunner) runExternalAction(hook string, action *configuration.Acti
 	out, err := cmd.CombinedOutput()
 
 	if err != nil {
-		message := ""
 		if len(out) > 0 {
-			message = message + string(out)
+			aIO.Write(string(out), true, io.NORMAL)
 		}
-		message = message + err.Error()
-		aIO.Write(message, true, io.NORMAL)
 		return err
 	}
 
