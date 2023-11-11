@@ -30,9 +30,9 @@ var (
 
 				from := types.NewRef(p[RemoteRef], p[RemoteHash], git.ExtractBranchFromRefPath(p[RemoteRef]))
 				to := types.NewRef(p[LocalRef], p[LocalHash], git.ExtractBranchFromRefPath(p[LocalRef]))
-				ranges[] = types.NewRange(from, to)
+				ranges = append(ranges, types.NewRange(from, to))
 			}
-			return []*types.Range{}
+			return ranges
 		},
 		"post-rewrite": func(appIO io.IO) []*types.Range {
 			var ranges []*types.Range
@@ -62,7 +62,7 @@ var (
 	}
 )
 
-func DetectRange(appIO io.IO) []*types.Range {
+func DetectRanges(appIO io.IO) []*types.Range {
 	command := appIO.Argument("command", "fallback")
 
 	detector, ok := detectors[command]

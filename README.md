@@ -5,7 +5,7 @@ Nothing here works, this is still in very early development stages and not reall
 This README is kind of a declaration of intent and shows what captainhook could or should be one day.
 
 [![Go Report Card](https://goreportcard.com/badge/github.com/captainhook-go/captainhook?style=flat-square)](https://goreportcard.com/report/github.com/captainhook-go/captainhook)
-![Go Version](https://img.shields.io/badge/go%20version-%3E=1.17-61CFDD.svg?style=flat-square)
+![Go Version](https://img.shields.io/badge/go%20version-%3E=1.21-61CFDD.svg?style=flat-square)
 
 # CaptainHook
 

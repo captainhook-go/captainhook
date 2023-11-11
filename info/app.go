@@ -1,7 +1,7 @@
 package info
 
 const (
-	VERSION      = "0.9.0"
-	RELEASE_DATE = "2023-10-30"
+	VERSION      = "0.9.1"
+	RELEASE_DATE = "2023-11-11"
 	CONFIG       = "captainhook.json"
 )

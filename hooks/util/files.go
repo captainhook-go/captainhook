@@ -2,6 +2,7 @@ package util
 
 import (
 	"path"
+	"slices"
 	"strings"
 )
 
@@ -26,18 +27,9 @@ func FilterByDirectory(files []string, inDir string) []string {
 	return filtered
 }
 
-func ContainsString(haystack []string, needle string) bool {
-	for _, ele := range haystack {
-		if ele == needle {
-			return true
-		}
-	}
-	return false
-}
-
 func ContainsAllStrings(haystack []string, needles []string) bool {
 	for _, file := range needles {
-		if !ContainsString(haystack, file) {
+		if !slices.Contains(haystack, file) {
 			return false
 		}
 	}
@@ -46,7 +38,7 @@ func ContainsAllStrings(haystack []string, needles []string) bool {
 
 func ContainsAnyString(haystack []string, needles []string) bool {
 	for _, file := range needles {
-		if ContainsString(haystack, file) {
+		if slices.Contains(haystack, file) {
 			return true
 		}
 	}

@@ -4,6 +4,7 @@ type CollectorIO struct {
 	verbosity int
 	arguments map[string]string
 	messages  []*CollectedMessage
+	stdIn     []string
 }
 
 type CollectedMessage struct {
@@ -56,7 +57,7 @@ func (c *CollectorIO) Write(message string, newline bool, verbosity int) {
 }
 
 func (c *CollectorIO) Ask(message string, defaultValue string) string {
-	value, err := getUserInput(message)
+	value, err := askForUserInput(message)
 	if err != nil {
 		c.Write("can't read from std input", true, NORMAL)
 	}

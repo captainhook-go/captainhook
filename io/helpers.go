@@ -7,15 +7,20 @@ import (
 	"strings"
 )
 
-func getUserInput(message string) (string, error) {
+func isPiped() bool {
+	stat, err := os.Stdin.Stat()
+	if err != nil {
+		return false
+	}
+	return (stat.Mode() & os.ModeCharDevice) == 0
+}
+
+func askForUserInput(message string) (string, error) {
+	reader := bufio.NewReader(os.Stdin)
 	fmt.Print(Colorize(message))
 
-	var input string
-	_, err := fmt.Scanln(&input)
-	if err != nil {
-		return "", err
-	}
-	return input, nil
+	input, _, err := reader.ReadLine()
+	return string(input), err
 }
 
 func AnswerToBool(answer string) bool {
@@ -40,6 +45,9 @@ func SplitLines(s string) []string {
 func SubString(input string, start int, length int) string {
 	asRunes := []rune(input)
 
+	if length == 0 {
+		length = len(asRunes)
+	}
 	if start < 0 {
 		start = len(asRunes) + start
 	}
@@ -56,21 +64,12 @@ func SubString(input string, start int, length int) string {
 }
 
 func ReadFile(path string) ([]byte, error) {
-	file, err := os.Open(path)
+	fileInfo, err := os.Stat(path)
 	if err != nil {
 		return nil, err
 	}
-	stats, err := file.Stat()
-	if err != nil {
-		return nil, fmt.Errorf("failed to read file: %s", path)
-	}
-	if stats.IsDir() {
+	if fileInfo.IsDir() {
 		return nil, fmt.Errorf("given file path is a directory: %s", path)
-	}
-
-	closeErr := file.Close()
-	if closeErr != nil {
-		return nil, fmt.Errorf("error closing file handle for: %s", path)
 	}
 
 	data, readErr := os.ReadFile(path)

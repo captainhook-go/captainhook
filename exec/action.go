@@ -7,6 +7,7 @@ import (
 	"github.com/captainhook-go/captainhook/git"
 	"github.com/captainhook-go/captainhook/hooks"
 	"github.com/captainhook-go/captainhook/hooks/actions"
+	"github.com/captainhook-go/captainhook/hooks/placeholder"
 	"github.com/captainhook-go/captainhook/info"
 	"github.com/captainhook-go/captainhook/io"
 	"os/exec"
@@ -81,7 +82,8 @@ func (a *ActionRunner) runInternalAction(hook string, action *configuration.Acti
 }
 
 func (a *ActionRunner) runExternalAction(hook string, action *configuration.Action, aIO *io.CollectorIO) error {
-	splits := strings.Split(action.Run(), " ")
+	commandToExecute := placeholder.ReplacePlaceholders(app.NewContext(aIO, a.conf, a.repo), action.Run())
+	splits := strings.Split(commandToExecute, " ")
 
 	cmd := exec.Command(splits[0], splits[1:]...)
 	out, err := cmd.CombinedOutput()

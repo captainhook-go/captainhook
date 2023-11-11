@@ -84,7 +84,7 @@ func (i *Installer) writeHookFile(hook string) error {
 
 	// if hook is configured and no force option is set
 	// ask the user if overwriting the hook is ok
-	if i.needConfirmation(hook) {
+	if i.needConfirmationToOverwrite(hook) {
 		answer := i.appIO.Ask("  The <info>"+hook+"</info> hook exists! Overwrite? <comment>[y,N]</comment> ", "n")
 		doIt = io.AnswerToBool(answer)
 	}
@@ -103,7 +103,11 @@ func (i *Installer) writeHookFile(hook string) error {
 		defer file.Close()
 
 		i.appIO.Write("  installing <info>"+hook+"</info> to "+i.repo.HooksDir()+"/"+hook, true, io.VERBOSE)
-		return tpl.Execute(file, vars)
+		tplErr := tpl.Execute(file, vars)
+		if tplErr != nil {
+			return tplErr
+		}
+		return os.Chmod(file.Name(), 0700)
 	}
 	return nil
 }
@@ -112,7 +116,7 @@ func (i *Installer) shouldHookBeSkipped(hook string) bool {
 	return i.skipExisting && i.repo.HookExists(hook)
 }
 
-func (i *Installer) needConfirmation(hook string) bool {
+func (i *Installer) needConfirmationToOverwrite(hook string) bool {
 	return !i.force && i.repo.HookExists(hook)
 }
 

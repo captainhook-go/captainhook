@@ -1,16 +1,20 @@
 package io
 
 import (
+	"bufio"
 	"fmt"
+	"os"
 )
 
 type DefaultIO struct {
 	verbosity int
 	arguments map[string]string
+	stdIn     []string
+	stdInRead bool
 }
 
 func NewDefaultIO(verbosity int, arguments map[string]string) *DefaultIO {
-	io := DefaultIO{verbosity: verbosity, arguments: arguments}
+	io := DefaultIO{verbosity: verbosity, arguments: arguments, stdInRead: false}
 	return &io
 }
 
@@ -30,7 +34,23 @@ func (d *DefaultIO) Argument(name, defaultValue string) string {
 }
 
 func (d *DefaultIO) StandardInput() []string {
-	return make([]string, 0)
+	if !d.stdInRead {
+		var lines []string
+		if isPiped() {
+			scanner := bufio.NewScanner(os.Stdin)
+			for scanner.Scan() {
+				lines = append(lines, scanner.Text())
+			}
+
+			if err := scanner.Err(); err != nil {
+				return []string{}
+			}
+		}
+		d.stdInRead = true
+		d.stdIn = lines
+	}
+
+	return d.stdIn
 }
 
 func (d *DefaultIO) IsInteractive() bool {
@@ -64,7 +84,7 @@ func (d *DefaultIO) Write(message string, newline bool, verbosity int) {
 }
 
 func (d *DefaultIO) Ask(message string, defaultValue string) string {
-	value, err := getUserInput(message)
+	value, err := askForUserInput(message)
 	if err != nil {
 		value = defaultValue
 	}

@@ -115,23 +115,14 @@ func (c *Configuration) load() error {
 }
 
 func (c *Configuration) readConfigFile() ([]byte, error) {
-	file, err := os.Open(c.path)
+	fileInfo, err := os.Stat(c.path)
 	if err != nil {
 		return nil, err
 	}
-	stats, err := file.Stat()
-	if err != nil {
-		return nil, fmt.Errorf("failed to read configuration file at: %s", c.path)
-	}
-	if stats.IsDir() {
+	if fileInfo.IsDir() {
 		return nil, fmt.Errorf("given configuration path is a directory: %s", c.path)
 	}
-
-	c.size = stats.Size()
-	closeErr := file.Close()
-	if closeErr != nil {
-		return nil, fmt.Errorf("could not read configuration file at: %s", c.path)
-	}
+	c.size = fileInfo.Size()
 
 	jsonData, readErr := os.ReadFile(c.path)
 	if readErr != nil {
