@@ -1,6 +1,8 @@
 package commands
 
 import (
+	"github.com/captainhook-go/captainhook/info"
+	"github.com/captainhook-go/captainhook/io"
 	"github.com/spf13/cobra"
 	"os"
 )
@@ -17,16 +19,25 @@ func (r Response) IsUserError() bool {
 }
 
 var (
-	quietFlag   bool
-	verboseFlag bool
-	debugFlag   bool
-	colorFlag   bool
-	rootCmd     = &cobra.Command{
+	quietFlag       bool
+	verboseFlag     bool
+	debugFlag       bool
+	colorFlag       bool
+	interactionFlag bool
+	rootCmd         = &cobra.Command{
 		Use:   "captainhook",
-		Short: "Git hook manager",
-		Long:  "CaptainHook is a git hook manager",
+		Short: description(),
+		Long:  description(),
 	}
 )
+
+func description() string {
+	return io.Colorize(
+		"<ok>CaptainHook</ok> " +
+			"version <comment>" + info.VERSION + "</comment> " +
+			info.RELEASE_DATE +
+			" <strong>#StandWith</strong><comment>Ukraine</comment>")
+}
 
 func Execute([]string) Response {
 
@@ -41,10 +52,11 @@ func Execute([]string) Response {
 }
 
 func init() {
-	rootCmd.PersistentFlags().BoolVarP(&quietFlag, "quiet", "q", false, "verbose output")
-	rootCmd.PersistentFlags().BoolVarP(&verboseFlag, "verbose", "v", false, "verbose output")
-	rootCmd.PersistentFlags().BoolVarP(&debugFlag, "debug", "d", false, "verbose output")
-	rootCmd.PersistentFlags().BoolVarP(&colorFlag, "no-color", "", false, "disable colored output")
+	rootCmd.PersistentFlags().BoolVarP(&quietFlag, "quiet", "q", false, "Do not output any message")
+	rootCmd.PersistentFlags().BoolVarP(&verboseFlag, "verbose", "v", false, "Increase the verbosity of messages")
+	rootCmd.PersistentFlags().BoolVarP(&debugFlag, "debug", "d", false, "Increase the verbosity even more")
+	rootCmd.PersistentFlags().BoolVarP(&colorFlag, "no-color", "", false, "Disable colored output")
+	rootCmd.PersistentFlags().BoolVarP(&interactionFlag, "no-interaction", "n", false, "Do not ask interactive questions")
 
 	hookCommand := setupHookCommand()
 	hookCommand.AddCommand(SetupHookCommitMsgCommand())
