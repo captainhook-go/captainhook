@@ -66,5 +66,7 @@ func Colorize(text string) string {
 	text = strings.Replace(text, "</ok>", Reset, -1)
 	text = strings.Replace(text, "<warning>", Red, -1)
 	text = strings.Replace(text, "</warning>", Reset, -1)
+	text = strings.Replace(text, "<strong>", Blue, -1)
+	text = strings.Replace(text, "</strong>", Reset, -1)
 	return text
 }
