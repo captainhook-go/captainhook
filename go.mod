@@ -1,6 +1,6 @@
 module github.com/captainhook-go/captainhook
 
-go 1.17
+go 1.21
 
 require github.com/spf13/cobra v1.8.0
 
