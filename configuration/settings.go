@@ -8,6 +8,7 @@ type AppSettings struct {
 	GitDirectory     string
 	Includes         []string
 	IncludeLevel     int
+	RunPath          string
 	Verbosity        string
 }
 
@@ -44,6 +45,9 @@ func createAppSettingsFromJson(json *JsonAppSettings) *AppSettings {
 	}
 	if json.GitDirectory != nil {
 		s.GitDirectory = *json.GitDirectory
+	}
+	if json.RunPath != nil {
+		s.RunPath = *json.RunPath
 	}
 	if json.Verbosity != nil {
 		s.Verbosity = *json.Verbosity

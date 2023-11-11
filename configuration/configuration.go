@@ -55,6 +55,10 @@ func (c *Configuration) Path() string {
 	return c.path
 }
 
+func (c *Configuration) RunPath() string {
+	return c.settings.RunPath
+}
+
 func (c *Configuration) CustomSettings() map[string]string {
 	return c.custom
 }

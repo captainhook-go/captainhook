@@ -36,5 +36,6 @@ type JsonAppSettings struct {
 	GitDirectory     *string            `json:"git-directory,omitempty"`
 	Includes         *[]string          `json:"includes,omitempty"`
 	IncludeLevel     *int               `json:"includes-level,omitempty"`
+	RunPath          *string            `json:"run-path,omitempty"`
 	Verbosity        *string            `json:"verbosity,omitempty"`
 }

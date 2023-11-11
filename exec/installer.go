@@ -41,7 +41,7 @@ func (i *Installer) Run() error {
 
 	// do some sort magic because go range random is weird
 	var keys []string
-	for key, _ := range hooks {
+	for key := range hooks {
 		keys = append(keys, key)
 	}
 	sort.Strings(keys)
@@ -92,7 +92,7 @@ func (i *Installer) writeHookFile(hook string) error {
 	if doIt {
 		vars := make(map[string]interface{})
 		vars["HOOK_NAME"] = hook
-		vars["RUN_PATH"] = ""
+		vars["RUN_PATH"] = i.config.RunPath()
 		vars["INTERACTION"] = false
 		vars["VERSION"] = info.VERSION
 		vars["CONFIGURATION"] = i.config.Path()
