@@ -10,11 +10,9 @@ import (
 func setupInstallCommand() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "install",
-		Short: "Install CaptainHook",
-		Long:  "Install CaptainHook into your local .git/hooks directory",
+		Short: "Install hooks into your local .git/hooks directory",
+		Long:  "Install hooks into your local .git/hooks directory",
 		Run: func(cmd *cobra.Command, args []string) {
-			appIO := io.NewDefaultIO(io.NORMAL, make(map[string]string))
-
 			force, _ := cmd.Flags().GetBool("force")
 			skip, _ := cmd.Flags().GetBool("skip-existing")
 			onlyEnabled, _ := cmd.Flags().GetBool("only-enabled")
@@ -29,6 +27,7 @@ func setupInstallCommand() *cobra.Command {
 				DisplayCommandError(errRepo)
 			}
 
+			appIO := io.NewDefaultIO(conf.Verbosity(), make(map[string]string))
 			installer := exec.NewInstaller(appIO, conf, repo)
 			installer.SkipExisting(skip)
 			installer.OnlyEnabled(onlyEnabled)
