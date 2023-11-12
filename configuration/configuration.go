@@ -14,7 +14,6 @@ type Configuration struct {
 	path       string
 	fileExists bool
 	settings   *AppSettings
-	custom     map[string]string
 	hooks      map[string]*Hook
 }
 
@@ -60,7 +59,7 @@ func (c *Configuration) RunPath() string {
 }
 
 func (c *Configuration) CustomSettings() map[string]string {
-	return c.custom
+	return c.settings.Custom
 }
 
 func (c *Configuration) GitDirectory() string {

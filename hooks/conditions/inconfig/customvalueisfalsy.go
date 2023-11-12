@@ -16,14 +16,17 @@ func (c *CustomValueIsFalsy) IsApplicableFor(hook string) bool {
 }
 
 func (c *CustomValueIsFalsy) IsTrue(condition *configuration.Condition) bool {
-	value, ok := c.hookBundle.Conf.CustomSettings()["foo"]
+	valueToCheck := condition.Options().AsString("value", "")
+	if valueToCheck == "" {
+		c.hookBundle.AppIO.Write("Condition Config.CustomValueIsFalsy option 'value' is missing", true, io.NORMAL)
+		return true
+	}
+	value, ok := c.hookBundle.Conf.CustomSettings()[valueToCheck]
 	if !ok {
+		c.hookBundle.AppIO.Write("Condition Config.CustomValueIsFalsy custom value not set", true, io.DEBUG)
 		return true
 	}
-	if value == "false" {
-		return true
-	}
-	return false
+	return !io.AnswerToBool(value)
 }
 
 func NewCustomValueIsFalsy(appIO io.IO, conf *configuration.Configuration, repo *git.Repository) hooks.Condition {
