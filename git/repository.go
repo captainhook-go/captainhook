@@ -63,6 +63,11 @@ func (r *Repository) HooksDir() string {
 	return r.root + "/hooks"
 }
 
+func (r *Repository) CommitMessage(path string) (*types.CommitMessage, error) {
+	commentChar := r.ConfigValue("core.commentchar", "#")
+	return types.NewCommitMessageFromFile(path, commentChar)
+}
+
 func (r *Repository) ConfigValue(value string, defaultValue string) string {
 	// git config --get VALUE
 	out, err := Config(config.Get(value))

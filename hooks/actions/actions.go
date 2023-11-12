@@ -31,9 +31,9 @@ func GetActionHookFunc(path []string) (func(appIO io.IO, conf *configuration.Con
 			"maxsize":             file.NewMaxSize,
 		},
 		"message": {
-			"cacheonfail":       message.NewCacheOnFail,
-			"followsbeamsrules": message.NewBeamsRules,
-			"containsregex":     message.NewContainsRegex,
+			"cacheonfail":          message.NewCacheOnFail,
+			"mustfollowbeamsrules": message.NewBeamsRules,
+			"mustcontainsregex":    message.NewContainsRegex,
 		},
 	}
 

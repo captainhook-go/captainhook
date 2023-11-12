@@ -1,11 +1,14 @@
 package message
 
 import (
+	"errors"
+	"fmt"
 	"github.com/captainhook-go/captainhook/configuration"
 	"github.com/captainhook-go/captainhook/git"
 	"github.com/captainhook-go/captainhook/hooks"
 	"github.com/captainhook-go/captainhook/info"
 	"github.com/captainhook-go/captainhook/io"
+	"regexp"
 )
 
 type ContainsRegex struct {
@@ -18,6 +21,20 @@ func (a *ContainsRegex) IsApplicableFor(hook string) bool {
 
 func (a *ContainsRegex) Run(action *configuration.Action) error {
 	a.hookBundle.AppIO.Write("checking regex", true, io.VERBOSE)
+
+	commitMessageFile := a.hookBundle.AppIO.Argument("file", "")
+	msg, err := a.hookBundle.Repo.CommitMessage(commitMessageFile)
+	if err != nil {
+		return err
+	}
+	regex := action.Options().AsString("regex", "")
+	if regex == "" {
+		return errors.New("option 'regex' is missing")
+	}
+	match, _ := regexp.MatchString(regex, msg.Message())
+	if !match {
+		return fmt.Errorf("unable to find '%s' in commit message", regex)
+	}
 	return nil
 }
 

@@ -2,11 +2,31 @@ package configuration
 
 import (
 	"fmt"
+	"github.com/captainhook-go/captainhook/io"
 	"strconv"
 )
 
 type Options struct {
 	options map[string]interface{}
+}
+
+func (o Options) AsBool(option string, defaultValue bool) bool {
+	var value, ok = o.options[option]
+	if ok {
+		switch value := value.(type) {
+		case bool:
+			return value
+		case int:
+		case int64:
+		case float64:
+			return value > 0
+		case string:
+			return io.AnswerToBool(value)
+		default:
+			return defaultValue
+		}
+	}
+	return defaultValue
 }
 
 func (o Options) AsInt(option string, defaultValue int) int {

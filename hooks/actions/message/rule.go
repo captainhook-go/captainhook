@@ -5,5 +5,5 @@ import (
 )
 
 type Rule interface {
-	AppliesTo(msg types.CommitMessage) (bool, string)
+	IsFollowedBy(msg *types.CommitMessage) (bool, string)
 }
