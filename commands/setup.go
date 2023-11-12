@@ -8,7 +8,7 @@ import (
 
 func configurationAware(cmd *cobra.Command) {
 	var configPath = ""
-	cmd.Flags().StringP("config", "c", configPath, "path to your CaptainHook config")
+	cmd.Flags().StringP("configuration", "c", configPath, "path to your CaptainHook config")
 }
 
 func repositoryAware(cmd *cobra.Command) {
