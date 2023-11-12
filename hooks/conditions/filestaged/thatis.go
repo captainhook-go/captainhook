@@ -21,7 +21,7 @@ func (c *ThatIs) IsTrue(condition *configuration.Condition) bool {
 	c.hookBundle.AppIO.Write("Condition: FileStaged.ThatIs", true, io.VERBOSE)
 	stagedFiles, err := c.hookBundle.Repo.StagedFiles()
 	if err != nil {
-		c.hookBundle.AppIO.Write("Condition ThatIs failed: "+err.Error(), true, io.NORMAL)
+		c.hookBundle.AppIO.Write("Condition FileStaged.ThatIs failed: "+err.Error(), true, io.NORMAL)
 		return false
 	}
 	files := stagedFiles

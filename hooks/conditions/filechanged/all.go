@@ -4,6 +4,7 @@ import (
 	"github.com/captainhook-go/captainhook/configuration"
 	"github.com/captainhook-go/captainhook/git"
 	"github.com/captainhook-go/captainhook/hooks"
+	"github.com/captainhook-go/captainhook/hooks/input"
 	"github.com/captainhook-go/captainhook/hooks/util"
 	"github.com/captainhook-go/captainhook/info"
 	"github.com/captainhook-go/captainhook/io"
@@ -19,9 +20,14 @@ func (c *All) IsApplicableFor(hook string) bool {
 }
 
 func (c *All) IsTrue(condition *configuration.Condition) bool {
-	changedFiles, err := c.hookBundle.Repo.ChangedFiles("from", "to")
+	c.hookBundle.AppIO.Write("Condition: FileChanged.All", true, io.VERBOSE)
+	ranges := input.DetectRanges(c.hookBundle.AppIO)
+	if len(ranges) == 0 {
+		return false
+	}
+	changedFiles, err := c.hookBundle.Repo.ChangedFiles(ranges[0].From().Id(), ranges[0].To().Id())
 	if err != nil {
-		c.hookBundle.AppIO.Write("Condition All failed: "+err.Error(), true, io.NORMAL)
+		c.hookBundle.AppIO.Write("Condition FileChanged.ThatIs failed: "+err.Error(), true, io.NORMAL)
 		return false
 	}
 	files := condition.Options().AsString("files", "")
