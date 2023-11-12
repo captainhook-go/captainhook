@@ -34,6 +34,7 @@ func GetActionHookFunc(path []string) (func(appIO io.IO, conf *configuration.Con
 			"cacheonfail":          message.NewCacheOnFail,
 			"mustfollowbeamsrules": message.NewBeamsRules,
 			"mustcontainsregex":    message.NewContainsRegex,
+			"preparefromfile":      message.NewPrepareFromFile,
 		},
 	}
 
