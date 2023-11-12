@@ -3,3 +3,4 @@ captainhook
 
 # ignore the local captainhook.json configuration
 captainhook.json
+dist/
