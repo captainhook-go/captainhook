@@ -62,7 +62,7 @@ func NewDefaultHookSucceededSubscriber(appIO io.IO) *DefaultHookSucceededSubscri
 
 func (s *DefaultHookSucceededSubscriber) Handle(event *events.HookSucceeded) error {
 	PrintActionLog(s.AppIO, event.Log)
-	s.AppIO.Write("\n<ok>captainhook successfully executed all actions</ok>", true, io.NORMAL)
+	s.AppIO.Write("<ok>captainhook successfully executed all actions</ok>", true, io.NORMAL)
 	return nil
 }
 
@@ -79,7 +79,7 @@ func NewDefaultHookFailedSubscriber(appIO io.IO) *DefaultHookFailedSubscriber {
 
 func (s *DefaultHookFailedSubscriber) Handle(event *events.HookFailed) error {
 	PrintActionLog(s.AppIO, event.Log)
-	s.AppIO.Write("\n<warning>captainhook failed: "+event.Error.Error()+"</warning>", true, io.NORMAL)
+	s.AppIO.Write("<warning>captainhook failed: "+event.Error.Error()+"</warning>", true, io.NORMAL)
 	return nil
 }
 
