@@ -31,12 +31,16 @@ func (a *ActionRunner) Run(hook string, action *configuration.Action) (error, er
 	var errDispatchResult error
 	status := info.ACTION_SUCCEEDED
 	cIO := io.NewCollectorIO(a.appIO.Verbosity(), a.appIO.Arguments())
-	errDispatchStart := a.eventDispatcher.DispatchActionStartedEvent(events.NewActionStartedEvent(app.NewContext(a.appIO, a.conf, a.repo), action))
+	errDispatchStart := a.eventDispatcher.DispatchActionStartedEvent(
+		events.NewActionStartedEvent(app.NewContext(a.appIO, a.conf, a.repo), action),
+	)
 	if errDispatchStart != nil {
 		return nil, errDispatchStart
 	}
 	if !a.doConditionsApply(hook, action.Conditions(), cIO) {
-		errDispatchSkipped := a.eventDispatcher.DispatchActionSkippedEvent(events.NewActionSkippedEvent(app.NewContext(a.appIO, a.conf, a.repo), action))
+		errDispatchSkipped := a.eventDispatcher.DispatchActionSkippedEvent(
+			events.NewActionSkippedEvent(app.NewContext(a.appIO, a.conf, a.repo), action),
+		)
 		status = info.ACTION_SKIPPED
 		a.appendActionLog(action, cIO, status)
 		return nil, errDispatchSkipped
@@ -46,10 +50,14 @@ func (a *ActionRunner) Run(hook string, action *configuration.Action) (error, er
 
 	if err != nil {
 		cIO.Write(err.Error(), true, io.NORMAL)
-		errDispatchResult = a.eventDispatcher.DispatchActionFailedEvent(events.NewActionFailedEvent(app.NewContext(a.appIO, a.conf, a.repo), action, err))
+		errDispatchResult = a.eventDispatcher.DispatchActionFailedEvent(
+			events.NewActionFailedEvent(app.NewContext(a.appIO, a.conf, a.repo), action, err),
+		)
 		status = info.ACTION_FAILED
 	} else {
-		errDispatchResult = a.eventDispatcher.DispatchActionSucceededEvent(events.NewActionSucceededEvent(app.NewContext(a.appIO, a.conf, a.repo), action))
+		errDispatchResult = a.eventDispatcher.DispatchActionSucceededEvent(
+			events.NewActionSucceededEvent(app.NewContext(a.appIO, a.conf, a.repo), action),
+		)
 	}
 	a.appendActionLog(action, cIO, status)
 	return err, errDispatchResult
@@ -73,6 +81,12 @@ func (a *ActionRunner) runInternalAction(hook string, action *configuration.Acti
 
 	var actionToExecute hooks.Action
 	actionToExecute = actionGenerator(cIO, a.conf, a.repo)
+	if value, ok := interface{}(actionToExecute).(events.EventSubscriber); ok {
+		subErr := value.Subscribe(a.eventDispatcher, action)
+		if subErr != nil {
+			return subErr
+		}
+	}
 
 	if !actionToExecute.IsApplicableFor(hook) {
 		cIO.Write("action not applicable for hook: "+hook, true, io.VERBOSE)

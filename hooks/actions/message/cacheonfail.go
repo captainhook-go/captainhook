@@ -1,11 +1,14 @@
 package message
 
 import (
+	"errors"
 	"github.com/captainhook-go/captainhook/configuration"
+	"github.com/captainhook-go/captainhook/events"
 	"github.com/captainhook-go/captainhook/git"
 	"github.com/captainhook-go/captainhook/hooks"
 	"github.com/captainhook-go/captainhook/info"
 	"github.com/captainhook-go/captainhook/io"
+	"os"
 )
 
 type CacheOnFail struct {
@@ -17,7 +20,18 @@ func (a *CacheOnFail) IsApplicableFor(hook string) bool {
 }
 
 func (a *CacheOnFail) Run(action *configuration.Action) error {
-	a.hookBundle.AppIO.Write("checking regex", true, io.VERBOSE)
+	a.hookBundle.AppIO.Write("doing nothing just here to register events", true, io.VERBOSE)
+	return nil
+}
+
+func (a *CacheOnFail) Subscribe(dispatcher *events.Dispatcher, action *configuration.Action) error {
+	path := action.Options().AsString("file", "")
+	if path == "" {
+		return errors.New("option 'file' is missing")
+	}
+	a.hookBundle.AppIO.Write("register hook fail event", true, io.VERBOSE)
+	dispatcher.RegisterHookFailedSubscribers(NewCacheOnFailEventHandler(a.hookBundle, path))
+
 	return nil
 }
 
@@ -26,4 +40,27 @@ func NewCacheOnFail(appIO io.IO, conf *configuration.Configuration, repo *git.Re
 		hookBundle: hooks.NewHookBundle(appIO, conf, repo, []string{info.CommitMsg}),
 	}
 	return &a
+}
+
+type CacheOnFailEventHandler struct {
+	bundle *hooks.HookBundle
+	path   string
+}
+
+func (h *CacheOnFailEventHandler) Handle(event *events.HookFailed) error {
+	h.bundle.AppIO.Write("  CacheOnFail - handle failed event", true, io.VERBOSE)
+
+	msg, err := h.bundle.Repo.CommitMessage(h.bundle.AppIO.Argument("file", ""))
+	if err != nil {
+		return err
+	}
+	writeErr := os.WriteFile(h.path, []byte(msg.Message()), 0644)
+	if writeErr != nil {
+		return writeErr
+	}
+	return nil
+}
+
+func NewCacheOnFailEventHandler(bundle *hooks.HookBundle, path string) *CacheOnFailEventHandler {
+	return &CacheOnFailEventHandler{bundle: bundle, path: path}
 }
