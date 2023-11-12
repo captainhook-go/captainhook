@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"slices"
 	"strings"
 )
 
@@ -25,12 +26,9 @@ func askForUserInput(message string) (string, error) {
 
 func AnswerToBool(answer string) bool {
 	value := strings.ToLower(answer)
-	for _, truthy := range []string{"y", "yes", "ok", "true", "+"} {
-		if value == truthy {
-			return true
-		}
-	}
-	return false
+	truth := []string{"y", "yes", "ok", "true", "+", "1"}
+
+	return slices.Contains(truth, value)
 }
 
 func SplitLines(s string) []string {
