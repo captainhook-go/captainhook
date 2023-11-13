@@ -37,7 +37,7 @@ func (c *ConditionRunner) Run(hook string, condition *configuration.Condition) b
 func (c *ConditionRunner) runInternalCondition(hook string, condition *configuration.Condition, cIO io.IO) bool {
 	path := splitInternalPath(condition.Run())
 
-	conditionGenerator, err := conditions.GetConditionFunc(path)
+	conditionGenerator, err := conditions.ConditionCreationFunc(path)
 	if err != nil {
 		cIO.Write("ConditionRunner: "+condition.Run()+"\n"+err.Error(), true, io.NORMAL)
 		return false

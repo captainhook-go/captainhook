@@ -12,16 +12,8 @@ import (
 	"strings"
 )
 
-func GetConditionFunc(path []string) (func(appIO io.IO, conf *configuration.Configuration, repo *git.Repository) hooks.Condition, error) {
-	if len(path) != 2 {
-		return nil, errors.New("invalid condition functionality")
-	}
-
-	for index, value := range path {
-		path[index] = strings.ToLower(value)
-	}
-
-	data := map[string]map[string]func(appIO io.IO, conf *configuration.Configuration, repo *git.Repository) hooks.Condition{
+var (
+	conditionCreationConfig = map[string]map[string]func(appIO io.IO, conf *configuration.Configuration, repo *git.Repository) hooks.Condition{
 		"inconfig": {
 			"customvalueistruthy": inconfig.NewCustomValueIsTruthy,
 			"customvalueisfalsy":  inconfig.NewCustomValueIsFalsy,
@@ -37,8 +29,18 @@ func GetConditionFunc(path []string) (func(appIO io.IO, conf *configuration.Conf
 			"thatis": filestaged.NewThatIs,
 		},
 	}
+)
 
-	group, ok := data[path[0]]
+func ConditionCreationFunc(path []string) (func(appIO io.IO, conf *configuration.Configuration, repo *git.Repository) hooks.Condition, error) {
+	if len(path) != 2 {
+		return nil, errors.New("invalid condition functionality")
+	}
+
+	for index, value := range path {
+		path[index] = strings.ToLower(value)
+	}
+
+	group, ok := conditionCreationConfig[path[0]]
 	if !ok {
 		return nil, errors.New("invalid condition functionality group")
 	}
