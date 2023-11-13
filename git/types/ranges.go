@@ -10,6 +10,14 @@ func (r *Ref) Id() string {
 	return r.id
 }
 
+func (r *Ref) Hash() string {
+	return r.hash
+}
+
+func (r *Ref) Branch() string {
+	return r.branch
+}
+
 func NewRef(id, hash, branch string) *Ref {
 	r := Ref{
 		id:     id,
