@@ -11,6 +11,25 @@ import (
 	"strings"
 )
 
+// BeamsRules blocks commits if the commit message is not following these rules.
+//   - Commit message is not empty
+//   - Subject has to start with upper case letter
+//   - No period at end of subject
+//   - Subject not longer than 50 characters
+//   - Body line not longer than 72 characters
+//   - Subject is written in imperative mood
+//   - There is an empty line between subject and body
+//
+// Example configuration:
+//
+//	{
+//	  "run": "CaptainHook::Message.MustFollowBeamsRules",
+//	  "options: {
+//	    "subject-length": 50,
+//	    "body-line-length": 72,
+//	    "check-subject-beginning-only": false
+//	  }
+//	}
 type BeamsRules struct {
 	hookBundle *hooks.HookBundle
 }
@@ -46,7 +65,7 @@ func (a *BeamsRules) Run(action *configuration.Action) error {
 func (a *BeamsRules) setupRulebook(action *configuration.Action) *Rulebook {
 	maxBodyLineLength := action.Options().AsInt("body-line-length", 72)
 	maxSubjectLength := action.Options().AsInt("subject-length", 50)
-	checkImperativeBeginningOnly := action.Options().AsBool("check-imperative-beginning-only", false)
+	checkImperativeBeginningOnly := action.Options().AsBool("check-subject-beginning-only", false)
 
 	rulebook := NewRulebook()
 	rulebook.AddRule(

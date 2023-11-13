@@ -11,6 +11,16 @@ import (
 	"regexp"
 )
 
+// ContainsRegex blocks commits if the commit message is not matching the given regex.
+//
+// Example configuration:
+//
+//	{
+//	  "run": "CaptainHook::Message.ContainsRegex",
+//	  "options: {
+//	    "regex": "mustContainThis"
+//	  }
+//	}
 type ContainsRegex struct {
 	hookBundle *hooks.HookBundle
 }
