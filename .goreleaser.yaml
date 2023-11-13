@@ -38,7 +38,7 @@ changelog:
 
 brews:
   - name: captainhook
-    tap:
+    repository:
       owner: captainhook-go
       name: homebrew-captainhook
       branch: main
