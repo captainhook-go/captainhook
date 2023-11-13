@@ -75,7 +75,7 @@ func (c *Configuration) AnsiColors() bool {
 }
 
 func (c *Configuration) Verbosity() int {
-	return mapVerbosity(c.settings.Verbosity)
+	return MapVerbosity(c.settings.Verbosity)
 }
 
 func (c *Configuration) IsFailureAllowed() bool {
@@ -157,7 +157,7 @@ func (c *Configuration) mergeSettings(settings *AppSettings, complete bool) {
 	if settings.AnsiColors == false {
 		c.settings.AnsiColors = settings.AnsiColors
 	}
-	if mapVerbosity(settings.Verbosity) > c.Verbosity() {
+	if MapVerbosity(settings.Verbosity) > c.Verbosity() {
 		c.settings.Verbosity = settings.Verbosity
 	}
 	if len(settings.GitDirectory) > 0 {
@@ -165,7 +165,7 @@ func (c *Configuration) mergeSettings(settings *AppSettings, complete bool) {
 	}
 }
 
-func mapVerbosity(verbosity string) int {
+func MapVerbosity(verbosity string) int {
 	verbosityMap := map[string]int{
 		"normal":  io.NORMAL,
 		"verbose": io.VERBOSE,

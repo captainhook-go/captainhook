@@ -6,7 +6,7 @@ type JsonConfiguration struct {
 }
 
 type JsonHook struct {
-	Actions []*JsonAction `load:"actions,omitempty"`
+	Actions []*JsonAction `json:"actions"`
 }
 
 type JsonAction struct {

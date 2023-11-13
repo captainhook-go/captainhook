@@ -48,15 +48,7 @@ func (r *Repository) GitDir() string {
 }
 
 func (r *Repository) HookExists(hook string) bool {
-	file, err := os.Open(r.HooksDir() + "/" + hook)
-	if err != nil {
-		return false
-	}
-	_, err = file.Stat()
-	if err != nil {
-		return false
-	}
-	return true
+	return io.FileExists(r.HooksDir() + "/" + hook)
 }
 
 func (r *Repository) HooksDir() string {

@@ -39,14 +39,14 @@ func setupInstallCommand() *cobra.Command {
 		},
 	}
 
-	setUpFlags(cmd)
+	setUpInstallFlags(cmd)
 	configurationAware(cmd)
 	repositoryAware(cmd)
 
 	return cmd
 }
 
-func setUpFlags(cmd *cobra.Command) {
+func setUpInstallFlags(cmd *cobra.Command) {
 	cmd.Flags().BoolP("skip-existing", "s", false, "skip existing hooks")
 	cmd.Flags().BoolP("force", "f", false, "force installation, overwrite existing hooks")
 	cmd.Flags().BoolP("only-enabled", "e", false, "install only enabled hooks")

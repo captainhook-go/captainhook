@@ -61,6 +61,18 @@ func SubString(input string, start int, length int) string {
 	return string(asRunes[start : start+length])
 }
 
+func FileExists(path string) bool {
+	file, err := os.Open(path)
+	if err != nil {
+		return false
+	}
+	_, err = file.Stat()
+	if err != nil {
+		return false
+	}
+	return true
+}
+
 func ReadFile(path string) ([]byte, error) {
 	fileInfo, err := os.Stat(path)
 	if err != nil {

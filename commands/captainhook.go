@@ -68,6 +68,7 @@ func init() {
 	hookCommand.AddCommand(SetupHookPostCheckoutCommand())
 	hookCommand.AddCommand(SetupHookPostMergeCommand())
 
+	rootCmd.AddCommand(setupInitCommand())
 	rootCmd.AddCommand(setupInstallCommand())
 	rootCmd.AddCommand(hookCommand)
 }
