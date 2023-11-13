@@ -33,7 +33,7 @@ changelog:
   sort: asc
   filters:
     exclude:
-      - "^docs:"
+      - "^Prepare version"
       - "^test:"
 
 brews:
