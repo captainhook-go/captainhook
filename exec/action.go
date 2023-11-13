@@ -74,7 +74,7 @@ func (a *ActionRunner) runAction(hook string, action *configuration.Action, cIO 
 func (a *ActionRunner) runInternalAction(hook string, action *configuration.Action, cIO *io.CollectorIO) error {
 	path := splitInternalPath(action.Run())
 
-	actionGenerator, err := actions.GetActionHookFunc(path)
+	actionGenerator, err := actions.ActionCreationFunc(path)
 	if err != nil {
 		return err
 	}

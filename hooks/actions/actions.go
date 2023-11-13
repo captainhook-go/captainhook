@@ -12,17 +12,10 @@ import (
 	"strings"
 )
 
-func GetActionHookFunc(path []string) (func(appIO io.IO, conf *configuration.Configuration, repo *git.Repository) hooks.Action, error) {
-	if len(path) != 2 {
-		return nil, errors.New("invalid actions functionality")
-	}
-
-	for index, value := range path {
-		path[index] = strings.ToLower(value)
-	}
-
-	data := map[string]map[string]func(appIO io.IO, conf *configuration.Configuration, repo *git.Repository) hooks.Action{
+var (
+	actionCreationConfig = map[string]map[string]func(appIO io.IO, conf *configuration.Configuration, repo *git.Repository) hooks.Action{
 		"branch": {
+			"ensurenaming":                       branch.NewEnsureNaming,
 			"preventpushoffixupandsquashcommits": branch.NewPreventPushOfFixupAndSquashCommits,
 		},
 		"file": {
@@ -37,15 +30,25 @@ func GetActionHookFunc(path []string) (func(appIO io.IO, conf *configuration.Con
 			"preparefromfile":      message.NewPrepareFromFile,
 		},
 	}
+)
 
-	group, ok := data[path[0]]
+// ActionCreationFunc is returning a function to create the configured action
+func ActionCreationFunc(path []string) (func(appIO io.IO, conf *configuration.Configuration, repo *git.Repository) hooks.Action, error) {
+	if len(path) != 2 {
+		return nil, errors.New("invalid actions functionality")
+	}
+
+	for index, value := range path {
+		path[index] = strings.ToLower(value)
+	}
+	group, ok := actionCreationConfig[path[0]]
 	if !ok {
-		return nil, errors.New("invalid actions functionality group")
+		return nil, errors.New("invalid action functionality group")
 	}
 
 	intFunc, ok := group[path[1]]
 	if !ok {
-		return nil, errors.New("invalid actions functionality")
+		return nil, errors.New("invalid action functionality")
 	}
 
 	return intFunc, nil
