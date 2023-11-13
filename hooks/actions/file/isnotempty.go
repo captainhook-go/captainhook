@@ -8,6 +8,16 @@ import (
 	"github.com/captainhook-go/captainhook/io"
 )
 
+// IsNotEmpty is preventing you from committing empty files to the repository
+//
+// Example configuration:
+//
+//	{
+//	  "run": "CaptainHook::File:IsNotEmpty",
+//	  "options": {
+//	    "files": ["README.md", "LICENSE.md"]
+//	  }
+//	}
 type IsNotEmpty struct {
 	hookBundle *hooks.HookBundle
 }

@@ -14,6 +14,16 @@ import (
 	"strings"
 )
 
+// MaxSize is preventing you from committing files exceeding a given size limit
+//
+// Example configuration:
+//
+//	{
+//	  "run": "CaptainHook::File:MaxSize",
+//	  "options": {
+//	    "max-size": "10M"
+//	  }
+//	}
 type MaxSize struct {
 	hookBundle *hooks.HookBundle
 }
@@ -53,6 +63,10 @@ func (a *MaxSize) Run(action *configuration.Action) error {
 	return nil
 }
 
+// toBytes converts the options size format to the according byte value.
+// Examples:
+// - 1K => 1024
+// - 1M => 1048576
 func (a *MaxSize) toBytes(value string) int64 {
 	matched, err := regexp.MatchString("^[0-9]*[BKMGTP]$", value)
 	if err != nil {

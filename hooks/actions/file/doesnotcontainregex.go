@@ -11,6 +11,16 @@ import (
 	"regexp"
 )
 
+// DoesNotContainRegex blocks commits if a file is containing a string matching the given regex.
+//
+// Example configuration:
+//
+//	{
+//	  "run": "CaptainHook::File.DoesNotContainRegex",
+//	  "options: {
+//	    "regex": "shouldNotContainThis"
+//	  }
+//	}
 type DoesNotContainRegex struct {
 	hookBundle *hooks.HookBundle
 }
