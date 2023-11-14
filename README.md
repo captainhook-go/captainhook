@@ -3,7 +3,7 @@
 ![Go Version](https://img.shields.io/badge/go%20version-%3E=1.21-61CFDD.svg?style=flat-square)
 
 
-# CaptainHook
+# CaptainHook alpha version
 
 <img src="https://captainhookphp.github.io/captainhook/gfx/ch.png" alt="CaptainHook logo" align="right" width="200"/>
 
@@ -29,13 +29,14 @@ brew install captainhook
 
 ## Setup
 
-After installing CaptainHook you can use the *captainhook* executable to create a configuration file.
+After installing CaptainHook go to your project directory and use the *captainhook* init command to create a configuration file.
 ```bash
+cd my-project-repo
 captainhook init
 ```
 
 As soon as you have a configuration file the only thing left is to activate the hooks by installing them to
-your local .git repository. To do so just run the following *captainhook* command.
+your local .git/hooks directory. To do so just run the following *captainhook* command.
 ```bash
 captainhook install
 ```
@@ -69,7 +70,7 @@ Here's an example *captainhook.json* configuration file.
 
 ## Contributing
 
-So you'd like to contribute to the `CaptainHook` library? Excellent! Thank you very much.
+So you'd like to contribute to `CaptainHook`? Excellent! Thank you very much.
 I can absolutely use your help.
 
 Have a look at the [contribution guidelines](CONTRIBUTING.md).
