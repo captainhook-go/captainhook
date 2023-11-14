@@ -2,6 +2,7 @@ package message
 
 import "github.com/captainhook-go/captainhook/git/types"
 
+// Rulebook is a container around Rule(s) that makes sure to check all configured rules.
 type Rulebook struct {
 	rules []Rule
 }
