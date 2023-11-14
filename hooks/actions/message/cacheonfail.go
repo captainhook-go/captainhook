@@ -11,6 +11,17 @@ import (
 	"os"
 )
 
+// CacheOnFail writes the commit message to a cache file if the message validation fails.
+// This way you can use the cache file to prepare your commit message.
+//
+// Example configuration:
+//
+//	{
+//	  "run": "CaptainHook::Message.CacheOnFail",
+//	  "options: {
+//	    "file": ".git/CH_COMMIT_MSG_CACHE"
+//	  }
+//	}
 type CacheOnFail struct {
 	hookBundle *hooks.HookBundle
 }
