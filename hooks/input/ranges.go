@@ -28,8 +28,8 @@ var (
 					continue
 				}
 
-				from := types.NewRef(p[RemoteRef], p[RemoteHash], git.ExtractBranchFromRefPath(p[RemoteRef]))
-				to := types.NewRef(p[LocalRef], p[LocalHash], git.ExtractBranchFromRefPath(p[LocalRef]))
+				from := types.NewRef(p[RemoteHash], p[RemoteHash], git.ExtractBranchFromRefPath(p[RemoteRef]))
+				to := types.NewRef(p[LocalHash], p[LocalHash], git.ExtractBranchFromRefPath(p[LocalRef]))
 				ranges = append(ranges, types.NewRange(from, to))
 			}
 			return ranges

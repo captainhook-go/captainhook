@@ -15,6 +15,7 @@ import (
 
 // PreventPushOfFixupAndSquashCommits prevents you from pushing fixup! or squash! commits. Either for every
 // branch in general or for a given list of branches.
+// Only applicable for 'pre-push' hooks.
 //
 // Example configuration:
 //
@@ -49,7 +50,7 @@ func (a *PreventPushOfFixupAndSquashCommits) Run(action *configuration.Action) e
 	a.handleOptions(action.Options())
 
 	for _, aRange := range refsToPush {
-		if len(a.protectedBranches) > 0 && !slices.Contains(a.protectedBranches, aRange.From().Branch()) {
+		if len(a.protectedBranches) > 0 && !slices.Contains(a.protectedBranches, aRange.To().Branch()) {
 			continue
 		}
 		commits := a.blockedCommits(aRange.From().Id(), aRange.To().Id())
@@ -101,10 +102,10 @@ func (a *PreventPushOfFixupAndSquashCommits) hasToBeBlocked(subject string, type
 func (a *PreventPushOfFixupAndSquashCommits) createFailureMessage(commits []*types.Commit, branch string) string {
 	var out []string
 	for _, commit := range commits {
-		out = append(out, " - "+commit.Hash+" "+commit.Subject)
+		out = append(out, " - <info>"+commit.Hash+"</info> "+commit.Subject)
 	}
 	return "You are prohibited to push the following commits:\n" +
-		" --[ " + branch + " ]-- \n" +
+		"<comment>[" + branch + "]</comment> \n" +
 		strings.Join(out, "\n")
 }
 

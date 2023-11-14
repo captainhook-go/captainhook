@@ -13,5 +13,5 @@ func IsZeroHash(hash string) bool {
 
 func ExtractBranchFromRefPath(head string) string {
 	parts := strings.Split(head, "/")
-	return parts[0]
+	return parts[len(parts)-1]
 }
