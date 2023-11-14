@@ -8,6 +8,7 @@ import (
 	"github.com/captainhook-go/captainhook/hooks/conditions/fileChanged"
 	"github.com/captainhook-go/captainhook/hooks/conditions/fileStaged"
 	"github.com/captainhook-go/captainhook/hooks/conditions/inConfig"
+	"github.com/captainhook-go/captainhook/hooks/conditions/status"
 	"github.com/captainhook-go/captainhook/io"
 	"strings"
 )
@@ -27,6 +28,9 @@ var (
 			"all":    filestaged.NewAll,
 			"any":    filestaged.NewAny,
 			"thatis": filestaged.NewThatIs,
+		},
+		"status": {
+			"onbranch": status.NewOnBranch,
 		},
 	}
 )
