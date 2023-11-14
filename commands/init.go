@@ -5,6 +5,7 @@ import (
 	"github.com/captainhook-go/captainhook/exec"
 	"github.com/captainhook-go/captainhook/io"
 	"github.com/spf13/cobra"
+	"os"
 )
 
 func setupInitCommand() *cobra.Command {
@@ -17,12 +18,14 @@ func setupInitCommand() *cobra.Command {
 			config, _ := cmd.Flags().GetString("configuration")
 
 			appIO := io.NewDefaultIO(configuration.MapVerbosity(getVerbosity(cmd)), make(map[string]string))
+
 			initializer := exec.NewInitializer(appIO)
 			initializer.UseConfig(config)
 			initializer.Force(force)
 			initError := initializer.Run()
+
 			if initError != nil {
-				DisplayCommandError(initError)
+				os.Exit(1)
 			}
 		},
 	}

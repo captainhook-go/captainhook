@@ -9,6 +9,7 @@ import (
 	"github.com/captainhook-go/captainhook/git/types"
 	"github.com/captainhook-go/captainhook/io"
 	"os"
+	"path"
 	"regexp"
 )
 
@@ -17,12 +18,13 @@ type Repository struct {
 	gitDir string
 }
 
-func NewRepository(repoPath string) (*Repository, error) {
-	if !isPathARepository(repoPath) {
-		err := fmt.Errorf("repository not found in: %s", repoPath)
+func NewRepository(gitDir string) (*Repository, error) {
+	repoPath := path.Dir(gitDir)
+	if !isPathARepository(gitDir) {
+		err := fmt.Errorf("repository not found in: %s", gitDir)
 		return nil, err
 	}
-	dotGitDir := repoPath + "/.git"
+	dotGitDir := gitDir
 	if isGitSubmodule(dotGitDir) {
 		// For submodules hooks are stored in the parents .git/modules directory
 		dotGitContents, err := os.ReadFile(dotGitDir)
