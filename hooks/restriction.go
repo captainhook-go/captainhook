@@ -1,5 +1,7 @@
 package hooks
 
+// Restriction is responsible to restrict Action or Condition to specific hooks.
+// For example Condition that requires staged files is only applicable for 'pre-commit' hooks.
 type Restriction struct {
 	applicableHooks []string
 }
