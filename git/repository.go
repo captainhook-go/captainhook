@@ -62,6 +62,10 @@ func (r *Repository) CommitMessage(path string) (*types.CommitMessage, error) {
 	return types.NewCommitMessageFromFile(path, commentChar)
 }
 
+func (r *Repository) PrepareCommitMessage(path string, msg *types.CommitMessage) error {
+	return os.WriteFile(path, []byte(msg.Raw()), 0644)
+}
+
 func (r *Repository) ConfigValue(value string, defaultValue string) string {
 	// git config --get VALUE
 	out, err := Config(config.Get(value))
@@ -112,7 +116,7 @@ func (r *Repository) ChangedFiles(from, to string) ([]string, error) {
 
 func (r *Repository) BranchName() string {
 	// rev-parse --abbrev-ref HEAD
-	out, err := RevParse(revparse.AbbrevRef)
+	out, err := RevParse(revparse.AbbrevRef, diff.To("HEAD"))
 	if err != nil {
 		return ""
 	}
