@@ -5,6 +5,7 @@ import (
 	"github.com/captainhook-go/captainhook/git"
 	"github.com/captainhook-go/captainhook/io"
 	"github.com/spf13/cobra"
+	"os"
 )
 
 func setupInstallCommand() *cobra.Command {
@@ -28,13 +29,15 @@ func setupInstallCommand() *cobra.Command {
 			}
 
 			appIO := io.NewDefaultIO(conf.Verbosity(), make(map[string]string))
+
 			installer := exec.NewInstaller(appIO, conf, repo)
 			installer.SkipExisting(skip)
 			installer.OnlyEnabled(onlyEnabled)
 			installer.Force(force)
 			instError := installer.Run()
+
 			if instError != nil {
-				DisplayCommandError(instError)
+				os.Exit(1)
 			}
 		},
 	}
