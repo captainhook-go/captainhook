@@ -10,6 +10,7 @@ import (
 	"github.com/captainhook-go/captainhook/hooks"
 	"github.com/captainhook-go/captainhook/info"
 	"github.com/captainhook-go/captainhook/io"
+	"os"
 )
 
 type HookRunner struct {
@@ -38,11 +39,25 @@ func NewHookRunner(hook string, appIO io.IO, config *configuration.Configuration
 }
 
 func (h *HookRunner) Run() error {
+	if shouldHooksBeSkipped() {
+		return nil
+	}
+
 	errActions := h.runActions()
 	if errActions != nil {
 		return errActions
 	}
 	return nil
+}
+
+func shouldHooksBeSkipped() bool {
+	for _, envName := range []string{"CAPTAINHOOK_SKIP_HOOKS", "CI"} {
+		skip := os.Getenv(envName)
+		if skip == "1" {
+			return true
+		}
+	}
+	return false
 }
 
 func (h *HookRunner) runActions() error {
