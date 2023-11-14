@@ -10,6 +10,23 @@ import (
 	"github.com/captainhook-go/captainhook/io"
 )
 
+// ThatIs makes sure an action is only executed if a file with the given configuration is changed.
+// Only applicable for 'pre-push' hooks.
+//
+// Example configuration:
+//
+//	{
+//	  "run": "echo ARRRRRR",
+//	  "conditions": [
+//	    {
+//	      "run": "CaptainHook::FilesChanged.ThatIs",
+//	      "options": {
+//	        "of-type": "go",
+//	        "in-directory": "app"
+//	      }
+//	    }
+//	  ]
+//	}
 type ThatIs struct {
 	hookBundle *hooks.HookBundle
 }

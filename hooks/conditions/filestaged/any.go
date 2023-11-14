@@ -7,9 +7,24 @@ import (
 	"github.com/captainhook-go/captainhook/hooks/util"
 	"github.com/captainhook-go/captainhook/info"
 	"github.com/captainhook-go/captainhook/io"
-	"strings"
 )
 
+// Any makes sure an action is only executed if any of the configured files is staged.
+// Only applicable for 'pre-commit' hooks.
+//
+// Example configuration:
+//
+//	{
+//	  "run": "echo ARRRRRR",
+//	  "conditions": [
+//	    {
+//	      "run": "CaptainHook::FilesStaged.Any",
+//	      "options": {
+//	        "files": ["foo.txt", "bar.txt"]
+//	      }
+//	    }
+//	  ]
+//	}
 type Any struct {
 	hookBundle *hooks.HookBundle
 }
@@ -24,9 +39,8 @@ func (c *Any) IsTrue(condition *configuration.Condition) bool {
 		c.hookBundle.AppIO.Write("Condition All failed: "+err.Error(), true, io.NORMAL)
 		return false
 	}
-	files := condition.Options().AsString("files", "")
-	mustContain := strings.Split(files, ",")
-	return util.ContainsAnyString(stagedFiles, mustContain)
+	mustContainAny := condition.Options().AsSliceOfStrings("files")
+	return util.ContainsAnyString(stagedFiles, mustContainAny)
 }
 
 func NewAny(appIO io.IO, conf *configuration.Configuration, repo *git.Repository) hooks.Condition {

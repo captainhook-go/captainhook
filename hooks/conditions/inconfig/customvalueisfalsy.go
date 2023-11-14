@@ -7,6 +7,21 @@ import (
 	"github.com/captainhook-go/captainhook/io"
 )
 
+// CustomValueIsFalsy prevents an action from being executed if a config 'custom' value is not falsy
+//
+// Example configuration:
+//
+//	{
+//	  "run": "echo ARRRRRRR",
+//	  "conditions": [
+//	    {
+//	      "run": "CaptainHook::InConfig.CustomValueIsFalsy",
+//	      "options": {
+//	        "value": "my-custom-value-that-must-be-falsy"
+//	      }
+//	    }
+//	  ]
+//	}
 type CustomValueIsFalsy struct {
 	hookBundle *hooks.HookBundle
 }

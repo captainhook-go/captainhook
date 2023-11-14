@@ -11,6 +11,22 @@ import (
 	"strings"
 )
 
+// Any makes sure an action is only executed if any of the configured files is changed.
+// Only applicable for 'pre-push' hooks.
+//
+// Example configuration:
+//
+//	{
+//	  "run": "echo ARRRRRR",
+//	  "conditions": [
+//	    {
+//	      "run": "CaptainHook::FilesChanged.Any",
+//	      "options": {
+//	        "files": ["foo.txt", "bar.txt"]
+//	      }
+//	    }
+//	  ]
+//	}
 type Any struct {
 	hookBundle *hooks.HookBundle
 }

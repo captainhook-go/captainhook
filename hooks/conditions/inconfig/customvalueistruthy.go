@@ -7,6 +7,21 @@ import (
 	"github.com/captainhook-go/captainhook/io"
 )
 
+// CustomValueIsTruthy prevents an action from being executed if a config 'custom' value is not truthy
+//
+// Example configuration:
+//
+//	{
+//	  "run": "echo ARRRRRRR",
+//	  "conditions": [
+//	    {
+//	      "run": "CaptainHook::InConfig.CustomValueIsTruthy",
+//	      "options": {
+//	        "value": "my-custom-value-that-must-be-truthy"
+//	      }
+//	    }
+//	  ]
+//	}
 type CustomValueIsTruthy struct {
 	hookBundle *hooks.HookBundle
 }

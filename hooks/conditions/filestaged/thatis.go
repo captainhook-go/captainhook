@@ -9,6 +9,23 @@ import (
 	"github.com/captainhook-go/captainhook/io"
 )
 
+// ThatIs makes sure an action is only executed if a file with the given configuration is staged.
+// Only applicable for 'pre-commit' hooks.
+//
+// Example configuration:
+//
+//	{
+//	  "run": "echo ARRRRRR",
+//	  "conditions": [
+//	    {
+//	      "run": "CaptainHook::FilesStaged.ThatIs",
+//	      "options": {
+//	        "of-type": "md",
+//	        "in-directory": "docs"
+//	      }
+//	    }
+//	  ]
+//	}
 type ThatIs struct {
 	hookBundle *hooks.HookBundle
 }

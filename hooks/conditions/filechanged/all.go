@@ -11,6 +11,22 @@ import (
 	"strings"
 )
 
+// All makes sure an action is only executed if all the configured files are changed.
+// Only applicable for 'pre-push' hooks.
+//
+// Example configuration:
+//
+//	{
+//	  "run": "echo ARRRRRR",
+//	  "conditions": [
+//	    {
+//	      "run": "CaptainHook::FilesChanged.All",
+//	      "options": {
+//	        "files": ["foo.txt", "bar.txt"]
+//	      }
+//	    }
+//	  ]
+//	}
 type All struct {
 	hookBundle *hooks.HookBundle
 }
