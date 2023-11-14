@@ -30,6 +30,11 @@ func (a *GitNotify) IsApplicableFor(hook string) bool {
 func (a *GitNotify) Run(action *configuration.Action) error {
 	a.hookBundle.AppIO.Write("check history for notifications", true, io.VERBOSE)
 	// TODO: implement this
+	//oldHash := ""
+	//newHash := ""
+	// get commit between oldHash newHash
+	// check all commit messages for "git-notify: .*"
+	// if found output notification
 	return nil
 }
 
