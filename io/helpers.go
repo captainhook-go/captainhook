@@ -8,14 +8,6 @@ import (
 	"strings"
 )
 
-func isPiped() bool {
-	stat, err := os.Stdin.Stat()
-	if err != nil {
-		return false
-	}
-	return (stat.Mode() & os.ModeCharDevice) == 0
-}
-
 func askForUserInput(message string) (string, error) {
 	reader := bufio.NewReader(os.Stdin)
 	fmt.Print(Colorize(message))

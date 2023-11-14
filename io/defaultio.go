@@ -1,20 +1,16 @@
 package io
 
 import (
-	"bufio"
 	"fmt"
-	"os"
 )
 
 type DefaultIO struct {
 	verbosity int
-	arguments map[string]string
-	stdIn     []string
-	stdInRead bool
+	input     Input
 }
 
 func NewDefaultIO(verbosity int, arguments map[string]string) *DefaultIO {
-	io := DefaultIO{verbosity: verbosity, arguments: arguments, stdInRead: false}
+	io := DefaultIO{verbosity: verbosity, input: NewStdIn(arguments)}
 	return &io
 }
 
@@ -23,41 +19,26 @@ func (d *DefaultIO) Verbosity() int {
 }
 
 func (d *DefaultIO) Arguments() map[string]string {
-	return d.arguments
+	return d.input.Arguments()
 }
+
 func (d *DefaultIO) Argument(name, defaultValue string) string {
-	value, ok := d.arguments[name]
-	if !ok {
-		value = defaultValue
-	}
-	return value
+	return d.input.Argument(name, defaultValue)
 }
 
 func (d *DefaultIO) StandardInput() []string {
-	if !d.stdInRead {
-		var lines []string
-		if isPiped() {
-			scanner := bufio.NewScanner(os.Stdin)
-			for scanner.Scan() {
-				lines = append(lines, scanner.Text())
-			}
+	return d.input.Data()
+}
 
-			if err := scanner.Err(); err != nil {
-				return []string{}
-			}
-		}
-		d.stdInRead = true
-		d.stdIn = lines
-	}
-
-	return d.stdIn
+func (d *DefaultIO) Input() Input {
+	return d.input
 }
 
 func (d *DefaultIO) IsInteractive() bool {
 	return false
 }
 
-func (d *DefaultIO) isQuiet() bool {
+func (d *DefaultIO) IsQuiet() bool {
 	return !(d.verbosity > QUIET)
 }
 
@@ -70,7 +51,7 @@ func (d *DefaultIO) IsVerbose() bool {
 }
 
 func (d *DefaultIO) Write(message string, newline bool, verbosity int) {
-	if d.isQuiet() {
+	if d.IsQuiet() {
 		return
 	}
 	var linebreak = ""

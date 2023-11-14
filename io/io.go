@@ -12,8 +12,10 @@ type IO interface {
 	Arguments() map[string]string
 	Argument(name, defaultValue string) string
 	StandardInput() []string
+	Input() Input
 	IsInteractive() bool
 	IsDebug() bool
+	IsQuiet() bool
 	IsVerbose() bool
 	Write(message string, newline bool, verbosity int)
 	Ask(message string, defaultValue string) string

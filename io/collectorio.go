@@ -2,9 +2,8 @@ package io
 
 type CollectorIO struct {
 	verbosity int
-	arguments map[string]string
+	input     Input
 	messages  []*CollectedMessage
-	stdIn     []string
 }
 
 type CollectedMessage struct {
@@ -12,8 +11,8 @@ type CollectedMessage struct {
 	Message   string
 }
 
-func NewCollectorIO(verbosity int, arguments map[string]string) *CollectorIO {
-	io := CollectorIO{verbosity: verbosity, arguments: arguments}
+func NewCollectorIO(verbosity int, input Input) *CollectorIO {
+	io := CollectorIO{verbosity: verbosity, input: input}
 	return &io
 }
 
@@ -22,18 +21,18 @@ func (c *CollectorIO) Verbosity() int {
 }
 
 func (c *CollectorIO) Arguments() map[string]string {
-	return c.arguments
+	return c.input.Arguments()
 }
 func (c *CollectorIO) Argument(name, defaultValue string) string {
-	value, ok := c.arguments[name]
-	if !ok {
-		value = defaultValue
-	}
-	return value
+	return c.input.Argument(name, defaultValue)
 }
 
 func (c *CollectorIO) StandardInput() []string {
-	return make([]string, 0)
+	return c.input.Data()
+}
+
+func (c *CollectorIO) Input() Input {
+	return c.input
 }
 
 func (c *CollectorIO) IsInteractive() bool {
@@ -42,6 +41,10 @@ func (c *CollectorIO) IsInteractive() bool {
 
 func (c *CollectorIO) IsDebug() bool {
 	return c.verbosity == DEBUG
+}
+
+func (c *CollectorIO) IsQuiet() bool {
+	return c.verbosity == QUIET
 }
 
 func (c *CollectorIO) IsVerbose() bool {

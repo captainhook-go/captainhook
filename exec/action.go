@@ -30,7 +30,7 @@ func NewActionRunner(appIO io.IO, conf *configuration.Configuration, repo *git.R
 func (a *ActionRunner) Run(hook string, action *configuration.Action) (error, error) {
 	var errDispatchResult error
 	status := info.ACTION_SUCCEEDED
-	cIO := io.NewCollectorIO(a.appIO.Verbosity(), a.appIO.Arguments())
+	cIO := io.NewCollectorIO(a.appIO.Verbosity(), a.appIO.Input())
 	errDispatchStart := a.eventDispatcher.DispatchActionStartedEvent(
 		events.NewActionStartedEvent(app.NewContext(a.appIO, a.conf, a.repo), action),
 	)
