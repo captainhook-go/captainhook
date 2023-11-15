@@ -65,9 +65,8 @@ func (h *CacheOnFailEventHandler) Handle(event *events.HookFailed) error {
 	if err != nil {
 		return err
 	}
-	writeErr := os.WriteFile(h.path, []byte(msg.Message()), 0644)
-	if writeErr != nil {
-		return writeErr
+	if !msg.IsEmpty() {
+		return os.WriteFile(h.path, []byte(msg.Message()), 0644)
 	}
 	return nil
 }
