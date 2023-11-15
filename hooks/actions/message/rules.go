@@ -58,7 +58,7 @@ func NewLimitSubjectLineLength(length int) *LimitSubjectLineLength {
 type MsgNotEmpty struct{}
 
 func (r *MsgNotEmpty) IsFollowedBy(msg *types.CommitMessage) (bool, string) {
-	if msg.Message() == "" {
+	if msg.Message() == "" || msg.Subject() == "" {
 		return false, "commit message can not be empty"
 	}
 	return true, ""
