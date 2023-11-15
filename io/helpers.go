@@ -32,7 +32,29 @@ func SplitLines(s string) []string {
 	return lines
 }
 
+func PrefixLinesInString(s, prefix string) string {
+	return strings.Join(
+		PrefixLines(
+			SplitLines(s),
+			prefix,
+		),
+		"\n",
+	)
+}
+
+func PrefixLines(lines []string, prefix string) []string {
+	var prefixed []string
+	for _, s := range lines {
+		prefixed = append(prefixed, prefix+s)
+	}
+	return prefixed
+}
+
 func SubString(input string, start int, length int) string {
+	if input == "" {
+		return ""
+	}
+
 	asRunes := []rune(input)
 
 	if length == 0 {
