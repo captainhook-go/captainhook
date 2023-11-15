@@ -36,7 +36,7 @@ captainhook init
 ```
 
 As soon as you have a configuration file the only thing left is to activate the hooks by installing them to
-your local .git/hooks directory. To do so just run the following *captainhook* command.
+your local `.git/hooks` directory. To do so just run the following *captainhook* command.
 ```bash
 captainhook install
 ```
