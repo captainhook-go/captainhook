@@ -11,17 +11,25 @@ import (
 )
 
 type Installer struct {
-	appIO        io.IO
-	config       *configuration.Configuration
-	repo         *git.Repository
-	force        bool
-	skipExisting bool
-	onlyEnabled  bool
+	appIO         io.IO
+	config        *configuration.Configuration
+	repo          *git.Repository
+	force         bool
+	skipExisting  bool
+	onlyEnabled   bool
+	backupEnabled bool
 }
 
 func NewInstaller(appIO io.IO, config *configuration.Configuration, repo *git.Repository) *Installer {
-	i := Installer{appIO: appIO, config: config, repo: repo, force: false, skipExisting: false}
-	return &i
+	return &Installer{
+		appIO:         appIO,
+		config:        config,
+		repo:          repo,
+		force:         false,
+		skipExisting:  false,
+		onlyEnabled:   false,
+		backupEnabled: false,
+	}
 }
 
 func (i *Installer) SkipExisting(skip bool) {
@@ -34,6 +42,10 @@ func (i *Installer) OnlyEnabled(enabled bool) {
 
 func (i *Installer) Force(force bool) {
 	i.force = force
+}
+
+func (i *Installer) EnableBackup(backup bool) {
+	i.backupEnabled = backup
 }
 
 func (i *Installer) Run() error {
@@ -71,7 +83,7 @@ func (i *Installer) installHook(hook string, ask bool) error {
 	}
 
 	if doIt {
-		if i.shouldHookBeMoved() {
+		if i.isBackupEnabled() {
 			i.backupHook(hook)
 		}
 		return i.writeHookFile(hook)
@@ -149,12 +161,23 @@ func (i *Installer) hooksToHandle() map[string]bool {
 	return hooks
 }
 
-func (i *Installer) shouldHookBeMoved() bool {
-	return false
+func (i *Installer) isBackupEnabled() bool {
+	return i.backupEnabled
 }
 
 func (i *Installer) backupHook(hook string) {
-	// TODO: add backup functionality
+	original := i.repo.HooksDir() + "/" + hook
+
+	if !io.FileExists(original) {
+		return
+	}
+	backup := original + ".old"
+	data, _ := os.ReadFile(original)
+	err := os.WriteFile(backup, data, 0644)
+	if err == nil {
+		i.appIO.Write("backup '"+hook+"' to '"+backup+"'", true, io.VERBOSE)
+	}
+	return
 }
 
 func (i *Installer) HookTemplate() string {
