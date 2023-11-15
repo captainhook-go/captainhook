@@ -61,6 +61,10 @@ func (m *CommitMessage) IsSquash() bool {
 	return strings.HasPrefix(m.raw, "squash!")
 }
 
+func (m *CommitMessage) IsEmpty() bool {
+	return strings.TrimSpace(m.Message()) == ""
+}
+
 func NewCommitMessage(msg string, commentChar string) *CommitMessage {
 	rawLines := io.SplitLines(msg)
 
