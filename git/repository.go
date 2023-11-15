@@ -1,6 +1,7 @@
 package git
 
 import (
+	"errors"
 	"fmt"
 	"github.com/captainhook-go/captainhook/git/config"
 	"github.com/captainhook-go/captainhook/git/diff"
@@ -58,6 +59,9 @@ func (r *Repository) HooksDir() string {
 }
 
 func (r *Repository) CommitMessage(path string) (*types.CommitMessage, error) {
+	if path == "" {
+		return nil, errors.New("invalid file path")
+	}
 	commentChar := r.ConfigValue("core.commentchar", "#")
 	return types.NewCommitMessageFromFile(path, commentChar)
 }
