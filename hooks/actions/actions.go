@@ -6,8 +6,10 @@ import (
 	"github.com/captainhook-go/captainhook/git"
 	"github.com/captainhook-go/captainhook/hooks"
 	"github.com/captainhook-go/captainhook/hooks/actions/branch"
+	"github.com/captainhook-go/captainhook/hooks/actions/debug"
 	"github.com/captainhook-go/captainhook/hooks/actions/file"
 	"github.com/captainhook-go/captainhook/hooks/actions/message"
+	"github.com/captainhook-go/captainhook/hooks/actions/notify"
 	"github.com/captainhook-go/captainhook/io"
 	"strings"
 )
@@ -18,16 +20,24 @@ var (
 			"ensurenaming":                       branch.NewEnsureNaming,
 			"preventpushoffixupandsquashcommits": branch.NewPreventPushOfFixupAndSquashCommits,
 		},
+		"debug": {
+			"fail":    debug.NewFail,
+			"success": debug.NewSuccess,
+		},
 		"file": {
 			"doesnotcontainregex": file.NewDoesNotContainRegex,
 			"isnotempty":          file.NewIsNotEmpty,
 			"maxsize":             file.NewMaxSize,
 		},
 		"message": {
-			"cacheonfail":          message.NewCacheOnFail,
-			"mustfollowbeamsrules": message.NewBeamsRules,
-			"mustcontainsregex":    message.NewContainsRegex,
-			"preparefromfile":      message.NewPrepareFromFile,
+			"injectissuekeyfrombranch": message.NewInjectIssueKeyFromBranch,
+			"cacheonfail":              message.NewCacheOnFail,
+			"mustfollowbeamsrules":     message.NewBeamsRules,
+			"mustcontainsregex":        message.NewContainsRegex,
+			"preparefromfile":          message.NewPrepareFromFile,
+		},
+		"notify": {
+			"gitnotify": notify.NewGitNotify,
 		},
 	}
 )
