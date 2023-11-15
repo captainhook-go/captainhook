@@ -150,8 +150,8 @@ func isPathARepository(repoPath string) bool {
 		repoPath + "/config",
 		repoPath + "/HEAD",
 	}
-	for _, path := range pathSlice {
-		_, err := os.Stat(path)
+	for _, p := range pathSlice {
+		_, err := os.Stat(p)
 		if err != nil {
 			return false
 		}
