@@ -139,7 +139,6 @@ func (r *Repository) CommitsBetween(from string, to string) []*types.Commit {
 		return []*types.Commit{}
 	}
 
-	// TODO: handle error
 	commits, _ := log.ParseXML("<log>" + out + "</log>")
 	return commits
 }
