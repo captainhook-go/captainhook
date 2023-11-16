@@ -22,46 +22,51 @@ type ActionRunner struct {
 	actionLog       *hooks.ActionLog
 }
 
-func NewActionRunner(appIO io.IO, conf *configuration.Configuration, repo *git.Repository, dispatcher *events.Dispatcher, log *hooks.ActionLog) *ActionRunner {
-	a := ActionRunner{appIO: appIO, conf: conf, repo: repo, eventDispatcher: dispatcher, actionLog: log}
-	return &a
+func NewActionRunner(
+	appIO io.IO,
+	conf *configuration.Configuration,
+	repo *git.Repository,
+	dispatcher *events.Dispatcher,
+	log *hooks.ActionLog,
+) *ActionRunner {
+	return &ActionRunner{appIO: appIO, conf: conf, repo: repo, eventDispatcher: dispatcher, actionLog: log}
 }
 
-func (a *ActionRunner) Run(hook string, action *configuration.Action) (error, error) {
-	var errDispatchResult error
-	status := info.ACTION_SUCCEEDED
+func (a *ActionRunner) Run(hook string, action *configuration.Action) *ActionResult {
 	cIO := io.NewCollectorIO(a.appIO.Verbosity(), a.appIO.Input())
+
 	errDispatchStart := a.eventDispatcher.DispatchActionStartedEvent(
 		events.NewActionStartedEvent(app.NewContext(a.appIO, a.conf, a.repo), action),
 	)
 	if errDispatchStart != nil {
-		return nil, errDispatchStart
+		a.appendActionLog(action, cIO, info.ACTION_FAILED)
+		return NewActionResult(info.ACTION_FAILED, nil, errDispatchStart)
 	}
+
 	if !a.doConditionsApply(hook, action.Conditions(), cIO) {
 		errDispatchSkipped := a.eventDispatcher.DispatchActionSkippedEvent(
 			events.NewActionSkippedEvent(app.NewContext(a.appIO, a.conf, a.repo), action),
 		)
-		status = info.ACTION_SKIPPED
-		a.appendActionLog(action, cIO, status)
-		return nil, errDispatchSkipped
+		a.appendActionLog(action, cIO, info.ACTION_SKIPPED)
+		return NewActionResult(info.ACTION_SKIPPED, nil, errDispatchSkipped)
 	}
 
-	err := a.runAction(hook, action, cIO)
+	errRun := a.runAction(hook, action, cIO)
 
-	if err != nil {
-		cIO.Write(err.Error(), true, io.NORMAL)
-		errDispatchResult = a.eventDispatcher.DispatchActionFailedEvent(
-			events.NewActionFailedEvent(app.NewContext(a.appIO, a.conf, a.repo), action, err),
+	if errRun != nil {
+		cIO.Write(errRun.Error(), true, io.NORMAL)
+		errDispatchFailed := a.eventDispatcher.DispatchActionFailedEvent(
+			events.NewActionFailedEvent(app.NewContext(a.appIO, a.conf, a.repo), action, errRun),
 		)
-		status = info.ACTION_FAILED
-	} else {
-		errDispatchResult = a.eventDispatcher.DispatchActionSucceededEvent(
-			events.NewActionSucceededEvent(app.NewContext(a.appIO, a.conf, a.repo), action),
-		)
+		a.appendActionLog(action, cIO, info.ACTION_FAILED)
+		return NewActionResult(info.ACTION_FAILED, errRun, errDispatchFailed)
 	}
-	a.appendActionLog(action, cIO, status)
-	return err, errDispatchResult
+	errDispatchSuccess := a.eventDispatcher.DispatchActionSucceededEvent(
+		events.NewActionSucceededEvent(app.NewContext(a.appIO, a.conf, a.repo), action),
+	)
 
+	a.appendActionLog(action, cIO, info.ACTION_SUCCEEDED)
+	return NewActionResult(info.ACTION_SUCCEEDED, errRun, errDispatchSuccess)
 }
 
 func (a *ActionRunner) runAction(hook string, action *configuration.Action, cIO *io.CollectorIO) error {
@@ -97,20 +102,25 @@ func (a *ActionRunner) runInternalAction(hook string, action *configuration.Acti
 
 func (a *ActionRunner) runExternalAction(hook string, action *configuration.Action, aIO *io.CollectorIO) error {
 	commandToExecute := placeholder.ReplacePlaceholders(app.NewContext(aIO, a.conf, a.repo), action.Run())
-	splits := strings.Split(commandToExecute, " ")
 
+	// if there were placeholders replaced
+	if commandToExecute != action.Run() {
+		aIO.Write("<comment>cmd:</comment>\n"+commandToExecute, true, io.VERBOSE)
+	}
+
+	splits := strings.Split(commandToExecute, " ")
 	cmd := exec.Command(splits[0], splits[1:]...)
 	out, err := cmd.CombinedOutput()
 
 	if err != nil {
 		if len(out) > 0 {
-			aIO.Write(string(out), true, io.NORMAL)
+			aIO.Write("<comment>output:</comment>\n"+string(out), true, io.NORMAL)
 		}
 		return err
 	}
 
 	if len(out) > 0 {
-		aIO.Write(string(out), false, io.VERBOSE)
+		aIO.Write("<comment>output:</comment>\n"+string(out), false, io.VERBOSE)
 	}
 	return nil
 }
@@ -118,8 +128,7 @@ func (a *ActionRunner) runExternalAction(hook string, action *configuration.Acti
 func (a *ActionRunner) doConditionsApply(hook string, conditions []*configuration.Condition, cIO *io.CollectorIO) bool {
 	conditionRunner := NewConditionRunner(cIO, a.conf, a.repo)
 	for _, condition := range conditions {
-		isTrue := conditionRunner.Run(hook, condition)
-		if !isTrue {
+		if !conditionRunner.Run(hook, condition) {
 			return false
 		}
 	}

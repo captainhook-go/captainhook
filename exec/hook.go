@@ -67,7 +67,6 @@ func (h *HookRunner) runActions() error {
 	err = h.eventDispatcher.DispatchHookStartedEvent(
 		events.NewHookStartedEvent(app.NewContext(h.appIO, h.config, h.repo), hookConfig),
 	)
-	// TODO: trigger failed event
 	if err != nil {
 		h.appIO.Write(err.Error(), true, io.NORMAL)
 		return err
@@ -79,7 +78,6 @@ func (h *HookRunner) runActions() error {
 		err = h.runActionsFailLate(hookConfig)
 	}
 
-	// TODO: handle dispatcher errors
 	if err != nil {
 		_ = h.eventDispatcher.DispatchHookFailedEvent(
 			events.NewHookFailedEvent(app.NewContext(h.appIO, h.config, h.repo), hookConfig, h.actionLog, err),
@@ -123,12 +121,11 @@ func (h *HookRunner) runActionsFailLate(hookConfig *configuration.Hook) error {
 
 func (h *HookRunner) runAction(action *configuration.Action) error {
 	actionRunner := NewActionRunner(h.appIO, h.config, h.repo, h.eventDispatcher, h.actionLog)
-	actionErr, dispatchErr := actionRunner.Run(h.hook, action)
-	// TODO: propagate dispatch error
-	if dispatchErr != nil {
-		h.appIO.Write(fmt.Sprintf("error dispatching events: %s", dispatchErr.Error()), true, io.NORMAL)
+	result := actionRunner.Run(h.hook, action)
+	if result.DispatchErr != nil {
+		h.appIO.Write(fmt.Sprintf("error dispatching events: %s", result.DispatchErr.Error()), true, io.NORMAL)
 	}
-	return actionErr
+	return result.RunErr
 }
 
 func (h *HookRunner) getHookConfig() *configuration.Hook {
