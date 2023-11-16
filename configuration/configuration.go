@@ -177,3 +177,16 @@ func MapVerbosity(verbosity string) int {
 	}
 	return verbosityIO
 }
+
+func UnMapVerbosity(verbosity int) string {
+	verbosityMap := map[int]string{
+		io.NORMAL:  "normal",
+		io.VERBOSE: "verbose",
+		io.DEBUG:   "debug",
+	}
+	verbosityConfig, ok := verbosityMap[verbosity]
+	if !ok {
+		verbosityConfig = "normal"
+	}
+	return verbosityConfig
+}
