@@ -11,13 +11,13 @@ import (
 var (
 	placeholders = map[string]func(aContext *app.Context) Replacer{
 		"CONFIG": func(aContext *app.Context) Replacer {
-			return &Config{context: aContext}
+			return &ConfigValue{context: aContext}
 		},
 		"CHANGED_FILES": func(aContext *app.Context) Replacer {
 			return &FileList{name: "CHANGED_FILES", context: aContext, files: collectAllChangedFiles(aContext)}
 		},
 		"ENV": func(aContext *app.Context) Replacer {
-			return &Config{context: aContext}
+			return &EnvVar{context: aContext}
 		},
 		"STAGED_FILES": func(aContext *app.Context) Replacer {
 			files, _ := aContext.Repository().StagedFiles()
