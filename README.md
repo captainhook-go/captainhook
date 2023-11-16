@@ -3,7 +3,7 @@
 ![Go Version](https://img.shields.io/badge/go%20version-%3E=1.21-61CFDD.svg?style=flat-square)
 
 
-# CaptainHook alpha version
+# CaptainHook [BETA]
 
 <img src="https://captainhook-go.github.io/captainhook/gfx/ch.png" alt="CaptainHook logo" align="right" width="200"/>
 
