@@ -15,20 +15,20 @@
         "commit-msg": {
             "actions": [
                 {
-                    "action": "CaptainHook::Message.Beams",
+                    "run": "CaptainHook::Message.Beams",
                     "options": {
-                        "subjectLength": 50,
-                        "bodyLineLength": 72
+                        "subject-length": 50,
+                        "body-line-length": 72
                     }
                 },
                 {
-                    "action": "CaptainHook::Message.Regex",
+                    "run": "CaptainHook::Message.ContainsRegex",
                     "options": {
                         "regex": "#.*#"
                     }
                 },
                 {
-                    "action": "CaptainHook::Message.CacheOnFail",
+                    "run": "CaptainHook::Message.CacheOnFail",
                     "options": {
                         "file": ".git/CH_COMMIT_MESSAGE.tmp"
                     }
@@ -38,26 +38,26 @@
         "pre-push": {
             "actions": [
                 {
-                    "action": "CaptainHook::Branch.BlockFixupAndSquashCommits"
+                    "run": "CaptainHook::Branch.BlockFixupAndSquashCommits"
                 },
                 {
-                    "action": "echo foo"
+                    "run": "echo foo"
                 }
             ]
         },
         "pre-commit": {
             "actions": [
                 {
-                    "action": "echo foo"
+                    "run": "echo foo"
                 },
                 {
-                    "action": "CaptainHook::File.DoesNotContainRegex",
+                    "run": "CaptainHook::File.DoesNotContainRegex",
                     "options": {
-                        "regex": "#fooooooooooooooooooooo#i"
+                        "regex": "foooo"
                     }
                 },
                 {
-                    "action": "CaptainHook::File.IsNotEmpty",
+                    "run": "CaptainHook::File.IsNotEmpty",
                     "options": {
                         "files": [
                             "src/CH.php",
@@ -66,25 +66,25 @@
                     }
                 },
                 {
-                    "action": "CaptainHook::File.MaxSize",
+                    "run": "CaptainHook::File.MaxSize",
                     "config": {
                         "allow-failure": true
                     },
                     "options": {
-                        "maxSize": "1M"
+                        "max-size": "1M"
                     }
                 },
                 {
-                    "action": "echo bar"
+                    "run": "echo bar"
                 },
                 {
-                    "action": "echo \"{$STAGED_FILES|of-type:php|separated-by: }\"",
+                    "action": "echo \"{$STAGED_FILES|of-type:ho|separated-by: }\"",
                     "conditions": [
                         {
-                            "exec": "CaptainHook::FileStaged.OfType",
-                            "args": [
-                                "go"
-                            ]
+                            "run": "CaptainHook::FileStaged.ThatIs",
+                            "options": {
+                                "of-type": "go"
+                            }
                         }
                     ]
                 }
@@ -93,7 +93,7 @@
         "prepare-commit-msg": {
             "actions": [
                 {
-                    "action": "CaptainHook::Message.PrepareFromFile",
+                    "run": "CaptainHook::Message.PrepareFromFile",
                     "options": {
                         "file": ".git/CH_COMMIT_MESSAGE.tmp"
                     }
@@ -103,7 +103,7 @@
         "post-change": {
             "actions": [
                 {
-                    "action": "CaptainHook::Notify.Notify"
+                    "run": "CaptainHook::Notify.GitNotify"
                 }
             ]
         }
