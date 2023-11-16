@@ -2,12 +2,12 @@ package exec
 
 import (
 	"fmt"
-	"github.com/captainhook-go/captainhook/app"
 	"github.com/captainhook-go/captainhook/configuration"
 	"github.com/captainhook-go/captainhook/events"
 	"github.com/captainhook-go/captainhook/exec/printer"
 	"github.com/captainhook-go/captainhook/git"
 	"github.com/captainhook-go/captainhook/hooks"
+	"github.com/captainhook-go/captainhook/hooks/app"
 	"github.com/captainhook-go/captainhook/info"
 	"github.com/captainhook-go/captainhook/io"
 	"os"

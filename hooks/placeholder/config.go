@@ -1,6 +1,8 @@
 package placeholder
 
-import "github.com/captainhook-go/captainhook/app"
+import (
+	"github.com/captainhook-go/captainhook/hooks/app"
+)
 
 type Config struct {
 	context *app.Context

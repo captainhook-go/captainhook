@@ -1,7 +1,7 @@
 package placeholder
 
 import (
-	"github.com/captainhook-go/captainhook/app"
+	"github.com/captainhook-go/captainhook/hooks/app"
 	"github.com/captainhook-go/captainhook/hooks/util"
 	"github.com/captainhook-go/captainhook/io"
 	"strings"

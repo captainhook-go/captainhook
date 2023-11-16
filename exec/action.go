@@ -1,12 +1,12 @@
 package exec
 
 import (
-	"github.com/captainhook-go/captainhook/app"
 	"github.com/captainhook-go/captainhook/configuration"
 	"github.com/captainhook-go/captainhook/events"
 	"github.com/captainhook-go/captainhook/git"
 	"github.com/captainhook-go/captainhook/hooks"
 	"github.com/captainhook-go/captainhook/hooks/actions"
+	"github.com/captainhook-go/captainhook/hooks/app"
 	"github.com/captainhook-go/captainhook/hooks/placeholder"
 	"github.com/captainhook-go/captainhook/info"
 	"github.com/captainhook-go/captainhook/io"

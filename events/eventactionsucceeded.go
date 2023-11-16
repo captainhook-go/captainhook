@@ -1,8 +1,8 @@
 package events
 
 import (
-	"github.com/captainhook-go/captainhook/app"
 	"github.com/captainhook-go/captainhook/configuration"
+	"github.com/captainhook-go/captainhook/hooks/app"
 )
 
 type ActionSucceeded struct {

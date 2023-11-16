@@ -9,7 +9,10 @@ before:
     - go mod tidy
 
 builds:
-  - env:
+  - main: 'cmd/captainhook/main.go'
+    binary: captainhook
+
+    env:
       - CGO_ENABLED=0
     goos:
       - linux

@@ -1,7 +1,7 @@
 package placeholder
 
 import (
-	"github.com/captainhook-go/captainhook/app"
+	"github.com/captainhook-go/captainhook/hooks/app"
 	"github.com/captainhook-go/captainhook/hooks/input"
 	"github.com/captainhook-go/captainhook/io"
 	"regexp"
@@ -72,7 +72,7 @@ func collectAllChangedFiles(aContext *app.Context) []string {
 			unique[file] = true
 		}
 	}
-	for file, _ := range unique {
+	for file := range unique {
 		files = append(files, file)
 	}
 	return files

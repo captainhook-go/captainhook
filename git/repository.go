@@ -14,6 +14,10 @@ import (
 	"regexp"
 )
 
+const (
+	FilterDefault = "ACMR"
+)
+
 type Repository struct {
 	root   string
 	gitDir string
@@ -95,6 +99,7 @@ func (r *Repository) StagedFiles() ([]string, error) {
 		diff.NoExtDiff,
 		diff.Cached,
 		log.NameOnly,
+		diff.Filter(FilterDefault),
 		diff.To("HEAD"),
 	)
 	if err != nil {
@@ -109,7 +114,7 @@ func (r *Repository) ChangedFiles(from, to string) ([]string, error) {
 		diff.NoExtDiff,
 		log.NameOnly,
 		diff.Recursive,
-		diff.Filter("ACMR"),
+		diff.Filter(FilterDefault),
 		diff.FromTo(from, to),
 	)
 	if err != nil {

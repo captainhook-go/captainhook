@@ -47,7 +47,8 @@ func (a *MaxSize) Run(action *configuration.Action) error {
 	for _, path := range files {
 		file, err := os.Open(path)
 		if err != nil {
-			return err
+			// ignore error because file is most likely deleted
+			continue
 		}
 		stats, err := file.Stat()
 		if err != nil {
