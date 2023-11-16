@@ -5,7 +5,7 @@
 
 # CaptainHook alpha version
 
-<img src="https://captainhookphp.github.io/captainhook/gfx/ch.png" alt="CaptainHook logo" align="right" width="200"/>
+<img src="https://captainhook-go.github.io/captainhook/gfx/ch.png" alt="CaptainHook logo" align="right" width="200"/>
 
 *CaptainHook* is an easy to use and very flexible git hook manager for software developers.
 It enables you to configure your git hook actions in a simple json file and easily share them within your team.
@@ -15,7 +15,7 @@ or run unit tests before you commit or push changes to git. You can automaticall
 local caches or install the correct dependencies after pulling the latest changes.
 
 You can run your own commands or use loads of built-in functionality.
-For more information have a look at the [documentation (NOT AVAILABLE YET)](https://captainhook-go.github.io/captainhook/ "CaptainHook Documentation").
+For more information have a look at the [documentation](https://captainhook-go.github.io/captainhook/ "CaptainHook Documentation").
 
 ## Installation
 
