@@ -20,12 +20,18 @@ For more information have a look at the [documentation (NOT AVAILABLE YET)](http
 ## Installation
 
 You can download the application binary for your platform from the [release page](https://github.com/captainhook-go/captainhook/releases/latest "Latest CaptainHook Release").
+Or use one of the following options.
 
-Or use *Homebrew* to install *CaptainHook*.
+Use `Homebrew` to install *CaptainHook*.
 ```bash
 brew tap captainhook-go/captainhook
 brew install captainhook
 ```
+Use `go install` to install the *Captain*.
+```bash
+go install github.com/captainhook-go/captainhook/cmd/captainhook@latest
+```
+
 
 ## Setup
 
