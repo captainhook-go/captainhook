@@ -9,6 +9,7 @@ import (
 	"github.com/captainhook-go/captainhook/hooks/input"
 	"github.com/captainhook-go/captainhook/info"
 	"github.com/captainhook-go/captainhook/io"
+	"math"
 	"regexp"
 	"strings"
 )
@@ -67,7 +68,25 @@ func (a *GitNotify) extractNotification(c *types.Commit, prefix string) (string,
 }
 
 func (a *GitNotify) showNotification(msg string) {
-	a.hookBundle.AppIO.Write(msg, true, io.NORMAL)
+	headline := "+" + strings.Repeat("-", 28) + "[ git-notify ]" + strings.Repeat("-", 28) + "+"
+	blank := "|" + strings.Repeat(" ", 70) + "|"
+	footer := "+" + strings.Repeat("-", 70) + "+"
+
+	a.hookBundle.AppIO.Write(headline, true, io.NORMAL)
+	a.hookBundle.AppIO.Write(blank, true, io.NORMAL)
+
+	for _, m := range io.SplitLines(msg) {
+		trimmed := strings.TrimSpace(m)
+		lPad := int(math.Floor(float64(68-len(trimmed)) / 2))
+		rPad := int(math.Ceil(float64(68-len(trimmed)) / 2))
+		padL := strings.Repeat(" ", lPad)
+		padR := strings.Repeat(" ", rPad)
+		line := "| " + padL + "<comment>" + trimmed + "</comment>" + padR + " |"
+		a.hookBundle.AppIO.Write(line, true, io.NORMAL)
+	}
+
+	a.hookBundle.AppIO.Write(blank, true, io.NORMAL)
+	a.hookBundle.AppIO.Write(footer, true, io.NORMAL)
 }
 
 func NewGitNotify(appIO io.IO, conf *configuration.Configuration, repo *git.Repository) hooks.Action {
