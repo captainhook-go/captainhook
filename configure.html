@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>CaptainHook Documentation</title>
+
+    <link rel="icon" type="image/png" href="gfx/favicon.png">
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/layout.css" rel="stylesheet">
+    <link href="css/atom-one-dark.css" rel="stylesheet">
+
+    <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+    <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="https://github.com/captainhook-go/captainhook">CaptainHook</a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+          <ul class="nav navbar-nav navbar-right">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="install.html">Install</a></li>
+            <li><a href="configure.html">Configure</a></li>
+            <li><a href="hooks.html">Hooks</a></li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <div class="container theme-showcase" role="main">
+
+      <h1>Configuration</h1>
+      <p>
+        If you look at a <em class="hl">captainhook.json</em> configuration, it consists of a config block for each
+        hook and an optional <a href="#settings"><em>config</em></a> section to tweak some <em>CaptainHook</em> settings.
+      </p>
+
+      <pre><code class="javascript">{
+  "commit-msg": {
+    // a hook config block
+  },
+  "pre-commit": {
+    // another hook config block
+  },
+  // ...
+}</code></pre>
+
+      <h3 id="hooks">Hook Config</h3>
+      <p>
+        Each hook configuration consists of two elements, an on/off switch and a list of actions to execute.
+      </p>
+
+      <pre><code class="javascript">'commit-msg': {
+  "enabled": true,
+  "actions": []
+}</code></pre>
+
+      <p>
+        By setting <em>enabled</em> to <em>false</em>, <em>CaptainHook</em> will not execute the configured actions even if the hook is
+        triggered by git.
+      </p>
+
+      <h3 id="actions">Actions</h3>
+      <h4>CLI commands</h4>
+      <p>
+        Actions can be two things, firstly you can run any cli command, as long as it uses exit codes to notify the
+        caller about its success. If you, for example, run <em>go test</em> and a test fails, it will exit with status
+        code 1, so <em>CaptainHook</em> knows that it should stop the currently running git command with an error.
+      </p>
+
+      <pre><code class="javascript">{
+  "pre-commit": {
+    "enabled": true,
+    "actions": [
+      {
+        "run": "go test"
+      }
+    ]
+  }
+}</code></pre>
+
+      <p>
+        Using the example above in a <em>pre-commit</em> hook will prevent you from committing code that
+        breaks any unit test.
+      </p>
+
+      <h5>Placeholders</h5>
+      <p>
+        You can use placeholders in CLI actions that will get replaced by the Cap'n before execution. This way you can
+        access the original hook arguments and some other neat stuff.
+      </p>
+      <h5>Static placeholders</h5>
+      <table class="table">
+        <tr>
+          <th>Placeholder</th>
+          <th>Hook</th>
+          <th>Description</th>
+        </tr>
+        <tr>
+          <td>{$FILE}</td>
+          <td>commit-message</td>
+          <td>The path to the file containing the commit message.</td>
+        </tr>
+        <tr>
+          <td>{$FILE}</td>
+          <td style="word-break: keep-all">prepare-commit-message</td>
+          <td>The path to the file containing the commit message.</td>
+        </tr>
+        <tr>
+          <td>{$MODE}</td>
+          <td style="word-break: keep-all">prepare-commit-message</td>
+          <td>Source of the commit message e.g. file, template ...</td>
+        </tr>
+        <tr>
+          <td>{$HASH}</td>
+          <td style="word-break: keep-all">prepare-commit-message</td>
+          <td>Hash of commit e.g. if --amend is used.</td>
+        </tr>
+        <tr>
+          <td>{$TARGET}</td>
+          <td>pre-push</td>
+          <td>The push target name.</td>
+        </tr>
+        <tr>
+          <td>{$URL}</td>
+          <td>pre-push</td>
+          <td>The target url.</td>
+        </tr>
+        <tr>
+          <td>{$PREVIOUSHEAD}</td>
+          <td>post-checkout</td>
+          <td>Old version hash.</td>
+        </tr>
+        <tr>
+          <td>{$NEWHEAD}</td>
+          <td>post-checkout</td>
+          <td>New version hash (can be the same as the old head).</td>
+        </tr>
+        <tr>
+          <td>{$MODE}</td>
+          <td>post-checkout</td>
+          <td>A flag indicating whether the checkout was a branch checkout.</td>
+        </tr>
+        <tr>
+          <td>{$SQUASH}</td>
+          <td>post-merge</td>
+          <td>A flag specifying whether or not the merge being done was a squash merge.</td>
+        </tr>
+      </table>
+
+      <pre><code class="javascript">{
+  "pre-commit": {
+    "enabled": true,
+    "actions": [
+      {
+        "run": "my-linter {$STAGED_FILES|of-type:go}"
+      }
+    ]
+  }
+}</code></pre>
+
+      <h5>Dynamic placeholders</h5>
+      <p>
+        Dynamic placeholders work like this:
+        <pre>{$ PLACEHOLDER | OPTION : ARGUMENT }</pre>
+      </p>
+      <table class="table">
+        <tr>
+          <th>Placeholder</th>
+          <th>Hook</th>
+          <th>Description</th>
+        </tr>
+        <tr>
+          <td>{$CONFIG}</td>
+          <td>*</td>
+          <td>Access config values.</td>
+        </tr>
+        <tr>
+          <td colspan="3">
+            <h7>Examples:</h7>
+            <pre>
+{$CONFIG|value-of:git-directory}
+{$CONFIG|value-of:some-custom-key|default-value:YES}</pre>
+          </td>
+        </tr>
+        <tr>
+          <td>{$ENV}</td>
+          <td>*</td>
+          <td>Access environment variables</td>
+        </tr>
+        <tr>
+          <td colspan="3">
+            <h7>Examples:</h7>
+            <pre>
+{$ENV|value-of:MY_ENV_VARIABLE}
+{$ENV|value-of:MY_ENV_VARIABLE|default-value:FALSE}</pre>
+          </td>
+        </tr>
+        <tr>
+          <td>{$STAGED_FILES}</td>
+          <td>pre-commit</td>
+          <td>Gets replaced with a list of staged files</td>
+        </tr>
+        <tr>
+          <td colspan="3">
+            <h7>Examples:</h7>
+            <pre>
+{$STAGED_FILES|separated-by: }               // foo/bar/file1 file2.html foo3.html
+{$STAGED_FILES|of-type:html|separated-by:, } // file2.html, foo3.html
+{$STAGED_FILES|in-dir:foo/bar}               // foo/bar/file1</pre>
+          </td>
+        </tr>
+        <tr>
+          <td>{$CHANGED_FILES}</td>
+          <td>pre-push, post-merge, post-checkout, post-rewrite</td>
+          <td>Gets replaced with a list of changed files</td>
+        </tr>
+        <tr>
+          <td colspan="3">
+            <h7>Examples:</h7>
+            <pre>
+{$CHANGED_FILES|separated-by: }               // foo/bar/file1 file2.html foo3.html
+{$CHANGED_FILES|of-type:html|separated-by:, } // file2.html, foo3.html
+{$CHANGED_FILES|in-dir:foo/bar}               // foo/bar/file1</pre>
+          </td>
+        </tr>
+      </table>
+
+
+      <h4>Internal functionality</h4>
+      <p>
+        Secondly you can execute some <em>CaptainHook</em> functionality.
+        So let's have a look at how to configure those.
+      </p>
+
+      <pre><code class="javascript">{
+  "commit-msg": {
+    "actions": [
+      {
+        "run": "CaptainHook::Message.ContainsRegex",
+        "options": {
+          "regex": ".*"
+        }
+      }
+    ]
+  }
+}</code></pre>
+
+      <p>
+        With this configuration you can validate your commit messages against a regular expression. If your commit
+        message doesn't match your regular expression your commit fails.
+      </p>
+      <p>
+        Here's a <a href="actions.html">list of all available actions</a>.
+      </p>
+
+      <h3 id="conditions">Conditions</h3>
+      <p>
+        You can add conditions to an <em>action</em> configuration.
+        This becomes useful for example if you want to run tasks automatically but only if someone conditions apply.
+      </p>
+      <p>
+        To make sure you catch every change in your repository just use the <em>CaptainHook</em> hook <em>post-change</em> (not an official git hook)
+        which gets triggered by gits <em>post-merge</em>, <em>post-checkout</em> and <em>post-rewrite</em> hooks.
+      </p>
+      <pre><code class="javascript">{
+  "post-change": {
+    "actions": [
+      {
+        "run": "go mod -u",
+        "conditions": [
+          {
+            "run": "CaptainHook::FileChanged.Any",
+            "options": {
+              "files": ["go.mod", "go.sum"]
+            }
+          }
+        ]
+      }
+    ]
+  }
+}</code></pre>
+      <p>
+        You can add multiple conditions all conditions have to apply to execute the action.
+        For a full list of all available <em>Conditions</em> and some example configurations check
+        the <a href="conditions.html"><em>Conditions</em> Section</a>.
+      </p>
+
+      <h3 id="includes">Include other configuration files</h3>
+      <p>
+        If you have a lot of projects you maybe want to define a set of default hooks for all of them. To maintain
+        such a default configuration CaptainHook has the possibility to include other <em>CaptainHook</em> configurations like this.
+      </p>
+      <pre><code class="javascript">{
+  "config": {
+    "includes": [
+      "some-other-captainhook-config.json"
+    ]
+  },
+  "pre-commit": {
+    "actions": [
+      {
+        "run": "CaptainHook::Message.ContainsRegex",
+        "options": {
+          "regex": ".*"
+        }
+      }
+    ]
+  }
+}</code></pre>
+      <p>
+        The idea is to create a separate package e.g. <em class="hl">my-git-hooks</em> that is structured like this.
+      </p>
+      <pre><code class="javascript">my-git-hooks/
+├── msg-validation.json
+└── crazy-workflow.json</code></pre>
+      <p>
+        The only thing you have to do in your projects is to require your <em class="hl">my-git-hooks</em>
+        package and add something like this to your local project <em>captainhook.json</em> file.
+      </p>
+      <pre><code class="javascript">{
+  "config": {
+    "includes": [
+      "my-git-hooks/msg-validation.json",
+      "my-git-hooks/crazy-workflow.json"
+    ]
+  }
+}</code></pre>
+
+      <h4>Include Level</h4>
+      <p>
+        By default you can't include configurations in included configurations. But if you really want to shoot yourself in the foot, who am I to judge you.
+        You can increase the maximum levels of inclusion in your project configuration. Be aware, that setting this in any included configuration will have no effect.
+      </p>
+      <pre><code class="javascript">{
+  "config": {
+    "includes-level": 2,
+    "includes": [
+      "my-git-hooks/msg-validation.json",
+      "my-git-hooks/crazy-workflow.json"
+    ]
+  }
+}</code></pre>
+
+      <a id="settings"></a>
+      <h2>Settings</h2>
+      <p>
+       You can configure some basic CaptainHook behaviour by overwriting the defaults in your configuration file.
+        For example if your .git directory is not located on the same level as your captainhook.json, or
+        you like a more verbose output.
+      </p>
+      <pre><code class="javascript">{
+  "config": {
+    "git-directory": "../../.git",
+    "fail-on-first-error": false,
+    "verbosity": "verbose",
+    "ansi-colors": false,
+    "includes-level": 2,
+    "includes": [],
+    "run-path": "./tools/",
+    "custom": {
+      "my-custom-index": "my-custom-value"
+    }
+  }
+}</code></pre>
+
+      <table class="table">
+        <tr>
+          <th style="width:120px">Setting</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+        <tr>
+          <td>git-directory</td>
+          <td>Custom path to your repositories .git directory (relative from the configuration file)</td>
+          <td>.git</td>
+        </tr>
+        <tr>
+          <td>fail-on-first-error</td>
+          <td>Stop hook execution on first error (true) or execute all actions and collect all errors (false)</td>
+          <td>true</td>
+        </tr>
+        <tr>
+          <td>verbosity</td>
+          <td>Define the output verbosity [quiet|normal|verbose|debug]</td>
+          <td>verbose</td>
+        </tr>
+        <tr>
+          <td>ansi-colors</td>
+          <td>Enable or disable ANSI color output</td>
+          <td>true</td>
+        </tr>
+        <tr>
+          <td>includes</td>
+          <td>A list of CaptainHook configuration files to include</td>
+          <td>-</td>
+        </tr>
+        <tr>
+          <td>includes-level</td>
+          <td>Nesting level of allowed config file inclusion</td>
+          <td>0</td>
+        </tr>
+
+        <tr>
+          <td>run-path</td>
+          <td>Path to the CaptainHook executable, only necessary if the Cap'n is not in your PATH</td>
+          <td>-</td>
+        </tr>
+        <tr>
+          <td>custom</td>
+          <td>List of custom settings you need for replacements or custom actions</td>
+          <td>-</td>
+        </tr>
+      </table>
+
+      <a id="settings-overwrite"></a>
+      <h3>Overwrite settings</h3>
+      <p>
+        If you have different preferences as your team does, and you want to tweak some settings to your needs, but you
+        don't want to change the <em>captainhook.json</em> that is under version control, there is a way.
+        All you have to do is to create a <em>captainhook.config.json</em> file right beside your <em>captainhook.json</em> file.
+      </p>
+      <p>
+        <strong>ATTENTION:</strong> The file must be named <em>captainhook.config.json</em> and it must be located in the same directory
+        as your <em>captainhook.json</em> configuration file.
+      </p>
+      <p>
+        In this file you can overwrite all settings to your personal needs. Here's an example <em>captainhook.config.json</em> file.
+      </p>
+      <pre><code class="javascript">{
+  "verbosity": "quiet",
+  "ansi-colors": false,
+  "fail-on-first-error": false,
+  "custom": {
+    "some-key": "some value"
+  }
+}</code></pre>
+      <p>
+        <strong>ATTENTION:</strong> Remember to exclude the file from version control ;)
+      </p>
+
+    </div>
+
+    <footer class="footer">
+      <div class="container">
+        <p>
+          Found a typo or a bug?
+          Please open an <a href="https://github.com/captainhook-go/captainhook/issues">issue</a>
+          or pull request for the <em>gh-pages</em>
+          branch of <a href="https://github.com/captainhook-go/captainhook/tree/gh-pages">CaptainHook</a>
+        </p>
+        <p>
+          &copy; <a href="https://github.com/sebastianfeldmann">Sebastian Feldmann</a>
+        </p>
+      </div>
+    </footer>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/highlight.pack.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+  </body>
+</html>

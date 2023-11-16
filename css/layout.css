@@ -1,0 +1,147 @@
+body {
+  padding-top: 70px;
+  padding-bottom: 30px;
+}
+
+/* Everything but the jumbotron gets side spacing for mobile first views */
+.header,
+.marketing,
+.footer {
+  padding-right: 15px;
+  padding-left: 15px;
+}
+
+/* Custom page header */
+.header {
+  padding-bottom: 20px;
+  border-bottom: 1px solid #e5e5e5;
+}
+/* Make the masthead heading the same height as the navigation */
+.header h3 {
+  margin-top: 0;
+  margin-bottom: 0;
+  line-height: 40px;
+}
+
+h4 { font-size: 20px; }
+h5 { font-size: 18px; }
+
+/* Custom page footer */
+.footer {
+  margin-top: 20px;
+  padding-top: 19px;
+  color: #777;
+  border-top: 1px solid #e5e5e5;
+}
+.footer p {
+  text-align: center;
+}
+
+/* Customize container */
+@media (min-width: 818px) {
+  .container {
+    max-width: 780px;
+  }
+}
+.container-narrow > hr {
+  margin: 30px 0;
+}
+
+/* Main marketing message and sign up button */
+.jumbotron {
+  text-align: center;
+  border-bottom: 1px solid #e5e5e5;
+}
+.jumbotron .btn {
+  padding: 14px 24px;
+  font-size: 21px;
+}
+
+/* Supporting marketing content */
+.marketing {
+  margin: 40px 0;
+}
+.marketing p + h4 {
+  margin-top: 28px;
+}
+
+code {
+  overflow: hidden;
+  white-space: pre;
+}
+
+em.hl {
+  background-color: #bbddfe;
+  display: inline-block;
+  padding: 0 2px;
+  margin-bottom: 2px;
+  border-radius: 3px;
+}
+
+.table .tool {
+  width: 150px;
+  padding-left: 30px;
+}
+.table .tool.ch {
+  background: transparent url("../gfx/ch.png") no-repeat left center;
+  background-size: auto 25px;
+}
+.table .tool.grumphp {
+  background: transparent url("../gfx/grumphp.png") no-repeat left center;
+  background-size: auto 25px;
+}
+.table .tool.whiskey {
+  background: transparent url("../gfx/whiskey.png") no-repeat left center;
+  background-size: auto 22px;
+}
+.table.compare th {
+  border-top: 0;
+}
+.table.compare td {
+  vertical-align: middle;
+}
+
+.yes {
+  display: block;
+  width: 30px;
+  height: 30px;
+  margin: 0 auto;
+  background: transparent url("../gfx/ok.svg") no-repeat;
+  background-size: contain;
+}
+
+.no {
+  display: block;
+  width: 30px;
+  height: 30px;
+  margin: 0 auto;
+  background: transparent url("../gfx/no.svg") no-repeat;
+  background-size: contain;
+}
+
+.pirate {
+  background: #ebebeb url("../gfx/ch.png") no-repeat right center;
+  background-size: auto 90%;
+  border-radius: 5px;
+  padding: 15px 100px 15px 15px;
+  font-style: italic !important;
+}
+
+/* Responsive: Portrait tablets and up */
+@media screen and (min-width: 768px) {
+  /* Remove the padding we set earlier */
+  .header,
+  .marketing,
+  .footer {
+    padding-right: 0;
+    padding-left: 0;
+  }
+  /* Space out the masthead */
+  .header {
+    margin-bottom: 30px;
+  }
+  /* Remove the bottom border on the jumbotron for visual effect */
+  .jumbotron {
+    border-bottom: 0;
+  }
+}

@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>CaptainHook Documentation</title>
+
+    <link rel="icon" type="image/png" href="gfx/favicon.png">
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/layout.css" rel="stylesheet">
+    <link href="css/darcula.css" rel="stylesheet">
+
+    <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+    <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="https://github.com/captainhook-go/captainhook">CaptainHook</a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+          <ul class="nav navbar-nav navbar-right">
+            <li><a href="index.html">Home</a></li>
+            <li class="active"><a href="install.html">Install</a></li>
+            <li><a href="configure.html">Configure</a></li>
+            <li><a href="hooks.html">Hooks</a></li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <div class="container theme-showcase" role="main">
+
+      <a id="installation"></a>
+      <h1>Installation</h1>
+      <h4>Download the binary</h4>
+      <p>
+        The easiest way to install <em>CaptainHook</em> is by downloading the binary for your platform manually
+        from the <em>CaptainHook</em> <a href="https://github.com/captainHook-go/captainhook/releases/latest">release page</a>.
+      </p>
+      <h4>Install using Homebrew</h4>
+      <p>
+        Installing <em>CaptainHook</em> via Homebrew is also supported.
+        First you have to tap the Captains Formula then you can install the Captain.
+      </p>
+      <pre><code class="bash">$ brew tap captainhook-go/captainhook
+$ brew install captainhook</code></pre>
+      <h4>Install using `go install`</h4>
+      <p>
+        If you have go installed you can use it to install the Cap'n using <em>go install</em>
+      </p>
+      <pre><code class="bash">$ go install github.com/captainhook-go/captainhook/cmd/captainhook@latest</code></pre>
+      <h2>Setup</h2>
+      <p>
+        The next step is to create a configuration file, to define the actions you want to execute for
+        each git hook. You can either use a sample configuration from the documentation or create one by running
+        the following command.
+      </p>
+      <pre><code class="bash">$ captainhook init</code></pre>
+      <p>
+        After creating the configuration file, there is only one step left to finish the installation.
+        You must activate the hooks in your local git repository. To do so, just run the following command.
+      </p>
+      <pre><code class="bash">$ captainhook install</code></pre>
+      <p>
+        Executing this will create the hook script located in your <em class="hl">.git/hooks</em> directory, for each hook
+        you choose to install while running the command. So now every time git triggers a hook,
+        <em>CaptainHook</em> gets executed.
+      </p>
+      <p class="pirate">
+        AYE! Ye have successfully installed <em>CaptainHook</em> to handle yer git hooks. Want to know how to set sail?
+        Have a closer look at thee <a href="configure.html">configuration file</a> to setup yer git hooks.
+        <br>
+        Don't ye forget it is still possible to commit without invoking thee hooks. Make sure ye run
+        appropriate backend-sanity checks on yer code, so yer hearties don't break anything AYE!!!
+      </p>
+
+    </div>
+
+    <footer class="footer">
+      <div class="container">
+        <p>
+          Found a typo or a bug?
+          Please open an <a href="https://github.com/captainhook-go/captainhook/issues">issue</a>
+          or pull request for the <em>gh-pages</em>
+          branch of <a href="https://github.com/captainhook-go/captainhook/tree/gh-pages">CaptainHook</a>
+        </p>
+        <p>
+          &copy; <a href="https://github.com/sebastianfeldmann">Sebastian Feldmann</a>
+        </p>
+      </div>
+    </footer>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/highlight.pack.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+  </body>
+</html>

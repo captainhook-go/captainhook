@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>CaptainHook Documentation</title>
+
+    <link rel="icon" type="image/png" href="gfx/favicon.png">
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/layout.css" rel="stylesheet">
+    <link href="css/atom-one-dark.css" rel="stylesheet">
+
+    <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+    <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="https://github.com/captainhook-go/captainhook">CaptainHook</a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+          <ul class="nav navbar-nav navbar-right">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="install.html">Install</a></li>
+            <li class="active"><a href="configure.html">Configure</a></li>
+            <li><a href="hooks.html">Hooks</a></li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <div class="container theme-showcase" role="main">
+
+      <h1>Conditions</h1>
+
+      <p>Here's a list of all built-in conditions:</p>
+      <table class="table">
+        <tr>
+          <th colspan="2">All hooks</th>
+        </tr>
+        <tr>
+          <td><a href="#on-branch">CaptainHook::Status.OnBranch</a></td>
+          <td>Check if we are on a particular branch</td>
+        </tr>
+        <tr>
+          <td><a href="#custom-truthy">CaptainHook::Config.CustomValueIsTruthy</a></td>
+          <td>Check if a custom config is true, 1, yes or on</td>
+        </tr>
+        <tr>
+          <td><a href="#custom-falsy">CaptainHook::Config.CustomValueIsFalsy</a></td>
+          <td>Check if a custom config is false, 0, no or off</td>
+        </tr>
+        <tr>
+          <th colspan="2">pre-commit</th>
+        </tr>
+        <tr>
+          <td><a href="#file-staged-all">CaptainHook::FileStaged.All</a></td>
+          <td>Check if <strong>all</strong> of the configured files are staged for commit</td>
+        </tr>
+        <tr>
+          <td><a href="#file-staged-any">CaptainHook::FileStaged.Any</a></td>
+          <td>Check if <strong>any</strong> of the configured files is staged for commit</td>
+        </tr>
+        <tr>
+          <td><a href="#file-staged-of-type">CaptainHook::FileStaged.ThatIs</a></td>
+          <td>Check if a file of a given type, or in a given directory is staged for commit</td>
+        </tr>
+        <tr>
+          <th colspan="2">post-checkout / post-merge / post-rewrite / pre-push</th>
+        </tr>
+        <tr>
+          <td><a href="#file-changed-all">CaptainHook::FileChange.All</a></td>
+          <td>Check if <strong>all</strong> of the configured files are changed</td>
+        </tr>
+        <tr>
+          <td><a href="#file-staged-any">CaptainHook::FileChange.Any</a></td>
+          <td>Check if <strong>any</strong> of the configured files is changed</td>
+        </tr>
+        <tr>
+          <td><a href="#file-changed-oftype">CaptainHook::FileChange.ThatIs</a></td>
+          <td>Check if a file was changed that is of a given type or in a given directory</td>
+        </tr>
+      </table>
+
+      <p>
+        You can build your own conditions. Just use a simple script or binary which must return an exit code.
+        The exit code 0 means the condition applies; any exit code other than 0 means the condition does not apply.
+      </p>
+
+      <h3 id="on-branch">OnBranch</h3>
+      <p><em class="hl">all hooks</em></p>
+      <p>This <em>Condition</em> expects just one argument, the name of the branch.</p>
+      <pre><code class="javascript">{
+  "conditions": [
+    {
+      "run": "CaptainHook::Status.OnBranch",
+      "options": {
+        "branch": "master"
+      }
+    }
+  ]
+}</code></pre>
+
+      <h3 id="custom-truthy">CustomValueIsTruthy</h3>
+      <p><em class="hl">all hooks</em></p>
+      <p>This <em>Condition</em> expects just one argument, the name of the custom config value to check.</p>
+      <pre><code class="javascript">{
+  "conditions": [
+    {
+      "run": "CaptainHook::Config.CustomConfigValueIsTruthy",
+      "options": {
+        "value": "MY_CONFIG_VALUE"
+      }
+    }
+  ]
+}</code></pre>
+
+      <h3 id="custom-falsy">CustomValueIsFalsy</h3>
+      <p><em class="hl">all hooks</em></p>
+      <p>This <em>Condition</em> expects just one argument, the name of the custom config value to check.</p>
+      <pre><code class="javascript">{
+  "conditions": [
+    {
+      "run": "CaptainHook::Config.CustomConfigValueIsFalsy",
+      "options": {
+        "value": "MY_CONFIG_VALUE"
+      }
+    }
+  ]
+}</code></pre>
+
+      <h3 id="file-staged-all">FileStaged.All</h3>
+      <p><em class="hl">pre-commit</em></p>
+      <p>Expecting a list of file names or pattern.</p>
+      <pre><code class="javascript">{
+  "conditions": [
+    {
+      "run": "CaptainHook::FileStaged.All",
+      "options": {
+        "files": ["foo.html", "bar.html", "*.css"]
+      }
+    }
+  ]
+}</code></pre>
+
+      <h3 id="file-staged-any">FileStaged.Any</h3>
+      <p><em class="hl">pre-commit</em></p>
+      <p>Expecting a list of file names or pattern.</p>
+      <pre><code class="javascript">{
+  "conditions": [
+    {
+      "run": "CaptainHook::FileStaged.Any",
+      "options": {
+        "files": ["foo.html", "bar.html", "*.css"]
+      }
+    }
+  ]
+}</code></pre>
+
+      <h3 id="file-staged-of-type">FileStaged.ThatIs</h3>
+      <p><em class="hl">pre-commit</em></p>
+      <p>Expecting just the type of file you want to watch as string.</p>
+      <pre><code class="javascript">{
+  "conditions": [
+    {
+      "run": "CaptainHook::FileStaged.OfType",
+      "options": {
+        "of-type": "go",
+        "in-directory": "cmd"
+      }
+    }
+  ]
+}</code></pre>
+
+      <h3 id="file-changed-all">FileChanged.All</h3>
+      <p><em class="hl">post-checkout</em> <em class="hl">post-merge</em></p>
+      <p>Expecting a list of file names or pattern.</p>
+      <pre><code class="javascript">{
+  "conditions": [
+    {
+      "run": "CaptainHook::FileChanged.All",
+      "options": {
+        "files": ["foo.html", "bar.html", "*.php"]
+      }
+    }
+  ]
+}</code></pre>
+
+      <h3 id="file-changed-any">FileChanged.Any</h3>
+      <p><em class="hl">post-checkout</em> <em class="hl">post-merge</em></p>
+      <p>Expecting a list of file names or pattern.</p>
+      <pre><code class="javascript">{
+  "conditions": [
+    {
+      "run": "CaptainHook::FileChanged.Any‚",
+      "options": {
+        "files": ["foo.html", "bar.html", "*.css"]
+      }
+    }
+  ]
+}</code></pre>
+
+      <h3 id="file-changed-oftype">FileChanged.ThatIs</h3>
+      <p><em class="hl">pre-push</em></p>
+      <p>Expecting just the type of file you want to watch as string.</p>
+      <pre><code class="javascript">{
+  "conditions": [
+    {
+      "run": "CaptainHook::FileChange.OfType",
+      "options": {
+        "of-type": "go",
+        "in-directory": "cmd"
+      }
+    }
+  ]
+}</code></pre>
+
+    </div>
+
+    <footer class="footer">
+      <div class="container">
+        <p>
+          Found a typo or a bug?
+          Please open an <a href="https://github.com/captainhook-go/captainhook/issues">issue</a>
+          or pull request for the <em>gh-pages</em>
+          branch of <a href="https://github.com/captainhook-go/captainhook/tree/gh-pages">CaptainHook</a>
+        </p>
+        <p>
+          &copy; <a href="https://github.com/sebastianfeldmann">Sebastian Feldmann</a>
+        </p>
+      </div>
+    </footer>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/highlight.pack.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+  </body>
+</html>

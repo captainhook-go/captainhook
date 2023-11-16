@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>CaptainHook Documentation</title>
+
+  <link rel="icon" type="image/png" href="gfx/favicon.png">
+  <link href="css/bootstrap.min.css" rel="stylesheet">
+  <link href="css/layout.css" rel="stylesheet">
+  <link href="css/atom-one-dark.css" rel="stylesheet">
+
+  <!--[if lt IE 9]>
+  <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+  <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+  <![endif]-->
+</head>
+<body>
+<nav class="navbar navbar-inverse navbar-fixed-top">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="https://github.com/captainhook-go/captainhook">CaptainHook</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav navbar-right">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="install.html">Install</a></li>
+        <li class="active"><a href="configure.html">Configure</a></li>
+        <li><a href="hooks.html">Hooks</a></li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<div class="container theme-showcase" role="main">
+
+  <h1>Actions</h1>
+  <p>Here's a list of all <em>CaptainHook's</em> built-in <em>Actions</em>.</p>
+
+  <ul>
+    <li>Actions
+      <ul>
+        <li><a href="#msg-regex">Commit message Validation with regex</a></li>
+        <li><a href="#msg-rules">Commit message Validation with rules</a></li>
+        <li><a href="#msg-issue-key">Inject issue key from branch name</a></li>
+        <li><a href="#msg-file-write">Write invalid commit message to a file</a></li>
+        <li><a href="#msg-file-read">Load commit message from file</a></li>
+        <li><a href="#check-lock-file">Composer lock file checks</a></li>
+        <li><a href="#linting">PHP syntax check</a></li>
+        <li><a href="#test-coverage">Enforce PHPUnit test coverage</a></li>
+        <li><a href="#notify">Git commit message notifications</a></li>
+        <li><a href="#file-size">Check file size</a></li>
+        <li><a href="#file-empty">Prevent committing any content to files</a></li>
+        <li><a href="#file-not-empty">Prevent committing empty files</a></li>
+        <li><a href="#file-does-not-contain">Prevent committing specific content to files</a></li>
+        <li><a href="#file-exists">Ensure a files exists</a></li>
+        <li><a href="#branch-naming">Enforce branch naming</a></li>
+        <li><a href="#branch-fixup">Block pushing of squash or fixup commits</a></li>
+      </ul>
+    </li>
+  </ul>
+
+  <h2>Actions</h2>
+
+  <h3>Commit-Message validation</h3>
+
+  <h4 id="msg-beams">Enforce Chris Beams commit message rules</h4>
+  <p>
+    Make sure your commit message complies to the following rules.
+  </p>
+  <ul>
+    <li>Subject line starts with an upper-case character</li>
+    <li>Subject line doesn't exceed 50 characters</li>
+    <li>Subject line doesn't end with a period</li>
+    <li>Subject line and body are separated by a blank line</li>
+    <li>Body lines don't exceed 72 characters</li>
+    <li>Use imperative mood</li>
+  </ul>
+  <pre><code class="javascript">{
+  "run": "CaptainHook::Message.MustFollowBeamsRules"
+}</code></pre>
+
+  <h4 id="msg-regex">Commit message regex validation</h4>
+  <p>
+    Use a regex to validate your commit messages.
+  </p>
+  <pre><code class="javascript">{
+  "run": "CaptainHook::Message.ContainsRegex",
+  "options": {
+    "regex": ".*"
+  }
+}</code></pre>
+
+  <h4 id="msg-file-write">Write invalid commit message to file</h4>
+  <p>
+    Writes the invalid commit message to a file. This way it can be loaded for the next commit attempt, and
+    you don't have to type the whole message again. Instead, you can just fix the errors and proceed.
+  </p>
+  <pre><code class="javascript">{
+  "run": "CaptainHook::Message.CacheOnFail",
+  "options": {
+    "file": ".git/CH_MSG.temp"
+  }
+}</code></pre>
+
+  <h3>Commit-Message preparation</h3>
+
+  <div class="alert alert-warning">
+    Be aware that <em>prepare-commit-msg</em> hooks should support two scenarios:
+    <ol>
+      <li>
+        Commit without providing a message<br>
+        Then the editor will load with your prepared commit message to edit.
+      </li>
+      <li>
+        Commit with providing a message<br>
+        This way the commit message will be whatever you prepare. So you have to use the provided message
+        and combine it with your "preparation" otherwise you will just overwrite the message.
+      </li>
+    </ol>
+  </div>
+
+  <h4 id="msg-issue-key">Inject issue key into your commit message</h4>
+  <p>
+    Extracts an issue key from the current branch name and appends or prepends it to your commit messages
+    subject or body. If the commit message already contains the key nothing is added. If you set the <em>force</em>
+    option to <em>true</em> it will fail if no issue key can be extracted.
+  </p>
+  <pre><code class="javascript">{
+  "action": "CaptainHook::Message.InjectIssueKeyFromBranch",
+  "options": {
+    "regex": "#([A-Z]+\\-[0-9]+)#i",
+    "into": "body",
+    "mode": "append",
+    "prefix": "\n\nIssue: ",
+    "force": false
+  }
+}</code></pre>
+
+  <h4 id="msg-file-read">Load commit message from file</h4>
+  <p>
+    Load a commit message from a file for example if you wrote an invalid commit message to a file in a
+    previous commit attempt.
+  </p>
+  <pre><code class="javascript">{
+  "action": "CaptainHook::Message.PrepareFromFile",
+  "options": {
+    "file": ".git/CH_MSG.temp"
+  }
+}</code></pre>
+
+  <h3>Pre-Commit / Pre-Push</h3>
+
+  <h4 id="file-size">Check if files are too big</h4>
+  <p>
+    Make sure you do not commit files that are bigger than a configured size limit.<br>
+    Use 'B', 'K' or 'M' as size indication.
+  </p>
+  <pre><code class="javascript">{
+  "run": "CaptainHook::File.MaxSize",
+  "options": {
+    "max-size": "5M"
+  }
+}</code></pre>
+
+  <h4 id="file-not-empty">Check if a file is not empty</h4>
+  <p>
+    Make sure you do not commit empty files to the repository.
+    With this configuration you can make sure that README files are not committed without any contents.
+  </p>
+  <pre><code class="javascript">{
+  "run": "CaptainHook\::File.IsNotEmpty",
+  "options": {
+    "files": [
+      "README.md",
+      "src/Modules/**/README.md"
+    ]
+  }
+}</code></pre>
+
+  <h4 id="file-does-not-contain">Check if a file does not contain certain text</h4>
+  <p>
+    Make sure you do not commit specific contents to a list of file types.
+  </p>
+  <pre><code class="javascript">{
+  "run": "CaptainHook::File.DoesNotContainRegex",
+  "options": {
+    "regex": "os.exit"
+    "regexName": "debug output"
+    "fileExtensions": [
+      "go"
+    ]
+  }
+}</code></pre>
+
+  <h4 id="enforce-branch-naming">Enforce branch naming rules</h4>
+  <p>
+    Make sure branch names match a configured regex.
+  </p>
+  <pre><code class="javascript">{
+  "run": "CaptainHook::Branch.EnsureNaming",
+  "options": {
+    "regex": "master|integration|feature/[a-z]+-[0-9]+"
+  }
+}</code></pre>
+
+  <h4 id="branch-fixup">Block pushing of !fixup or !squash commits</h4>
+  <p>
+    Preparing !fixup or !squash commits for smooth rebasing is very handy. But you may not want to push those commits
+    to the main branch. If you don't provide any protected branches push fixup and squash commits is generally
+    prohibited.
+  </p>
+  <pre><code class="javascript">{
+  "run": "CaptainHook::Branch.BlockFixupAndSquashCommits",
+  "options": {
+    "protected-branches": ["main", "master"]
+  }
+}</code></pre>
+
+  <h3>Post-Merge, Post-Rewrite, Post-Checkout</h3>
+
+  <h4 id="notify">Display notifications if you merge or checkout commits with notifications</h4>
+  <p>
+    Trigger notifications with git commit messages. Use <em>git-notify:</em> in your commit message to display
+    notifications after merge, rebase or checkout.<br>
+    Inspired by: <a href="https://github.com/jevakallio/git-notify">git-notify from Jani Eväkallio</a>
+  <pre>
+Update dev tooling
+
+git-notify: WARNING
+Please update your dev tooling</pre>
+  </p>
+  <pre><code class="javascript">{
+  "run": "CaptainHook::Notify.GitNotify",
+  "options": {
+    "prefix": "git-notify:"
+  }
+}</code></pre>
+
+</div>
+
+  <footer class="footer">
+    <div class="container">
+      <p>
+        Found a typo or a bug?
+        Please open an <a href="https://github.com/captainhook-go/captainhook/issues">issue</a>
+        or pull request for the <em>gh-pages</em>
+        branch of <a href="https://github.com/captainhook-go/captainhook/tree/gh-pages">CaptainHook</a>
+      </p>
+      <p>
+        &copy; <a href="https://github.com/sebastianfeldmann">Sebastian Feldmann</a>
+      </p>
+    </div>
+  </footer>
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+  <script src="js/bootstrap.min.js"></script>
+  <script src="js/highlight.pack.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script>
+</body>
+</html>
