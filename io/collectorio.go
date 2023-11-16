@@ -59,15 +59,8 @@ func (c *CollectorIO) Write(message string, newline bool, verbosity int) {
 	c.messages = append(c.messages, &CollectedMessage{verbosity, message + linebreak})
 }
 
-func (c *CollectorIO) Ask(message string, defaultValue string) string {
-	value, err := askForUserInput(message)
-	if err != nil {
-		c.Write("can't read from std input", true, NORMAL)
-	}
-	if len(value) == 0 {
-		value = defaultValue
-	}
-	return value
+func (c *CollectorIO) Ask(message, defaultValue string) string {
+	return c.input.Ask(message, defaultValue)
 }
 
 func (c *CollectorIO) HasCollectedMessages() bool {

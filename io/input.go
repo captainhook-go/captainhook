@@ -2,6 +2,7 @@ package io
 
 import (
 	"bufio"
+	"fmt"
 	"os"
 )
 
@@ -9,6 +10,7 @@ type Input interface {
 	Data() []string
 	Argument(name, defaultValue string) string
 	Arguments() map[string]string
+	Ask(message, defaultValue string) string
 }
 
 type StdIn struct {
@@ -35,6 +37,25 @@ func (s *StdIn) Argument(name, defaultValue string) string {
 
 func (s *StdIn) Arguments() map[string]string {
 	return s.arguments
+}
+
+func (s *StdIn) Ask(message, defaultValue string) string {
+	value, err := s.askForUserInput(message)
+	if err != nil {
+		value = defaultValue
+	}
+	if len(value) == 0 {
+		value = defaultValue
+	}
+	return value
+}
+
+func (s *StdIn) askForUserInput(message string) (string, error) {
+	reader := bufio.NewReader(os.Stdin)
+	fmt.Print(Colorize(message))
+
+	input, _, err := reader.ReadLine()
+	return string(input), err
 }
 
 func (s *StdIn) readStdIn() []string {

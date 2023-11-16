@@ -65,12 +65,5 @@ func (d *DefaultIO) Write(message string, newline bool, verbosity int) {
 }
 
 func (d *DefaultIO) Ask(message string, defaultValue string) string {
-	value, err := askForUserInput(message)
-	if err != nil {
-		value = defaultValue
-	}
-	if len(value) == 0 {
-		value = defaultValue
-	}
-	return value
+	return d.input.Ask(message, defaultValue)
 }

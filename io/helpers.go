@@ -8,14 +8,6 @@ import (
 	"strings"
 )
 
-func askForUserInput(message string) (string, error) {
-	reader := bufio.NewReader(os.Stdin)
-	fmt.Print(Colorize(message))
-
-	input, _, err := reader.ReadLine()
-	return string(input), err
-}
-
 func AnswerToBool(answer string) bool {
 	value := strings.ToLower(answer)
 	truth := []string{"y", "yes", "ok", "true", "+", "1"}
