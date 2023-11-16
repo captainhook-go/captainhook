@@ -1,7 +1,6 @@
 package debug
 
 import (
-	"fmt"
 	"github.com/captainhook-go/captainhook/configuration"
 	"github.com/captainhook-go/captainhook/git"
 	"github.com/captainhook-go/captainhook/hooks"
@@ -18,30 +17,13 @@ import (
 //	    "foo": "bar"
 //	  }
 //	}
-type Success struct {
-	hookBundle *hooks.HookBundle
-}
-
-func (a *Success) IsApplicableFor(hook string) bool {
-	return a.hookBundle.Restriction.IsApplicableFor(hook)
-}
-
-func (a *Success) Run(action *configuration.Action) error {
-	a.hookBundle.AppIO.Write("debug action", true, io.VERBOSE)
-	a.hookBundle.AppIO.Write("<info>Hook Arguments</info>", true, io.NORMAL)
-	for name, value := range a.hookBundle.AppIO.Arguments() {
-		a.hookBundle.AppIO.Write(
-			fmt.Sprintf("  name: <comment>%s</comment> value: <comment>%s</comment>", name, value),
-			true,
-			io.NORMAL,
-		)
-	}
-	return nil
-}
+type Success struct{}
 
 func NewSuccess(appIO io.IO, conf *configuration.Configuration, repo *git.Repository) hooks.Action {
-	a := Success{
-		hookBundle: hooks.NewHookBundle(appIO, conf, repo, []string{}),
-	}
-	return &a
+	return NewDebug(
+		hooks.NewHookBundle(appIO, conf, repo, []string{}),
+		func() error {
+			return nil
+		},
+	)
 }
