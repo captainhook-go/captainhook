@@ -35,10 +35,10 @@ func (c *ThatIs) IsApplicableFor(hook string) bool {
 }
 
 func (c *ThatIs) IsTrue(condition *configuration.Condition) bool {
-	c.hookBundle.AppIO.Write("Condition: FileStaged.ThatIs", true, io.VERBOSE)
+	c.hookBundle.AppIO.Write("<comment>condition: FileStaged.ThatIs</comment>", true, io.VERBOSE)
 	stagedFiles, err := c.hookBundle.Repo.StagedFiles()
 	if err != nil {
-		c.hookBundle.AppIO.Write("Condition FileStaged.ThatIs failed: "+err.Error(), true, io.NORMAL)
+		c.hookBundle.AppIO.Write("  FileStaged.ThatIs failed: "+err.Error(), true, io.NORMAL)
 		return false
 	}
 	files := stagedFiles
@@ -57,7 +57,7 @@ func (c *ThatIs) filterByType(condition *configuration.Condition, files []string
 		return files
 	}
 
-	c.hookBundle.AppIO.Write("  filter by type: '"+ofType+"'", true, io.DEBUG)
+	c.hookBundle.AppIO.Write("  filter by type: "+ofType, true, io.DEBUG)
 	ofType = "." + ofType
 	return util.FilterByType(files, ofType)
 }
@@ -67,6 +67,7 @@ func (c *ThatIs) filterByDirectory(condition *configuration.Condition, files []s
 	if inDir == "" {
 		return files
 	}
+	c.hookBundle.AppIO.Write("  filter by directory: "+inDir, true, io.DEBUG)
 	return util.FilterByDirectory(files, inDir)
 }
 

@@ -14,7 +14,7 @@ type FileList struct {
 }
 
 func (r *FileList) Replacement(options map[string]string) string {
-	r.context.IO().Write("Placeholder: "+r.name, true, io.VERBOSE)
+	r.context.IO().Write("<comment>placeholder: "+r.name+"</comment>", true, io.VERBOSE)
 	r.filterByType(options)
 	r.filterByDirectory(options)
 
@@ -28,7 +28,7 @@ func (r *FileList) Replacement(options map[string]string) string {
 func (r *FileList) filterByType(options map[string]string) {
 	suffix, ok := options["of-type"]
 	if ok {
-		r.context.IO().Write("filter files by type: "+suffix, true, io.DEBUG)
+		r.context.IO().Write("  filter files by type: "+suffix+"", true, io.DEBUG)
 		r.files = util.FilterByType(r.files, "."+suffix)
 	}
 }
@@ -36,7 +36,7 @@ func (r *FileList) filterByType(options map[string]string) {
 func (r *FileList) filterByDirectory(options map[string]string) {
 	dir, ok := options["in-directory"]
 	if ok {
-		r.context.IO().Write("filter files by directory: "+dir, true, io.DEBUG)
+		r.context.IO().Write("  filter files by directory: "+dir, true, io.DEBUG)
 		r.files = util.FilterByDirectory(r.files, dir)
 	}
 }
