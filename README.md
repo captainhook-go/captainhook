@@ -56,14 +56,14 @@ Here's an example *captainhook.json* configuration file.
     "commit-msg": {
       "actions": [
         {
-          "action": "CaptainHook::Message.Beams"
+          "run": "CaptainHook::Message.MustFollowBeamsRules"
         }
       ]
     },
     "pre-commit": {
       "actions": [
         {
-          "action": "go test"
+          "run": "go test"
         }
        ]
     },
