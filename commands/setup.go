@@ -66,6 +66,6 @@ func mapArgs(names []string, args []string, cmd string) map[string]string {
 			m[name] = args[index]
 		}
 	}
-	m["command"] = cmd
+	m[info.ArgCommand] = cmd
 	return m
 }

@@ -42,7 +42,7 @@ func (a *BeamsRules) Run(action *configuration.Action) error {
 	a.hookBundle.AppIO.Write("checking beams rules", true, io.VERBOSE)
 
 	rulebook := a.setupRulebook(action)
-	commitMessageFile := a.hookBundle.AppIO.Argument("file", "")
+	commitMessageFile := a.hookBundle.AppIO.Argument(info.ArgCommitMsgFile, "")
 	if commitMessageFile == "" {
 		return errors.New("commit message file argument is missing")
 	}

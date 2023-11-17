@@ -3,6 +3,7 @@ package input
 import (
 	"github.com/captainhook-go/captainhook/git"
 	"github.com/captainhook-go/captainhook/git/types"
+	"github.com/captainhook-go/captainhook/info"
 	"github.com/captainhook-go/captainhook/io"
 	"strings"
 )
@@ -53,7 +54,7 @@ var (
 		"fallback": func(appIO io.IO) []*types.Range {
 			var ranges []*types.Range
 			r := types.NewRange(
-				types.NewRef(appIO.Argument("previousHead", "HEAD@{1}"), "", ""),
+				types.NewRef(appIO.Argument(info.ArgPreviousHead, "HEAD@{1}"), "", ""),
 				types.NewRef("HEAD", "", ""),
 			)
 			ranges = append(ranges, r)
@@ -63,7 +64,7 @@ var (
 )
 
 func DetectRanges(appIO io.IO) []*types.Range {
-	command := appIO.Argument("command", "fallback")
+	command := appIO.Argument(info.ArgCommand, "fallback")
 
 	detector, ok := detectors[command]
 	if !ok {

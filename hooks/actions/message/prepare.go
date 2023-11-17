@@ -32,7 +32,7 @@ func (a *Prepare) IsApplicableFor(hook string) bool {
 func (a *Prepare) Run(action *configuration.Action) error {
 	a.hookBundle.AppIO.Write("prepare commit message", true, io.VERBOSE)
 
-	msgFile := a.hookBundle.AppIO.Argument("file", "")
+	msgFile := a.hookBundle.AppIO.Argument(info.ArgCommitMsgFile, "")
 	msg, err := a.hookBundle.Repo.CommitMessage(msgFile)
 	if err != nil {
 		return err

@@ -35,6 +35,7 @@ var (
 			"mustfollowbeamsrules":     message.NewBeamsRules,
 			"mustcontainsregex":        message.NewContainsRegex,
 			"preparefromfile":          message.NewPrepareFromFile,
+			"prepare":                  message.NewPrepare,
 		},
 		"notify": {
 			"gitnotify": notify.NewGitNotify,

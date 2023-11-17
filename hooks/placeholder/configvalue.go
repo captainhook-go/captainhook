@@ -3,6 +3,7 @@ package placeholder
 import (
 	"github.com/captainhook-go/captainhook/configuration"
 	"github.com/captainhook-go/captainhook/hooks/app"
+	"github.com/captainhook-go/captainhook/io"
 )
 
 type ConfigValue struct {
@@ -15,10 +16,7 @@ func (r *ConfigValue) Replacement(options map[string]string) string {
 		return ""
 	}
 
-	defaultValue, okDefault := options["default-value"]
-	if !okDefault {
-		defaultValue = ""
-	}
+	defaultValue := io.MappedStringOrDefault(options, "default", "")
 
 	switch replaceWith {
 	case "git-directory":

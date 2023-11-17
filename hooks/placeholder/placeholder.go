@@ -3,13 +3,18 @@ package placeholder
 import (
 	"github.com/captainhook-go/captainhook/hooks/app"
 	"github.com/captainhook-go/captainhook/hooks/input"
+	"github.com/captainhook-go/captainhook/info"
 	"github.com/captainhook-go/captainhook/io"
 	"regexp"
+	"slices"
 	"strings"
 )
 
 var (
 	placeholders = map[string]func(aContext *app.Context) Replacer{
+		"ARG": func(aContext *app.Context) Replacer {
+			return &Args{context: aContext}
+		},
 		"CONFIG": func(aContext *app.Context) Replacer {
 			return &ConfigValue{context: aContext}
 		},
@@ -41,6 +46,19 @@ func ReplacePlaceholders(aContext *app.Context, input string) string {
 		if len(matches) == 3 {
 			name := matches[1]
 			optsAll := matches[2]
+
+			// to conveniently access arguments directly like:
+			// {$MESSAGE_FILE}
+			// we have to check for this case
+			// and inject the correct replacer syntax
+			// {$ARG|value-of:MESSAGE_FILE}
+			if optsAll == "" {
+				if isValidArg(name) {
+					optsAll = "|value-of:" + name
+					name = "ARG"
+				}
+			}
+
 			for _, opt := range strings.Split(io.SubString(optsAll, 1, 0), "|") {
 				optParts := strings.Split(opt, ":")
 				if len(optParts) == 2 {
@@ -61,6 +79,21 @@ func ReplacePlaceholders(aContext *app.Context, input string) string {
 	})
 
 	return result
+}
+
+func isValidArg(placeholder string) bool {
+	return slices.Contains(
+		info.AllHookArguments(),
+		placeholderToArg(placeholder),
+	)
+}
+
+func argToPlaceholder(arg string) string {
+	return strings.Replace(strings.ToUpper(arg), "-", "_", -1)
+}
+
+func placeholderToArg(placeholder string) string {
+	return strings.Replace(strings.ToLower(placeholder), "_", "-", -1)
 }
 
 func collectAllChangedFiles(aContext *app.Context) []string {

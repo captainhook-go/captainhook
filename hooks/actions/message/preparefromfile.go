@@ -37,7 +37,7 @@ func (a *PrepareFromFile) IsApplicableFor(hook string) bool {
 
 func (a *PrepareFromFile) Run(action *configuration.Action) error {
 	a.hookBundle.AppIO.Write("prepare from file", true, io.NORMAL)
-	gitMsgFile := a.hookBundle.AppIO.Argument("file", "")
+	gitMsgFile := a.hookBundle.AppIO.Argument(info.ArgCommitMsgFile, "")
 	msg, loadErr := a.hookBundle.Repo.CommitMessage(gitMsgFile)
 	if loadErr != nil {
 		return loadErr

@@ -18,11 +18,10 @@ func (r *FileList) Replacement(options map[string]string) string {
 	r.filterByType(options)
 	r.filterByDirectory(options)
 
-	separator, ok := options["separated-by"]
-	if !ok {
-		separator = " "
-	}
-	return strings.Join(r.files, separator)
+	return strings.Join(
+		r.files,
+		io.MappedStringOrDefault(options, "separated-by", " "),
+	)
 }
 
 func (r *FileList) filterByType(options map[string]string) {

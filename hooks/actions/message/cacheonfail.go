@@ -31,7 +31,11 @@ func (a *CacheOnFail) IsApplicableFor(hook string) bool {
 }
 
 func (a *CacheOnFail) Run(action *configuration.Action) error {
-	a.hookBundle.AppIO.Write("doing nothing just here to register events", true, io.VERBOSE)
+	a.hookBundle.AppIO.Write(
+		"doing nothing just here to register an event:"+action.Options().AsString("file", ""),
+		true,
+		io.VERBOSE,
+	)
 	return nil
 }
 
@@ -61,7 +65,7 @@ type CacheOnFailEventHandler struct {
 func (h *CacheOnFailEventHandler) Handle(event *events.HookFailed) error {
 	h.bundle.AppIO.Write("  CacheOnFail - handle failed event", true, io.VERBOSE)
 
-	msg, err := h.bundle.Repo.CommitMessage(h.bundle.AppIO.Argument("file", ""))
+	msg, err := h.bundle.Repo.CommitMessage(h.bundle.AppIO.Argument(info.ArgCommitMsgFile, ""))
 	if err != nil {
 		return err
 	}

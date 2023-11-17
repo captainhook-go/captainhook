@@ -2,6 +2,7 @@ package placeholder
 
 import (
 	"github.com/captainhook-go/captainhook/hooks/app"
+	"github.com/captainhook-go/captainhook/io"
 	"os"
 )
 
@@ -15,10 +16,7 @@ func (r *EnvVar) Replacement(options map[string]string) string {
 		return ""
 	}
 
-	defaultValue, okDefault := options["default-value"]
-	if !okDefault {
-		defaultValue = ""
-	}
+	defaultValue := io.MappedStringOrDefault(options, "default", "")
 
 	envVal := os.Getenv(envName)
 	if envVal == "" {

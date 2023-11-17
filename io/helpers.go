@@ -94,3 +94,11 @@ func ReadFile(path string) ([]byte, error) {
 	}
 	return data, nil
 }
+
+func MappedStringOrDefault(data map[string]string, index, defaultValue string) string {
+	value, inMap := data[index]
+	if !inMap {
+		return defaultValue
+	}
+	return value
+}

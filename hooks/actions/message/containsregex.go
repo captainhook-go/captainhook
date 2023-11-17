@@ -32,7 +32,7 @@ func (a *ContainsRegex) IsApplicableFor(hook string) bool {
 func (a *ContainsRegex) Run(action *configuration.Action) error {
 	a.hookBundle.AppIO.Write("checking regex", true, io.VERBOSE)
 
-	commitMessageFile := a.hookBundle.AppIO.Argument("file", "")
+	commitMessageFile := a.hookBundle.AppIO.Argument(info.ArgCommitMsgFile, "")
 	msg, err := a.hookBundle.Repo.CommitMessage(commitMessageFile)
 	if err != nil {
 		return err

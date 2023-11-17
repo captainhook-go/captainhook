@@ -43,7 +43,7 @@ func (a *InjectIssueKeyFromBranch) Run(action *configuration.Action) error {
 	branch := a.hookBundle.Repo.BranchName()
 	options := action.Options()
 	pattern := options.AsString("regex", "([A-Za-z]+\\-[0-9]+)")
-	msgFile := a.hookBundle.AppIO.Argument("file", "")
+	msgFile := a.hookBundle.AppIO.Argument(info.ArgCommitMsgFile, "")
 
 	msg, err := a.hookBundle.Repo.CommitMessage(msgFile)
 	if err != nil {

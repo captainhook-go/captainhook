@@ -33,38 +33,38 @@ func setupHookCommand() *cobra.Command {
 }
 
 func SetupHookCommitMsgCommand() *cobra.Command {
-	return setupHookSubCommand(info.CommitMsg, []string{"file"})
+	return setupHookSubCommand(info.CommitMsg)
 }
 
 func SetupHookPrepareCommitMsgCommand() *cobra.Command {
-	return setupHookSubCommand(info.PrepareCommitMsg, []string{"file", "mode", "hash"})
+	return setupHookSubCommand(info.PrepareCommitMsg)
 }
 
 func SetupHookPostCheckoutCommand() *cobra.Command {
-	return setupHookSubCommand(info.PostCheckout, []string{"previousHead", "newHead", "mode"})
+	return setupHookSubCommand(info.PostCheckout)
 }
 
 func SetupHookPostCommitCommand() *cobra.Command {
-	return setupHookSubCommand(info.PostCommit, []string{})
+	return setupHookSubCommand(info.PostCommit)
 }
 
 func SetupHookPostMergeCommand() *cobra.Command {
-	return setupHookSubCommand(info.PostMerge, []string{"squash"})
+	return setupHookSubCommand(info.PostMerge)
 }
 
 func SetupHookPostRewriteCommand() *cobra.Command {
-	return setupHookSubCommand(info.PostRewrite, []string{"gitCommand"})
+	return setupHookSubCommand(info.PostRewrite)
 }
 
 func SetupHookPreCommitCommand() *cobra.Command {
-	return setupHookSubCommand(info.PreCommit, []string{})
+	return setupHookSubCommand(info.PreCommit)
 }
 
 func SetupHookPrePushCommand() *cobra.Command {
-	return setupHookSubCommand(info.PrePush, []string{"target", "url"})
+	return setupHookSubCommand(info.PrePush)
 }
 
-func setupHookSubCommand(hook string, argMap []string) *cobra.Command {
+func setupHookSubCommand(hook string) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   hook,
 		Short: "Execute " + hook + " actions",
@@ -81,7 +81,7 @@ func setupHookSubCommand(hook string, argMap []string) *cobra.Command {
 			}
 
 			io.ColorStatus(conf.AnsiColors())
-			appIO := io.NewDefaultIO(conf.Verbosity(), mapArgs(argMap, args, hook))
+			appIO := io.NewDefaultIO(conf.Verbosity(), mapArgs(info.HookArguments(hook), args, hook))
 			runner := exec.NewHookRunner(hook, appIO, conf, repo)
 			errRun := runner.Run()
 			if errRun != nil {
