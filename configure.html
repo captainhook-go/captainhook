@@ -43,6 +43,14 @@
     <div class="container theme-showcase" role="main">
 
       <h1>Configuration</h1>
+
+      <ul class="subNav">
+        <li class="first">Looking for:</li>
+        <li><a href="actions.html">Actions</a></li>
+        <li><a href="conditions.html">Conditions</a></li>
+        <li><a href="#placeholders">Placeholders</a></li>
+        <li class="last"><a href="#settings">CaptainHook Settings</a></li>
+      </ul>
       <p>
         If you look at a <em class="hl">captainhook.json</em> configuration, it consists of a config block for each
         hook and an optional <a href="#settings"><em>config</em></a> section to tweak some <em>CaptainHook</em> settings.
@@ -97,12 +105,13 @@
         breaks any unit test.
       </p>
 
-      <h5>Placeholders</h5>
+      <h5 id="placeholders">Placeholders</h5>
       <p>
         You can use placeholders in CLI actions that will get replaced by the Cap'n before execution. This way you can
         access the original hook arguments and some other neat stuff.
+        You can either refer to them by a shorthand<em>{$ARGUMENT}</em> or the standard way <em>{$ARG|value-of:ARGUMENT}</em>.
       </p>
-      <h5>Static placeholders</h5>
+      <h5>Shorthand placeholders</h5>
       <table class="table">
         <tr>
           <th>Placeholder</th>
@@ -110,12 +119,12 @@
           <th>Description</th>
         </tr>
         <tr>
-          <td>{$FILE}</td>
+          <td>{$MESSAGE_FILE}</td>
           <td>commit-message</td>
           <td>The path to the file containing the commit message.</td>
         </tr>
         <tr>
-          <td>{$FILE}</td>
+          <td>{$MESSAGE_FILE}</td>
           <td style="word-break: keep-all">prepare-commit-message</td>
           <td>The path to the file containing the commit message.</td>
         </tr>
@@ -140,12 +149,12 @@
           <td>The target url.</td>
         </tr>
         <tr>
-          <td>{$PREVIOUSHEAD}</td>
+          <td>{$PREVIOUS_HEAD}</td>
           <td>post-checkout</td>
           <td>Old version hash.</td>
         </tr>
         <tr>
-          <td>{$NEWHEAD}</td>
+          <td>{$NEW_HEAD}</td>
           <td>post-checkout</td>
           <td>New version hash (can be the same as the old head).</td>
         </tr>
@@ -172,7 +181,7 @@
   }
 }</code></pre>
 
-      <h5>Dynamic placeholders</h5>
+      <h5>Placeholders</h5>
       <p>
         Dynamic placeholders work like this:
         <pre>{$ PLACEHOLDER | OPTION : ARGUMENT }</pre>
@@ -183,8 +192,35 @@
           <th>Hook</th>
           <th>Description</th>
         </tr>
+          <tr>
+              <td><strong>{$ARG}</strong></td>
+              <td>*</td>
+              <td>Access original hook arguments.</td>
+          </tr>
+          <tr>
+              <td colspan="3">
+                  <h7>Hooks and their arguments:</h7>
+                  <ul>
+                      <li>commit-message (MESSAGE_FILE)</li>
+                      <li>post-checkout (PREVIOUS_HEAD, NEW_HEAD, MODE)</li>
+                      <li>post-commit</li>
+                      <li>post-merge (MODE)</li>
+                      <li>pre-commit</li>
+                      <li>pre-push (TARGET, URL)</li>
+                      <li>prepare-commit-msg (MESSAGE_FILE, MODE, HASH)</li>
+                  </ul>
+              </td>
+          </tr>
+          <tr>
+              <td colspan="3">
+                  <h7>Examples:</h7>
+                  <pre>
+{$ARG|value-of:MESSAGE_FILE}
+{$ARG|value-of:PREVIOUS_HEAD|default:HEAD^}</pre>
+              </td>
+          </tr>
         <tr>
-          <td>{$CONFIG}</td>
+            <td><strong>{$CONFIG}</strong></td>
           <td>*</td>
           <td>Access config values.</td>
         </tr>
@@ -193,11 +229,11 @@
             <h7>Examples:</h7>
             <pre>
 {$CONFIG|value-of:git-directory}
-{$CONFIG|value-of:some-custom-key|default-value:YES}</pre>
+{$CONFIG|value-of:some-custom-key|default:YES}</pre>
           </td>
         </tr>
         <tr>
-          <td>{$ENV}</td>
+            <td><strong>{$ENV}</strong></td>
           <td>*</td>
           <td>Access environment variables</td>
         </tr>
@@ -206,11 +242,11 @@
             <h7>Examples:</h7>
             <pre>
 {$ENV|value-of:MY_ENV_VARIABLE}
-{$ENV|value-of:MY_ENV_VARIABLE|default-value:FALSE}</pre>
+{$ENV|value-of:MY_ENV_VARIABLE|default:FALSE}</pre>
           </td>
         </tr>
         <tr>
-          <td>{$STAGED_FILES}</td>
+            <td><strong>{$STAGED_FILES}</strong></td>
           <td>pre-commit</td>
           <td>Gets replaced with a list of staged files</td>
         </tr>
@@ -224,7 +260,7 @@
           </td>
         </tr>
         <tr>
-          <td>{$CHANGED_FILES}</td>
+            <td><strong>{$CHANGED_FILES}</strong></td>
           <td>pre-push, post-merge, post-checkout, post-rewrite</td>
           <td>Gets replaced with a list of changed files</td>
         </tr>
