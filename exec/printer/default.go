@@ -20,142 +20,60 @@ func NewDefaultPrinter(appIO io.IO) *DefaultPrinter {
 	return &p
 }
 
-func (p *DefaultPrinter) RegisterSubscribers(dispatcher *events.Dispatcher) {
-	dispatcher.RegisterHookStartedSubscribers(NewDefaultHookStartedSubscriber(p.appIO))
-	dispatcher.RegisterHookSucceededSubscribers(NewDefaultHookSucceededSubscriber(p.appIO))
-	dispatcher.RegisterHookFailedSubscribers(NewDefaultHookFailedSubscriber(p.appIO))
-	dispatcher.RegisterActionStartedSubscribers(NewDefaultActionStartedSubscriber(p.appIO))
-	dispatcher.RegisterActionSucceededSubscribers(NewDefaultActionSucceededSubscriber(p.appIO))
-	dispatcher.RegisterActionSkippedSubscribers(NewDefaultActionSkippedSubscriber(p.appIO))
-	dispatcher.RegisterActionFailedSubscribers(NewDefaultActionFailedSubscriber(p.appIO))
-}
-
-type DefaultHookStartedSubscriber struct {
-	AppIO io.IO
-}
-
-func NewDefaultHookStartedSubscriber(appIO io.IO) *DefaultHookStartedSubscriber {
-	s := DefaultHookStartedSubscriber{
-		AppIO: appIO,
-	}
-	return &s
-}
-
-func (s *DefaultHookStartedSubscriber) Handle(event *events.HookStarted) error {
-	s.AppIO.Write("<comment>"+event.Config.Name()+":</comment>", true, io.NORMAL)
+func (p *DefaultPrinter) HookStarted(event *events.HookStarted) {
+	p.appIO.Write("<comment>"+event.Config.Name()+":</comment>", true, io.NORMAL)
 	if len(event.Config.GetActions()) == 0 {
-		s.AppIO.Write(" - no actions to execute", true, io.NORMAL)
+		p.appIO.Write(" - no actions to execute", true, io.NORMAL)
 	}
-	return nil
 }
 
-type DefaultHookSucceededSubscriber struct {
-	AppIO io.IO
+func (p *DefaultPrinter) HookSucceeded(event *events.HookSucceeded) {
+	p.printActionLog(event.Log)
+	p.appIO.Write("<ok>captainhook successfully executed all actions</ok>", true, io.NORMAL)
 }
 
-func NewDefaultHookSucceededSubscriber(appIO io.IO) *DefaultHookSucceededSubscriber {
-	s := DefaultHookSucceededSubscriber{
-		AppIO: appIO,
-	}
-	return &s
+func (p *DefaultPrinter) HookFailed(event *events.HookFailed) {
+	p.printActionLog(event.Log)
+	p.appIO.Write("<warning>captainhook failed: "+event.Error.Error()+"</warning>", true, io.NORMAL)
 }
 
-func (s *DefaultHookSucceededSubscriber) Handle(event *events.HookSucceeded) error {
-	PrintActionLog(s.AppIO, event.Log)
-	s.AppIO.Write("<ok>captainhook successfully executed all actions</ok>", true, io.NORMAL)
-	return nil
+func (p *DefaultPrinter) ActionSuccess(event *events.ActionSucceeded) {
+	p.printActionIntro(event.Config.Label())
+	p.appIO.Write("<ok>done</ok>", true, io.NORMAL)
 }
 
-type DefaultHookFailedSubscriber struct {
-	AppIO io.IO
+func (p *DefaultPrinter) ActionSkipped(event *events.ActionSkipped) {
+	p.printActionIntro(event.Config.Label())
+	p.appIO.Write("<comment>skipped</comment>", true, io.NORMAL)
 }
 
-func NewDefaultHookFailedSubscriber(appIO io.IO) *DefaultHookFailedSubscriber {
-	s := DefaultHookFailedSubscriber{
-		AppIO: appIO,
-	}
-	return &s
+func (p *DefaultPrinter) ActionFailed(event *events.ActionFailed) {
+	p.printActionIntro(event.Config.Label())
+	p.appIO.Write("<warning>failed</warning>", true, io.NORMAL)
 }
 
-func (s *DefaultHookFailedSubscriber) Handle(event *events.HookFailed) error {
-	PrintActionLog(s.AppIO, event.Log)
-	s.AppIO.Write("<warning>captainhook failed: "+event.Error.Error()+"</warning>", true, io.NORMAL)
-	return nil
+func (p *DefaultPrinter) RegisterSubscribers(dispatcher *events.Dispatcher) {
+	dispatcher.RegisterHookStartedSubscribers(NewDefaultHookStartedSubscriber(p))
+	dispatcher.RegisterHookSucceededSubscribers(NewDefaultHookSucceededSubscriber(p))
+	dispatcher.RegisterHookFailedSubscribers(NewDefaultHookFailedSubscriber(p))
+	dispatcher.RegisterActionSucceededSubscribers(NewDefaultActionSucceededSubscriber(p))
+	dispatcher.RegisterActionSkippedSubscribers(NewDefaultActionSkippedSubscriber(p))
+	dispatcher.RegisterActionFailedSubscribers(NewDefaultActionFailedSubscriber(p))
 }
 
-type DefaultActionStartedSubscriber struct {
-	AppIO io.IO
-}
-
-func NewDefaultActionStartedSubscriber(appIO io.IO) events.ActionStartedSubscriber {
-	s := DefaultActionStartedSubscriber{
-		AppIO: appIO,
-	}
-	return &s
-}
-
-func (s *DefaultActionStartedSubscriber) Handle(event *events.ActionStarted) error {
-	actionLength := len(event.Config.Label())
+func (p *DefaultPrinter) printActionIntro(label string) {
+	actionLength := len(label)
 	action := " - <info>"
 	if actionLength > 58 {
-		action = action + event.Config.Label()[0:58] + "..."
+		action = action + label[0:58] + "..."
 	} else {
-		action = action + event.Config.Label() + strings.Repeat(" ", 61-actionLength)
+		action = action + label + strings.Repeat(" ", 61-actionLength)
 	}
 	action = action + "</info> : "
-	s.AppIO.Write(action, false, io.NORMAL)
-	return nil
+	p.appIO.Write(action, false, io.NORMAL)
 }
 
-type DefaultActionSucceededSubscriber struct {
-	AppIO io.IO
-}
-
-func NewDefaultActionSucceededSubscriber(appIO io.IO) events.ActionSucceededSubscriber {
-	s := DefaultActionSucceededSubscriber{
-		AppIO: appIO,
-	}
-	return &s
-}
-
-func (s *DefaultActionSucceededSubscriber) Handle(event *events.ActionSucceeded) error {
-	s.AppIO.Write("<ok>done</ok>", true, io.NORMAL)
-	return nil
-}
-
-type DefaultActionSkippedSubscriber struct {
-	AppIO io.IO
-}
-
-func NewDefaultActionSkippedSubscriber(appIO io.IO) events.ActionSkippedSubscriber {
-	s := DefaultActionSkippedSubscriber{
-		AppIO: appIO,
-	}
-	return &s
-}
-
-func (s *DefaultActionSkippedSubscriber) Handle(event *events.ActionSkipped) error {
-	s.AppIO.Write("<comment>skipped</comment>", true, io.NORMAL)
-	return nil
-}
-
-type DefaultActionFailedSubscriber struct {
-	AppIO io.IO
-}
-
-func NewDefaultActionFailedSubscriber(appIO io.IO) events.ActionFailedSubscriber {
-	s := DefaultActionFailedSubscriber{
-		AppIO: appIO,
-	}
-	return &s
-}
-
-func (s *DefaultActionFailedSubscriber) Handle(event *events.ActionFailed) error {
-	s.AppIO.Write("<warning>failed</warning>", true, io.NORMAL)
-	return nil
-}
-
-func PrintActionLog(appIO io.IO, log *hooks.ActionLog) {
+func (p *DefaultPrinter) printActionLog(log *hooks.ActionLog) {
 	if log.HasLogs() {
 		for _, log := range log.Logs() {
 			opening := "<ok>"
@@ -168,11 +86,11 @@ func PrintActionLog(appIO io.IO, log *hooks.ActionLog) {
 				opening = "<comment>"
 				closing = "</comment>"
 			}
-			if log.CollectorIO.HasCollectedMessagesForVerbosity(appIO.Verbosity()) {
-				appIO.Write("", true, io.NORMAL)
-				appIO.Write(fmt.Sprintf("%sAction: "+log.Conf.Run()+"%s", opening, closing), true, io.NORMAL)
+			if log.CollectorIO.HasCollectedMessagesForVerbosity(p.appIO.Verbosity()) {
+				p.appIO.Write("", true, io.NORMAL)
+				p.appIO.Write(fmt.Sprintf("%sAction: "+log.Conf.Run()+"%s", opening, closing), true, io.NORMAL)
 				for _, message := range log.CollectorIO.Messages() {
-					appIO.Write(message.Message, false, message.Verbosity)
+					p.appIO.Write(message.Message, false, message.Verbosity)
 				}
 			}
 		}

@@ -1,7 +1,6 @@
 package exec
 
 import (
-	"errors"
 	"github.com/captainhook-go/captainhook/configuration"
 	"github.com/captainhook-go/captainhook/git"
 	"github.com/captainhook-go/captainhook/hooks/conditions"
@@ -52,5 +51,6 @@ func (c *ConditionRunner) runInternalCondition(hook string, condition *configura
 }
 
 func (c *ConditionRunner) runExternalCondition(hook string, condition *configuration.Condition, cIO io.IO) error {
-	return errors.New("ConditionRunner: " + condition.Run() + " failed")
+	// return errors.New("ConditionRunner: " + condition.Run() + " failed")
+	return ExecuteCommand(cIO, condition.Run())
 }

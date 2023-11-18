@@ -120,8 +120,11 @@ func (h *HookRunner) runActionsFailLate(hookConfig *configuration.Hook) error {
 }
 
 func (h *HookRunner) runAction(action *configuration.Action) error {
-	actionRunner := NewActionRunner(h.appIO, h.config, h.repo, h.eventDispatcher, h.actionLog)
+	actionRunner := NewActionRunner(h.appIO, h.config, h.repo, h.eventDispatcher)
 	result := actionRunner.Run(h.hook, action)
+
+	h.actionLog.Add(hooks.NewActionLogItem(action, result.Log, result.Status))
+
 	if result.DispatchErr != nil {
 		h.appIO.Write(fmt.Sprintf("error dispatching events: %s", result.DispatchErr.Error()), true, io.NORMAL)
 	}

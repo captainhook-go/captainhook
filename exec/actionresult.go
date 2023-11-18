@@ -1,17 +1,24 @@
 package exec
 
-const (
-	ActionSuccessful = 0
-	ActionSkipped    = 1
-	ActionFailed     = 2
+import (
+	"github.com/captainhook-go/captainhook/configuration"
+	"github.com/captainhook-go/captainhook/io"
 )
 
 type ActionResult struct {
-	State       int
+	Config      *configuration.Action
+	Status      int
 	RunErr      error
 	DispatchErr error
+	Log         *io.CollectorIO
 }
 
-func NewActionResult(state int, run, dispatch error) *ActionResult {
-	return &ActionResult{state, run, dispatch}
+func NewActionResult(config *configuration.Action, status int, run, dispatch error, log *io.CollectorIO) *ActionResult {
+	return &ActionResult{
+		Config:      config,
+		Status:      status,
+		RunErr:      run,
+		DispatchErr: dispatch,
+		Log:         log,
+	}
 }
