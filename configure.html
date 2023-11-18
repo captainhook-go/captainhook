@@ -380,7 +380,7 @@
 
       <h4>Include Level</h4>
       <p>
-        By default you can't include configurations in included configurations. But if you really want to shoot yourself in the foot, who am I to judge you.
+        By default, you can't include configurations in included configurations. But if you really want to shoot yourself in the foot, who am I to judge you.
         You can increase the maximum levels of inclusion in your project configuration. Be aware, that setting this in any included configuration will have no effect.
       </p>
       <pre><code class="javascript">{
@@ -409,6 +409,7 @@
     "includes-level": 2,
     "includes": [],
     "run-path": "./tools/",
+    "run-path": true,
     "custom": {
       "my-custom-index": "my-custom-value"
     }
@@ -457,6 +458,11 @@
           <td>Path to the CaptainHook executable, only necessary if the Cap'n is not in your PATH</td>
           <td>-</td>
         </tr>
+          <tr>
+              <td>run-async</td>
+              <td>Run actions in parallel</td>
+              <td>-</td>
+          </tr>
         <tr>
           <td>custom</td>
           <td>List of custom settings you need for replacements or custom actions</td>
