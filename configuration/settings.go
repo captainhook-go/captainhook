@@ -9,6 +9,7 @@ type AppSettings struct {
 	Includes         []string
 	IncludeLevel     int
 	RunPath          string
+	RunAsync         bool
 	Verbosity        string
 }
 
@@ -21,6 +22,7 @@ func NewDefaultAppSettings() *AppSettings {
 		GitDirectory:     ".git",
 		Includes:         []string{},
 		IncludeLevel:     0,
+		RunAsync:         false,
 		Verbosity:        "normal",
 	}
 }
@@ -48,6 +50,9 @@ func createAppSettingsFromJson(json *JsonAppSettings) *AppSettings {
 	}
 	if json.RunPath != nil {
 		s.RunPath = *json.RunPath
+	}
+	if json.RunAsync != nil {
+		s.RunAsync = *json.RunAsync
 	}
 	if json.Verbosity != nil {
 		s.Verbosity = *json.Verbosity

@@ -11,6 +11,8 @@ import (
 	"github.com/captainhook-go/captainhook/info"
 	"github.com/captainhook-go/captainhook/io"
 	"os"
+	"sync"
+	"time"
 )
 
 type HookRunner struct {
@@ -62,6 +64,7 @@ func shouldHooksBeSkipped() bool {
 
 func (h *HookRunner) runActions() error {
 	var err error
+	start := time.Now()
 	hookConfig := h.getHookConfig()
 
 	err = h.eventDispatcher.DispatchHookStartedEvent(
@@ -74,19 +77,26 @@ func (h *HookRunner) runActions() error {
 
 	if h.config.FailOnFirstError() {
 		err = h.runActionsFailFast(hookConfig)
+	} else if h.config.RunAsync() {
+		err = h.runActionsAsync(hookConfig)
 	} else {
 		err = h.runActionsFailLate(hookConfig)
 	}
+	executionTime := time.Since(start)
 
 	if err != nil {
 		_ = h.eventDispatcher.DispatchHookFailedEvent(
-			events.NewHookFailedEvent(app.NewContext(h.appIO, h.config, h.repo), hookConfig, h.actionLog, err),
+			events.NewHookFailedEvent(
+				app.NewContext(h.appIO, h.config, h.repo), hookConfig, h.actionLog, executionTime, err,
+			),
 		)
 		return err
 	}
 
 	_ = h.eventDispatcher.DispatchHookSucceededEvent(
-		events.NewHookSucceededEvent(app.NewContext(h.appIO, h.config, h.repo), hookConfig, h.actionLog),
+		events.NewHookSucceededEvent(
+			app.NewContext(h.appIO, h.config, h.repo), hookConfig, h.actionLog, executionTime,
+		),
 	)
 	return err
 }
@@ -97,6 +107,35 @@ func (h *HookRunner) runActionsFailFast(hookConfig *configuration.Hook) error {
 		if err != nil {
 			return err
 		}
+	}
+	return nil
+}
+
+func (h *HookRunner) runActionsAsync(hookConfig *configuration.Hook) error {
+	channel := make(chan *ActionResult)
+	var wg sync.WaitGroup
+	for _, action := range hookConfig.GetActions() {
+		wg.Add(1)
+		go h.runActionAsync(action, channel, &wg)
+	}
+	go func() {
+		wg.Wait()
+		close(channel)
+	}()
+
+	failed := 0
+	for result := range channel {
+		h.actionLog.Add(hooks.NewActionLogItem(result.Config, result.Log, result.Status))
+		if result.RunErr != nil {
+			failed++
+		}
+	}
+	if failed > 0 {
+		plural := ""
+		if failed > 1 {
+			plural = "s"
+		}
+		return fmt.Errorf("%d action%s failed", failed, plural)
 	}
 	return nil
 }
@@ -117,6 +156,12 @@ func (h *HookRunner) runActionsFailLate(hookConfig *configuration.Hook) error {
 		return fmt.Errorf("%d action%s failed", failed, plural)
 	}
 	return nil
+}
+
+func (h *HookRunner) runActionAsync(action *configuration.Action, channel chan *ActionResult, wg *sync.WaitGroup) {
+	actionRunner := NewActionRunner(h.appIO, h.config, h.repo, h.eventDispatcher)
+	actionRunner.RunAsync(h.hook, action, channel)
+	defer wg.Done()
 }
 
 func (h *HookRunner) runAction(action *configuration.Action) error {

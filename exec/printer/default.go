@@ -7,6 +7,7 @@ import (
 	"github.com/captainhook-go/captainhook/info"
 	"github.com/captainhook-go/captainhook/io"
 	"strings"
+	"time"
 )
 
 type DefaultPrinter struct {
@@ -29,7 +30,8 @@ func (p *DefaultPrinter) HookStarted(event *events.HookStarted) {
 
 func (p *DefaultPrinter) HookSucceeded(event *events.HookSucceeded) {
 	p.printActionLog(event.Log)
-	p.appIO.Write("<ok>captainhook successfully executed all actions</ok>", true, io.NORMAL)
+	d := event.ExecTime.Round(2 * time.Millisecond)
+	p.appIO.Write(fmt.Sprintf("<ok>captainhook successfully executed all actions in %s</ok>", d.String()), true, io.NORMAL)
 }
 
 func (p *DefaultPrinter) HookFailed(event *events.HookFailed) {
@@ -38,18 +40,15 @@ func (p *DefaultPrinter) HookFailed(event *events.HookFailed) {
 }
 
 func (p *DefaultPrinter) ActionSuccess(event *events.ActionSucceeded) {
-	p.printActionIntro(event.Config.Label())
-	p.appIO.Write("<ok>done</ok>", true, io.NORMAL)
+	p.appIO.Write(p.actionIntro(event.Config.Label())+"<ok>done</ok>", true, io.NORMAL)
 }
 
 func (p *DefaultPrinter) ActionSkipped(event *events.ActionSkipped) {
-	p.printActionIntro(event.Config.Label())
-	p.appIO.Write("<comment>skipped</comment>", true, io.NORMAL)
+	p.appIO.Write(p.actionIntro(event.Config.Label())+"<comment>skipped</comment>", true, io.NORMAL)
 }
 
 func (p *DefaultPrinter) ActionFailed(event *events.ActionFailed) {
-	p.printActionIntro(event.Config.Label())
-	p.appIO.Write("<warning>failed</warning>", true, io.NORMAL)
+	p.appIO.Write(p.actionIntro(event.Config.Label())+"<warning>failed</warning>", true, io.NORMAL)
 }
 
 func (p *DefaultPrinter) RegisterSubscribers(dispatcher *events.Dispatcher) {
@@ -61,7 +60,7 @@ func (p *DefaultPrinter) RegisterSubscribers(dispatcher *events.Dispatcher) {
 	dispatcher.RegisterActionFailedSubscribers(NewDefaultActionFailedSubscriber(p))
 }
 
-func (p *DefaultPrinter) printActionIntro(label string) {
+func (p *DefaultPrinter) actionIntro(label string) string {
 	actionLength := len(label)
 	action := " - <info>"
 	if actionLength > 58 {
@@ -69,8 +68,7 @@ func (p *DefaultPrinter) printActionIntro(label string) {
 	} else {
 		action = action + label + strings.Repeat(" ", 61-actionLength)
 	}
-	action = action + "</info> : "
-	p.appIO.Write(action, false, io.NORMAL)
+	return action + "</info> : "
 }
 
 func (p *DefaultPrinter) printActionLog(log *hooks.ActionLog) {

@@ -37,5 +37,6 @@ type JsonAppSettings struct {
 	Includes         *[]string          `json:"includes,omitempty"`
 	IncludeLevel     *int               `json:"includes-level,omitempty"`
 	RunPath          *string            `json:"run-path,omitempty"`
+	RunAsync         *bool              `json:"run-async,omitempty"`
 	Verbosity        *string            `json:"verbosity,omitempty"`
 }

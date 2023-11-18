@@ -86,6 +86,10 @@ func (c *Configuration) FailOnFirstError() bool {
 	return c.settings.FailOnFirstError
 }
 
+func (c *Configuration) RunAsync() bool {
+	return c.settings.RunAsync
+}
+
 func (c *Configuration) HookConfig(hook string) *Hook {
 	return c.hooks[hook]
 }
