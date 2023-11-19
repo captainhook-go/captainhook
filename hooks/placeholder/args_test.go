@@ -9,9 +9,9 @@ import (
 )
 
 func TestArgs(t *testing.T) {
+	argMap := map[string]string{"message-file": "bar.txt"}
 	expected := "bar.txt"
 
-	argMap := map[string]string{"message-file": "bar.txt"}
 	config, _ := configuration.NewConfiguration("foo", false, configuration.NewDefaultAppSettings())
 	repo, _ := git.NewRepository(".git")
 	ctx := app.NewContext(
