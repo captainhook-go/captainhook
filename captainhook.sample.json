@@ -60,8 +60,8 @@
                     "run": "CaptainHook::File.IsNotEmpty",
                     "options": {
                         "files": [
-                            "src/CH.php",
-                            "src/Hook/Debug.php"
+                            "some/file/that/cant/be/empty",
+                            "other/file/that/cant/be/empty"
                         ]
                     }
                 },
