@@ -49,7 +49,7 @@ func NewDefaultHookFailedSubscriber(printer *DefaultPrinter) *DefaultHookFailedS
 }
 
 func (s *DefaultHookFailedSubscriber) Handle(event *events.HookFailed) error {
-
+	s.printer.HookFailed(event)
 	return nil
 }
 
