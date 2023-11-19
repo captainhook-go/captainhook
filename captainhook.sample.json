@@ -6,6 +6,7 @@
         "git-directory": ".git",
         "includes": [],
         "run-path": "tools/captainhook",
+        "run-async": true,
         "custom": {
             "foo": "bar",
             "fiz": "baz"
@@ -15,7 +16,7 @@
         "commit-msg": {
             "actions": [
                 {
-                    "run": "CaptainHook::Message.Beams",
+                    "run": "CaptainHook::Message.MustFollowBeamsRules",
                     "options": {
                         "subject-length": 50,
                         "body-line-length": 72
@@ -24,7 +25,7 @@
                 {
                     "run": "CaptainHook::Message.ContainsRegex",
                     "options": {
-                        "regex": "#.*#"
+                        "regex": ".*"
                     }
                 },
                 {
@@ -78,7 +79,7 @@
                     "run": "echo bar"
                 },
                 {
-                    "action": "echo \"{$STAGED_FILES|of-type:ho|separated-by: }\"",
+                    "action": "echo \"{$STAGED_FILES|of-type:md|separated-by: }\"",
                     "conditions": [
                         {
                             "run": "CaptainHook::FileStaged.ThatIs",
