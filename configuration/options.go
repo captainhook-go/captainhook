@@ -10,6 +10,7 @@ type Options struct {
 	options map[string]interface{}
 }
 
+// AsBool tries to convert an option value to a bool and return it
 func (o Options) AsBool(option string, defaultValue bool) bool {
 	var value, ok = o.options[option]
 	if ok {
@@ -29,6 +30,7 @@ func (o Options) AsBool(option string, defaultValue bool) bool {
 	return defaultValue
 }
 
+// AsInt tries to convert an option value to an int and return it
 func (o Options) AsInt(option string, defaultValue int) int {
 	var value, ok = o.options[option]
 	if ok {
@@ -51,14 +53,16 @@ func (o Options) AsInt(option string, defaultValue int) int {
 	return defaultValue
 }
 
+// AsString tries to convert an option value to a string and return it
 func (o Options) AsString(option string, defaultValue string) string {
 	var value, ok = o.options[option]
 	if ok {
 		switch value := value.(type) {
 		case int:
 		case int64:
-		case float64:
 			return fmt.Sprintf("%d", value)
+		case float64:
+			return fmt.Sprintf("%f", value)
 		case string:
 			return value
 		default:
@@ -68,6 +72,7 @@ func (o Options) AsString(option string, defaultValue string) string {
 	return defaultValue
 }
 
+// AsSliceOfStrings tries to convert an option value to a slice of strings and return it
 func (o Options) AsSliceOfStrings(option string) []string {
 	var data, ok = o.options[option]
 	var strings []string
