@@ -59,7 +59,7 @@ func (r *Repository) HookExists(hook string) bool {
 }
 
 func (r *Repository) HooksDir() string {
-	return r.root + "/hooks"
+	return r.gitDir + "/hooks"
 }
 
 func (r *Repository) CommitMessage(path string) (*types.CommitMessage, error) {
