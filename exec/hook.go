@@ -41,7 +41,16 @@ func NewHookRunner(hook string, appIO io.IO, config *configuration.Configuration
 }
 
 func (h *HookRunner) Run() error {
-	if shouldHooksBeSkipped() {
+	var err error
+	err = h.eventDispatcher.DispatchHookStartedEvent(
+		events.NewHookStartedEvent(app.NewContext(h.appIO, h.config, h.repo), h.getHookConfig()),
+	)
+	if err != nil {
+		h.appIO.Write(err.Error(), true, io.NORMAL)
+		return err
+	}
+
+	if h.shouldHooksBeSkipped() {
 		return nil
 	}
 
@@ -52,10 +61,21 @@ func (h *HookRunner) Run() error {
 	return nil
 }
 
-func shouldHooksBeSkipped() bool {
+func (h *HookRunner) shouldHooksBeSkipped() bool {
 	for _, envName := range []string{"CAPTAINHOOK_SKIP_HOOKS", "CI"} {
 		skip := os.Getenv(envName)
 		if skip == "1" {
+			h.appIO.Write(" - skipped because of ENV variable "+envName+" is set to 1", true, io.NORMAL)
+			return true
+		}
+	}
+	if h.hook == info.CommitMsg {
+		msg, err := h.repo.CommitMessage(h.appIO.Argument(info.ArgCommitMsgFile, ""))
+		if err != nil {
+			return false
+		}
+		if msg.IsFixup() || msg.IsSquash() {
+			h.appIO.Write(" - no message validation for fixup & squash commits: skipping all actions", true, io.NORMAL)
 			return true
 		}
 	}
@@ -66,14 +86,6 @@ func (h *HookRunner) runActions() error {
 	var err error
 	start := time.Now()
 	hookConfig := h.getHookConfig()
-
-	err = h.eventDispatcher.DispatchHookStartedEvent(
-		events.NewHookStartedEvent(app.NewContext(h.appIO, h.config, h.repo), hookConfig),
-	)
-	if err != nil {
-		h.appIO.Write(err.Error(), true, io.NORMAL)
-		return err
-	}
 
 	if h.config.FailOnFirstError() {
 		err = h.runActionsFailFast(hookConfig)
