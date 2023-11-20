@@ -44,6 +44,7 @@ func (a *PreventPushOfFixupAndSquashCommits) Run(action *configuration.Action) e
 	refsToPush := input.DetectRanges(a.hookBundle.AppIO)
 
 	if len(refsToPush) == 0 {
+		a.hookBundle.AppIO.Write("no refs found", true, io.VERBOSE)
 		return nil
 	}
 
