@@ -36,7 +36,7 @@ func (a *PrepareFromFile) IsApplicableFor(hook string) bool {
 }
 
 func (a *PrepareFromFile) Run(action *configuration.Action) error {
-	a.hookBundle.AppIO.Write("prepare from file", true, io.NORMAL)
+	a.hookBundle.AppIO.Write("prepare from file", true, io.DEBUG)
 	gitMsgFile := a.hookBundle.AppIO.Argument(info.ArgCommitMsgFile, "")
 	msg, loadErr := a.hookBundle.Repo.CommitMessage(gitMsgFile)
 	if loadErr != nil {
@@ -50,7 +50,7 @@ func (a *PrepareFromFile) Run(action *configuration.Action) error {
 
 	content, readErr := io.ReadFile(preparedMessageFile)
 	if readErr != nil {
-		a.hookBundle.AppIO.Write("no file to read", true, io.NORMAL)
+		a.hookBundle.AppIO.Write("no file to read", true, io.DEBUG)
 		return nil
 	}
 	return a.hookBundle.Repo.PrepareCommitMessage(gitMsgFile, a.createCommitMessage(msg, string(content)))
