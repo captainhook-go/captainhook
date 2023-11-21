@@ -1,12 +1,8 @@
 package configuration
 
 import (
-	"encoding/json"
-	"errors"
-	"fmt"
 	"github.com/captainhook-go/captainhook/info"
 	"github.com/captainhook-go/captainhook/io"
-	"os"
 )
 
 type Configuration struct {
@@ -17,22 +13,10 @@ type Configuration struct {
 	hooks      map[string]*Hook
 }
 
-func NewConfiguration(path string, fileExists bool, settings *AppSettings) (*Configuration, error) {
-	var err error
-	c := Configuration{path: path, fileExists: fileExists, settings: NewDefaultAppSettings()}
-	c.path = path
-	c.fileExists = fileExists
+func NewConfiguration(path string, fileExists bool) *Configuration {
+	c := &Configuration{path: path, fileExists: fileExists, settings: NewDefaultAppSettings()}
 	c.init()
-	conf := &c
-
-	if c.fileExists {
-		err = c.load()
-		if err != nil {
-			println(err.Error())
-		}
-	}
-	c.mergeSettings(settings, false)
-	return conf, err
+	return c
 }
 
 func (c *Configuration) init() {
@@ -90,82 +74,47 @@ func (c *Configuration) RunAsync() bool {
 	return c.settings.RunAsync
 }
 
+func (c *Configuration) Includes() []string {
+	return c.settings.Includes
+}
+
+func (c *Configuration) MaxIncludeLevel() int {
+	return c.settings.IncludeLevel
+}
+
 func (c *Configuration) HookConfig(hook string) *Hook {
 	return c.hooks[hook]
 }
 
-func (c *Configuration) load() error {
-	jsonBytes, readError := c.readConfigFile()
-	if readError != nil {
-		return readError
-	}
-	configurationJson, decodeErr := c.decodeConfigJson(jsonBytes)
-	if decodeErr != nil {
-		return fmt.Errorf("unable to parse json: %s %s", c.path, decodeErr.Error())
+// overwriteSettings will overwrite every setting that is set in the jsonConfig.
+func (c *Configuration) overwriteSettings(json *JsonAppSettings) {
+	if json == nil {
+		return
 	}
 
-	c.settings = createAppSettingsFromJson(configurationJson.Settings)
-
-	if configurationJson.Hooks == nil {
-		return errors.New("no hooks config found")
+	if json.AllowFailure != nil {
+		c.settings.AllowFailure = *json.AllowFailure
 	}
-
-	for hookName, hookConfigJson := range *configurationJson.Hooks {
-		hookConfig := c.HookConfig(hookName)
-		hookConfig.isEnabled = true
-		for _, actionJson := range hookConfigJson.Actions {
-			hookConfig.AddAction(CreateActionFromJson(actionJson))
-		}
+	if json.AnsiColors != nil {
+		c.settings.AnsiColors = *json.AnsiColors
 	}
-
-	return nil
-}
-
-func (c *Configuration) readConfigFile() ([]byte, error) {
-	fileInfo, err := os.Stat(c.path)
-	if err != nil {
-		return nil, err
+	if (json.Custom) != nil {
+		c.settings.Custom = *json.Custom
 	}
-	if fileInfo.IsDir() {
-		return nil, fmt.Errorf("given configuration path is a directory: %s", c.path)
+	if json.FailOnFirstError != nil {
+		c.settings.FailOnFirstError = *json.FailOnFirstError
 	}
-	c.size = fileInfo.Size()
-
-	jsonData, readErr := os.ReadFile(c.path)
-	if readErr != nil {
-		return nil, fmt.Errorf("could not read configuration file at: %s", c.path)
+	if json.GitDirectory != nil {
+		c.settings.GitDirectory = *json.GitDirectory
 	}
-	return jsonData, nil
-}
-
-func (c *Configuration) decodeConfigJson(jsonInBytes []byte) (JsonConfiguration, error) {
-	var config JsonConfiguration
-	if !json.Valid(jsonInBytes) {
-		return config, fmt.Errorf("json configuration is invalid: %s", c.path)
+	if json.RunPath != nil {
+		c.settings.RunPath = *json.RunPath
 	}
-	marshalError := json.Unmarshal(jsonInBytes, &config)
-	if marshalError != nil {
-		return config, fmt.Errorf("could not load json to struct: %s %s", c.path, marshalError.Error())
+	if json.RunAsync != nil {
+		c.settings.RunAsync = *json.RunAsync
 	}
-	return config, nil
-}
-
-func (c *Configuration) mergeSettings(settings *AppSettings, complete bool) {
-	if complete {
-		c.settings.AllowFailure = settings.AllowFailure
-		c.settings.FailOnFirstError = settings.FailOnFirstError
-		for key, value := range settings.Custom {
-			c.settings.Custom[key] = value
-		}
-	}
-	if settings.AnsiColors == false {
-		c.settings.AnsiColors = settings.AnsiColors
-	}
-	if MapVerbosity(settings.Verbosity) > c.Verbosity() {
-		c.settings.Verbosity = settings.Verbosity
-	}
-	if len(settings.GitDirectory) > 0 {
-		c.settings.GitDirectory = settings.GitDirectory
+	if json.Verbosity != nil {
+		c.settings.Verbosity = *json.Verbosity
 	}
 }
 

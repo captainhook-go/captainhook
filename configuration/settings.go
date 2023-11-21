@@ -21,43 +21,10 @@ func NewDefaultAppSettings() *AppSettings {
 		FailOnFirstError: true,
 		GitDirectory:     ".git",
 		Includes:         []string{},
-		IncludeLevel:     0,
+		IncludeLevel:     1,
 		RunAsync:         false,
 		Verbosity:        "normal",
 	}
-}
-
-func createAppSettingsFromJson(json *JsonAppSettings) *AppSettings {
-	s := NewDefaultAppSettings()
-	if json == nil {
-		return s
-	}
-
-	if json.AllowFailure != nil {
-		s.AllowFailure = *json.AllowFailure
-	}
-	if json.AnsiColors != nil {
-		s.AnsiColors = *json.AnsiColors
-	}
-	if (json.Custom) != nil {
-		s.Custom = *json.Custom
-	}
-	if json.FailOnFirstError != nil {
-		s.FailOnFirstError = *json.FailOnFirstError
-	}
-	if json.GitDirectory != nil {
-		s.GitDirectory = *json.GitDirectory
-	}
-	if json.RunPath != nil {
-		s.RunPath = *json.RunPath
-	}
-	if json.RunAsync != nil {
-		s.RunAsync = *json.RunAsync
-	}
-	if json.Verbosity != nil {
-		s.Verbosity = *json.Verbosity
-	}
-	return s
 }
 
 type ActionSettings struct {

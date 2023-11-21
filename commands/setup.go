@@ -17,29 +17,60 @@ func repositoryAware(cmd *cobra.Command) {
 }
 
 func setUpConfig(cmd *cobra.Command) (*configuration.Configuration, error) {
-	noColor, _ := cmd.Flags().GetBool("no-color")
-	repoPath := ""
-	confPath := info.CONFIG
+	nullableSettings := &configuration.JsonAppSettings{}
 
-	repoOption, _ := cmd.Flags().GetString("repository")
-	if len(repoOption) > 0 {
-		repoPath = repoOption
-	}
+	detectColor(cmd, nullableSettings)
+	detectGitDir(cmd, nullableSettings)
+	detectVerbosity(cmd, nullableSettings)
+
+	confPath := info.CONFIG
 	confOption, _ := cmd.Flags().GetString("configuration")
 	if len(confOption) > 0 {
 		confPath = confOption
 	}
-	settings := &configuration.AppSettings{
-		AnsiColors:   !noColor,
-		GitDirectory: repoPath,
-		Verbosity:    getVerbosity(cmd),
-	}
 
-	conf, confErr := configuration.NewConfiguration(confPath, true, settings)
+	factory := configuration.NewFactory()
+	conf, confErr := factory.CreateConfig(confPath, nullableSettings)
 	if confErr != nil {
 		return nil, confErr
 	}
 	return conf, nil
+}
+
+func detectColor(cmd *cobra.Command, settings *configuration.JsonAppSettings) {
+	noColor := getNoColor(cmd)
+	if noColor {
+		falsePointer := false
+		settings.AnsiColors = &falsePointer
+	}
+}
+
+func getNoColor(cmd *cobra.Command) bool {
+	noColor, _ := cmd.Flags().GetBool("no-color")
+	return noColor
+}
+
+func detectGitDir(cmd *cobra.Command, settings *configuration.JsonAppSettings) {
+	repoOption := getGitDit(cmd)
+	if len(repoOption) > 0 {
+		settings.GitDirectory = &repoOption
+	}
+}
+
+func getGitDit(cmd *cobra.Command) string {
+	repoPath := ""
+	repoOption, _ := cmd.Flags().GetString("repository")
+	if len(repoOption) > 0 {
+		repoPath = repoOption
+	}
+	return repoPath
+}
+
+func detectVerbosity(cmd *cobra.Command, settings *configuration.JsonAppSettings) {
+	v := getVerbosity(cmd)
+	if v != "normal" {
+		settings.Verbosity = &v
+	}
 }
 
 func getVerbosity(cmd *cobra.Command) string {

@@ -17,6 +17,15 @@ func (h *Hook) Name() string {
 func (h *Hook) IsEnabled() bool {
 	return h.isEnabled
 }
+
+func (h *Hook) Enable() {
+	h.isEnabled = true
+}
+
+func (h *Hook) Disable() {
+	h.isEnabled = false
+}
+
 func (h *Hook) AddAction(action *Action) {
 	h.actions = append(h.actions, action)
 }
