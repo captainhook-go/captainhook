@@ -12,7 +12,7 @@ func TestFileListDefault(t *testing.T) {
 	files := []string{"x/foo.txt", "x/bar.md", "y/fiz.txt", "y/baz.md"}
 	expected := "x/foo.txt x/bar.md y/fiz.txt y/baz.md"
 
-	config, _ := configuration.NewConfiguration("foo", false, configuration.NewDefaultAppSettings())
+	config := configuration.NewConfiguration("foo", false)
 	repo, _ := git.NewRepository(".git")
 	ctx := app.NewContext(
 		io.NewDefaultIO(io.NORMAL, map[string]string{}),
@@ -32,7 +32,7 @@ func TestFileListInDirectory(t *testing.T) {
 	files := []string{"x/foo.txt", "x/bar.md", "y/fiz.txt", "y/baz.md"}
 	expected := "x/foo.txt x/bar.md"
 
-	config, _ := configuration.NewConfiguration("foo", false, configuration.NewDefaultAppSettings())
+	config := configuration.NewConfiguration("foo", false)
 	repo, _ := git.NewRepository(".git")
 	ctx := app.NewContext(
 		io.NewDefaultIO(io.NORMAL, map[string]string{}),
@@ -52,7 +52,7 @@ func TestFileListOfType(t *testing.T) {
 	files := []string{"x/foo.txt", "x/bar.md", "y/fiz.txt", "y/baz.md"}
 	expected := "x/foo.txt y/fiz.txt"
 
-	config, _ := configuration.NewConfiguration("foo", false, configuration.NewDefaultAppSettings())
+	config := configuration.NewConfiguration("foo", false)
 	repo, _ := git.NewRepository(".git")
 	ctx := app.NewContext(
 		io.NewDefaultIO(io.NORMAL, map[string]string{}),
@@ -72,7 +72,7 @@ func TestFileListSeparatedBy(t *testing.T) {
 	files := []string{"x/foo.txt", "x/bar.md", "y/fiz.txt", "y/baz.md"}
 	expected := "x/foo.txt"
 
-	config, _ := configuration.NewConfiguration("foo", false, configuration.NewDefaultAppSettings())
+	config := configuration.NewConfiguration("foo", false)
 	repo, _ := git.NewRepository(".git")
 	ctx := app.NewContext(
 		io.NewDefaultIO(io.NORMAL, map[string]string{}),

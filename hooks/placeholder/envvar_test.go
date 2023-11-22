@@ -14,7 +14,7 @@ func TestEnvVarFound(t *testing.T) {
 
 	os.Setenv("FOO", "BAR")
 
-	config, _ := configuration.NewConfiguration("foo", false, configuration.NewDefaultAppSettings())
+	config := configuration.NewConfiguration("foo", false)
 	repo, _ := git.NewRepository(".git")
 	ctx := app.NewContext(
 		io.NewDefaultIO(io.NORMAL, map[string]string{}),
@@ -35,7 +35,7 @@ func TestEnvVarFound(t *testing.T) {
 func TestEnvVarDefault(t *testing.T) {
 	expected := "xxx"
 
-	config, _ := configuration.NewConfiguration("foo", false, configuration.NewDefaultAppSettings())
+	config := configuration.NewConfiguration("foo", false)
 	repo, _ := git.NewRepository(".git")
 	ctx := app.NewContext(
 		io.NewDefaultIO(io.NORMAL, map[string]string{}),

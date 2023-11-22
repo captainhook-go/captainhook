@@ -12,7 +12,7 @@ func TestArgs(t *testing.T) {
 	argMap := map[string]string{"message-file": "bar.txt"}
 	expected := "bar.txt"
 
-	config, _ := configuration.NewConfiguration("foo", false, configuration.NewDefaultAppSettings())
+	config := configuration.NewConfiguration("foo", false)
 	repo, _ := git.NewRepository(".git")
 	ctx := app.NewContext(
 		io.NewDefaultIO(io.NORMAL, argMap),
