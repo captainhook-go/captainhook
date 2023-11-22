@@ -56,7 +56,7 @@ brews:
     license: "MIT"
 
     extra_install:
-      ln_s captainhook, "#{HOMEBREW_PREFIX}/bin/git-ch", :force => true
+      ln_s "captainhook", "#{HOMEBREW_PREFIX}/bin/git-ch", :force => true
 
     skip_upload: false
     dependencies:
