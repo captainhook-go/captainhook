@@ -29,7 +29,7 @@ func (a *Debug) Run(action *configuration.Action) error {
 	return a.returnFunc()
 }
 
-func NewDebug(bundle *hooks.HookBundle, rFunc func() error) hooks.Action {
+func newDebug(bundle *hooks.HookBundle, rFunc func() error) hooks.Action {
 	a := Debug{
 		hookBundle: bundle,
 		returnFunc: rFunc,

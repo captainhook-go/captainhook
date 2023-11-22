@@ -20,7 +20,7 @@ import (
 type Success struct{}
 
 func NewSuccess(appIO io.IO, conf *configuration.Configuration, repo *git.Repository) hooks.Action {
-	return NewDebug(
+	return newDebug(
 		hooks.NewHookBundle(appIO, conf, repo, []string{}),
 		func() error {
 			return nil
