@@ -7,7 +7,6 @@ import (
 	"github.com/captainhook-go/captainhook/hooks"
 	"github.com/captainhook-go/captainhook/hooks/actions"
 	"github.com/captainhook-go/captainhook/hooks/app"
-	"github.com/captainhook-go/captainhook/hooks/placeholder"
 	"github.com/captainhook-go/captainhook/info"
 	"github.com/captainhook-go/captainhook/io"
 )
@@ -65,22 +64,10 @@ func (a *ActionRunner) Run(hook string, action *configuration.Action) *ActionRes
 }
 
 func (a *ActionRunner) runAction(hook string, action *configuration.Action, cIO *io.CollectorIO) error {
-	if isInternalFunctionality(action.Run()) {
-		return a.runInternalAction(hook, action, cIO)
-	}
-	return a.runExternalAction(hook, action, cIO)
-}
-
-func (a *ActionRunner) runInternalAction(hook string, action *configuration.Action, cIO *io.CollectorIO) error {
-	path := splitInternalPath(action.Run())
-
-	actionGenerator, err := actions.ActionCreationFunc(path)
+	actionToExecute, err := a.createAction(action, cIO)
 	if err != nil {
 		return err
 	}
-
-	var actionToExecute hooks.Action
-	actionToExecute = actionGenerator(cIO, a.conf, a.repo)
 	if value, ok := interface{}(actionToExecute).(events.EventSubscriber); ok {
 		subErr := value.Subscribe(a.eventDispatcher, action)
 		if subErr != nil {
@@ -95,13 +82,24 @@ func (a *ActionRunner) runInternalAction(hook string, action *configuration.Acti
 	return actionToExecute.Run(action)
 }
 
-func (a *ActionRunner) runExternalAction(hook string, action *configuration.Action, aIO *io.CollectorIO) error {
-	commandToExecute := placeholder.ReplacePlaceholders(app.NewContext(aIO, a.conf, a.repo), action.Run())
-	// if there were placeholders replaced
-	if commandToExecute != action.Run() {
-		aIO.Write("<comment>cmd:</comment>\n"+commandToExecute, true, io.VERBOSE)
+func (a *ActionRunner) createAction(action *configuration.Action, cIO *io.CollectorIO) (hooks.Action, error) {
+	if isInternalFunctionality(action.Run()) {
+		return a.createInternalAction(action, cIO)
 	}
-	return ExecuteCommand(aIO, commandToExecute)
+	return a.createExternalAction(cIO)
+}
+
+func (a *ActionRunner) createInternalAction(action *configuration.Action, cIO *io.CollectorIO) (hooks.Action, error) {
+	path := splitInternalPath(action.Run())
+	actionGenerator, err := actions.ActionCreationFunc(path)
+	if err != nil {
+		return nil, err
+	}
+	return actionGenerator(cIO, a.conf, a.repo), nil
+}
+
+func (a *ActionRunner) createExternalAction(cIO *io.CollectorIO) (hooks.Action, error) {
+	return actions.NewExternalCommand(cIO, a.conf, a.repo), nil
 }
 
 func (a *ActionRunner) doConditionsApply(hook string, conditions []*configuration.Condition, cIO *io.CollectorIO) bool {

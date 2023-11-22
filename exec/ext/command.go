@@ -1,4 +1,4 @@
-package exec
+package ext
 
 import (
 	"github.com/captainhook-go/captainhook/io"

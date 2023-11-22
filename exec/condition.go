@@ -3,6 +3,7 @@ package exec
 import (
 	"github.com/captainhook-go/captainhook/configuration"
 	"github.com/captainhook-go/captainhook/git"
+	"github.com/captainhook-go/captainhook/hooks"
 	"github.com/captainhook-go/captainhook/hooks/conditions"
 	"github.com/captainhook-go/captainhook/io"
 )
@@ -23,34 +24,36 @@ func NewConditionRunner(cIO io.IO, conf *configuration.Configuration, repo *git.
 }
 
 func (c *ConditionRunner) Run(hook string, condition *configuration.Condition) bool {
-	if isInternalFunctionality(condition.Run()) {
-		return c.runInternalCondition(hook, condition, c.cIO)
-	}
-	err := c.runExternalCondition(hook, condition, c.cIO)
+	conditionToExecute, err := c.crateCondition(condition)
+
 	if err != nil {
 		return false
 	}
-	return true
-}
 
-func (c *ConditionRunner) runInternalCondition(hook string, condition *configuration.Condition, cIO io.IO) bool {
-	path := splitInternalPath(condition.Run())
-
-	conditionGenerator, err := conditions.ConditionCreationFunc(path)
-	if err != nil {
-		cIO.Write("ConditionRunner: "+condition.Run()+"\n"+err.Error(), true, io.NORMAL)
-		return false
-	}
-
-	conditionToExecute := conditionGenerator(cIO, c.conf, c.repo)
 	if !conditionToExecute.IsApplicableFor(hook) {
-		cIO.Write("ConditionRunner: "+condition.Run()+" nor applicable for hook "+hook, true, io.VERBOSE)
+		c.cIO.Write("ConditionRunner: "+condition.Run()+" nor applicable for hook "+hook, true, io.VERBOSE)
 		return true
 	}
 	return conditionToExecute.IsTrue(condition)
 }
 
-func (c *ConditionRunner) runExternalCondition(hook string, condition *configuration.Condition, cIO io.IO) error {
-	// return errors.New("ConditionRunner: " + condition.Run() + " failed")
-	return ExecuteCommand(cIO, condition.Run())
+func (c *ConditionRunner) crateCondition(condition *configuration.Condition) (hooks.Condition, error) {
+	if isInternalFunctionality(condition.Run()) {
+		return c.createInternalCondition(condition)
+	}
+	return c.createExternalCondition()
+}
+
+func (c *ConditionRunner) createInternalCondition(condition *configuration.Condition) (hooks.Condition, error) {
+	path := splitInternalPath(condition.Run())
+	conditionGenerator, err := conditions.ConditionCreationFunc(path)
+	if err != nil {
+		c.cIO.Write("ConditionRunner: "+condition.Run()+"\n"+err.Error(), true, io.NORMAL)
+		return nil, err
+	}
+	return conditionGenerator(c.cIO, c.conf, c.repo), nil
+}
+
+func (c *ConditionRunner) createExternalCondition() (hooks.Condition, error) {
+	return conditions.NewExternalCommand(c.cIO, c.conf, c.repo), nil
 }
