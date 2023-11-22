@@ -54,10 +54,6 @@ brews:
     commit_msg_template: "Brew formula update for {{ .ProjectName }} version {{ .Tag }}"
     description: "CaptainHook is a flexible git hooks manager that makes sharing git hooks a breeze"
     license: "MIT"
-
-    extra_install:
-      ln_s "captainhook", "#{HOMEBREW_PREFIX}/bin/git-ch", :force => true
-
     skip_upload: false
     dependencies:
       - name: git
