@@ -7,7 +7,7 @@ import (
 	"github.com/captainhook-go/captainhook/io"
 )
 
-// Success is a debug action to output args and opts
+// Success is a debug action to output args and opts not failing the hook execution
 //
 // Example configuration:
 //

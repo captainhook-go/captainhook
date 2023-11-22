@@ -8,7 +8,7 @@ import (
 	"github.com/captainhook-go/captainhook/io"
 )
 
-// Fail is a debug action to output the original hook args.
+// Fail is a debug action to output the original hook args and fail the hook execution
 //
 // Example configuration:
 //
