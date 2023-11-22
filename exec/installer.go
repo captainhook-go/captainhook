@@ -106,7 +106,7 @@ func (i *Installer) writeHookFile(hook string) error {
 		vars["HOOK_NAME"] = hook
 		vars["RUN_PATH"] = i.config.RunPath()
 		vars["INTERACTION"] = false
-		vars["VERSION"] = info.VERSION
+		vars["VERSION"] = info.Version
 		vars["CONFIGURATION"] = i.config.Path()
 
 		tpl, _ := template.New("hook").Parse(i.HookTemplate())

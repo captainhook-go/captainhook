@@ -34,8 +34,8 @@ var (
 func description() string {
 	return io.Colorize(
 		"<ok>CaptainHook</ok> " +
-			"version <comment>" + info.VERSION + "</comment> " +
-			info.RELEASE_DATE +
+			"version <comment>" + info.Version + "</comment> " +
+			info.ReleaseDate +
 			" <strong>#StandWith</strong><comment>Ukraine</comment>")
 }
 

@@ -7,7 +7,7 @@ import (
 )
 
 func configurationAware(cmd *cobra.Command) {
-	var configPath = info.CONFIG
+	var configPath = info.Config
 	cmd.Flags().StringP("configuration", "c", configPath, "path to your CaptainHook config")
 }
 
@@ -23,7 +23,7 @@ func setUpConfig(cmd *cobra.Command) (*configuration.Configuration, error) {
 	detectGitDir(cmd, nullableSettings)
 	detectVerbosity(cmd, nullableSettings)
 
-	confPath := info.CONFIG
+	confPath := info.Config
 	confOption, _ := cmd.Flags().GetString("configuration")
 	if len(confOption) > 0 {
 		confPath = confOption
