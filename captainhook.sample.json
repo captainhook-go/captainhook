@@ -27,12 +27,6 @@
                     "options": {
                         "regex": ".*"
                     }
-                },
-                {
-                    "run": "CaptainHook::Message.CacheOnFail",
-                    "options": {
-                        "file": ".git/CH_COMMIT_MESSAGE.tmp"
-                    }
                 }
             ]
         },
@@ -40,17 +34,11 @@
             "actions": [
                 {
                     "run": "CaptainHook::Branch.BlockFixupAndSquashCommits"
-                },
-                {
-                    "run": "echo foo"
                 }
             ]
         },
         "pre-commit": {
             "actions": [
-                {
-                    "run": "echo foo"
-                },
                 {
                     "run": "CaptainHook::File.DoesNotContainRegex",
                     "options": {
@@ -74,9 +62,6 @@
                     "options": {
                         "max-size": "1M"
                     }
-                },
-                {
-                    "run": "echo bar"
                 },
                 {
                     "action": "echo \"{$STAGED_FILES|of-type:md|separated-by: }\"",
