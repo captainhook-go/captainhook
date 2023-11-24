@@ -87,7 +87,7 @@ func (i *Initializer) pathToGit(absoluteGit string) (string, error) {
 func (i *Initializer) createJsonHookConfigs() *map[string]*configuration.JsonHook {
 	configs := map[string]*configuration.JsonHook{}
 
-	for _, hook := range info.GetValidHooks() {
+	for _, hook := range []string{info.CommitMsg, info.PreCommit, info.PrePush} {
 		configs[hook] = &configuration.JsonHook{
 			Actions: make([]*configuration.JsonAction, 0),
 		}
