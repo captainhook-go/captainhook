@@ -8,6 +8,8 @@ import (
 	"github.com/captainhook-go/captainhook/io"
 )
 
+// ConditionRunner executes conditions
+// If the execution is successful the condition is considered true.
 type ConditionRunner struct {
 	cIO  io.IO
 	conf *configuration.Configuration
@@ -23,6 +25,7 @@ func NewConditionRunner(cIO io.IO, conf *configuration.Configuration, repo *git.
 	return &c
 }
 
+// Run executes the ConditionRunner
 func (c *ConditionRunner) Run(hook string, condition *configuration.Condition) bool {
 	conditionToExecute, err := c.crateCondition(condition)
 
@@ -37,6 +40,8 @@ func (c *ConditionRunner) Run(hook string, condition *configuration.Condition) b
 	return conditionToExecute.IsTrue(condition)
 }
 
+// createCondition creates the condition to execute
+// It either creates an internally available condition or an `external` one that just executes a command
 func (c *ConditionRunner) crateCondition(condition *configuration.Condition) (hooks.Condition, error) {
 	if isInternalFunctionality(condition.Run()) {
 		return c.createInternalCondition(condition)
@@ -44,6 +49,7 @@ func (c *ConditionRunner) crateCondition(condition *configuration.Condition) (ho
 	return c.createExternalCondition()
 }
 
+// createInternalCondition creates one of CaptainHooks own conditions
 func (c *ConditionRunner) createInternalCondition(condition *configuration.Condition) (hooks.Condition, error) {
 	path := splitInternalPath(condition.Run())
 	conditionGenerator, err := conditions.ConditionCreationFunc(path)
@@ -54,6 +60,7 @@ func (c *ConditionRunner) createInternalCondition(condition *configuration.Condi
 	return conditionGenerator(c.cIO, c.conf, c.repo), nil
 }
 
+// createExternalCondition creates a condition that runs the configured command
 func (c *ConditionRunner) createExternalCondition() (hooks.Condition, error) {
 	return conditions.NewExternalCommand(c.cIO, c.conf, c.repo), nil
 }

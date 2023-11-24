@@ -13,6 +13,8 @@ import (
 	"strings"
 )
 
+// Initializer creates an empty CaptainHook configuration file
+// Is used to set up a empty dummy configuration
 type Initializer struct {
 	appIO  io.IO
 	config string
@@ -24,14 +26,19 @@ func NewInitializer(appIO io.IO) *Initializer {
 	return &i
 }
 
+// UseConfig sets the path to the configuration file
+// By default this should be `captainhook.json` but can be changed via the --configuration option.
 func (i *Initializer) UseConfig(config string) {
 	i.config = config
 }
 
+// Force decides if the configuration file will be overwritten without asking
+// By default this is false but can be changed with the `--force` option.
 func (i *Initializer) Force(force bool) {
 	i.force = force
 }
 
+// Run executes the Initializer
 func (i *Initializer) Run() error {
 	i.appIO.Write("Initializing CaptainHook", true, io.NORMAL)
 
@@ -68,6 +75,8 @@ func (i *Initializer) Run() error {
 	return nil
 }
 
+// pathToGit determines the relative path to the `.git` directory
+// If the configuration file is not withing the git directory this throws an error
 func (i *Initializer) pathToGit(absoluteGit string) (string, error) {
 	confDir := path.Dir(i.config)
 	absoluteConf, _ := filepath.Abs(confDir)
@@ -84,6 +93,8 @@ func (i *Initializer) pathToGit(absoluteGit string) (string, error) {
 	return "./" + strings.Repeat("../", cwdDepth-repoDepth) + ".git", nil
 }
 
+// createJsonHookConfigs create a list of empty hook configurations
+// By default this just creates the 3 obvious hooks
 func (i *Initializer) createJsonHookConfigs() *map[string]*configuration.JsonHook {
 	configs := map[string]*configuration.JsonHook{}
 
@@ -96,6 +107,8 @@ func (i *Initializer) createJsonHookConfigs() *map[string]*configuration.JsonHoo
 	return &configs
 }
 
+// writeConfigFile writes the configuration file
+// If the file exists it asks the user to confirm to overwrite the existing file
 func (i *Initializer) writeConfigFile(res []byte) error {
 	doIt := true
 
@@ -113,6 +126,8 @@ func (i *Initializer) writeConfigFile(res []byte) error {
 	return nil
 }
 
+// needConfirmationToOverwrite returns true is the user has to confirm to overwrite the configuration file
+// Only true if the `--force` option is not set and the file exists
 func (i *Initializer) needConfirmationToOverwrite() bool {
 	return !i.force && io.FileExists(i.config)
 }

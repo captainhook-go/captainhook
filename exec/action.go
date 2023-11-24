@@ -11,6 +11,8 @@ import (
 	"github.com/captainhook-go/captainhook/io"
 )
 
+// ActionRunner executes an action
+// Besides executing the action the runner triggers the relevant events
 type ActionRunner struct {
 	appIO           io.IO
 	conf            *configuration.Configuration
@@ -27,10 +29,12 @@ func NewActionRunner(
 	return &ActionRunner{appIO: appIO, conf: conf, repo: repo, eventDispatcher: dispatcher}
 }
 
+// RunAsync run the action concurrently and send the result to a channel
 func (a *ActionRunner) RunAsync(hook string, action *configuration.Action, channel chan *ActionResult) {
 	channel <- a.Run(hook, action)
 }
 
+// Run executes the action and returns an ActionResult struct
 func (a *ActionRunner) Run(hook string, action *configuration.Action) *ActionResult {
 	cIO := io.NewCollectorIO(a.appIO.Verbosity(), a.appIO.Input())
 

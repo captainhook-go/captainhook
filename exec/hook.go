@@ -15,6 +15,7 @@ import (
 	"time"
 )
 
+// HookRunner executes all configured actions for the executed hook
 type HookRunner struct {
 	hook            string
 	appIO           io.IO
@@ -40,10 +41,11 @@ func NewHookRunner(hook string, appIO io.IO, config *configuration.Configuration
 	return &h
 }
 
+// Run executes the HookRunner
 func (h *HookRunner) Run() error {
 	var err error
 	err = h.eventDispatcher.DispatchHookStartedEvent(
-		events.NewHookStartedEvent(app.NewContext(h.appIO, h.config, h.repo), h.getHookConfig()),
+		events.NewHookStartedEvent(app.NewContext(h.appIO, h.config, h.repo), h.prepareHookConfig()),
 	)
 	if err != nil {
 		h.appIO.Write(err.Error(), true, io.NORMAL)
@@ -61,6 +63,9 @@ func (h *HookRunner) Run() error {
 	return nil
 }
 
+// shouldHooksBeSkipped tells if the hook execution should be skipped
+// Hook execution can be skipped by setting environment variables CI or CAPTAINHOOK_SKIP_HOOKS to 1
+// This als makes sure there is no message validation for fixup! or squash! commits
 func (h *HookRunner) shouldHooksBeSkipped() bool {
 	for _, envName := range []string{"CAPTAINHOOK_SKIP_HOOKS", "CI"} {
 		skip := os.Getenv(envName)
@@ -82,10 +87,15 @@ func (h *HookRunner) shouldHooksBeSkipped() bool {
 	return false
 }
 
+// runActions executes all configured actions
+// There are 3 ways to execute the actions
+//   - fail at first error
+//   - execute all before failing
+//   - execute all asynchronously before failing
 func (h *HookRunner) runActions() error {
 	var err error
 	start := time.Now()
-	hookConfig := h.getHookConfig()
+	hookConfig := h.prepareHookConfig()
 
 	if h.config.FailOnFirstError() {
 		err = h.runActionsFailFast(hookConfig)
@@ -188,7 +198,10 @@ func (h *HookRunner) runAction(action *configuration.Action) error {
 	return result.RunErr
 }
 
-func (h *HookRunner) getHookConfig() *configuration.Hook {
+// prepareHookConfig returns the hook configuration for the current hook
+// If the current hook triggers virtual hooks the virtual hook configuration is merged
+// into the returned hook configuration.
+func (h *HookRunner) prepareHookConfig() *configuration.Hook {
 	hookConfig := h.config.HookConfig(h.hook)
 	vHook, ok := info.VirtualHook(h.hook)
 	if ok {
@@ -201,6 +214,5 @@ func (h *HookRunner) getHookConfig() *configuration.Hook {
 			hookConfig.AddAction(action)
 		}
 	}
-
 	return hookConfig
 }
