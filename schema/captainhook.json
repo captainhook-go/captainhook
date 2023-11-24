@@ -1,0 +1,161 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "http://captainhook.info/schema/captainhook.json",
+  "title": "CaptainHook",
+  "description": "CaptainHook configuration file",
+  "type": "object",
+  "properties": {
+    "config": {
+      "description": "CaptainHook settings",
+      "type": "object",
+      "properties": {
+        "verbosity": {
+          "description": "Verbosity of the command use 'verbose' or even 'debug' or more verbose output",
+          "type": "string"
+        },
+        "fail-on-first-error": {
+          "description": "Should the execution stop on the first error, or run all action and collect the errors",
+          "type": "boolean"
+        },
+        "ansi-colors": {
+          "description": "Should colored output be used",
+          "type": "boolean"
+        },
+        "git-directory": {
+          "description": "Path to your .git directory",
+          "type": "string"
+        },
+        "includes": {
+          "description": "List of config files to include",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "custom": {
+          "description": "List of custom key value options",
+          "type": "object",
+          "additionalProperties": { "type": "string" }
+        },
+        "run-path": {
+          "description": "Path to the captainhook binary, if empty the Cap'n must be in your PATH",
+          "type": "string"
+        },
+        "run-async": {
+          "description": "Run actions concurrently or in sequence",
+          "type": "boolean"
+        }
+      }
+    },
+    "hooks": {
+      "description": "List of hook configurations",
+      "type": "object",
+      "properties": {
+        "pre-commit": {
+          "$ref": "#/$defs/hook"
+        },
+        "pre-push": {
+          "$ref": "#/$defs/hook"
+        },
+        "commit-msg": {
+          "$ref": "#/$defs/hook"
+        },
+        "prepare-commit-msg": {
+          "$ref": "#/$defs/hook"
+        },
+        "post-commit": {
+          "$ref": "#/$defs/hook"
+        },
+        "post-merge": {
+          "$ref": "#/$defs/hook"
+        },
+        "post-checkout": {
+          "$ref": "#/$defs/hook"
+        },
+        "post-rewrite": {
+          "$ref": "#/$defs/hook"
+        },
+        "post-change": {
+          "$ref": "#/$defs/hook"
+        }
+      },
+      "required": []
+    }
+  },
+  "$defs": {
+    "hook": {
+      "description": "Hook configuration for a specific git hook",
+      "type": "object",
+      "properties": {
+        "actions": {
+          "description": "List of actions to execute if the hook is triggered",
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/action"
+          }
+        }
+      },
+      "required": [ "actions" ]
+    },
+    "action": {
+      "description": "Action that will be executed",
+      "type": "object",
+      "properties": {
+        "run": {
+          "description": "The command to execute",
+          "type": "string"
+        },
+        "options": {
+          "description": "Options for the command to execute",
+          "$ref": "#/$defs/options"
+        }
+      },
+      "config": {
+        "description": "Special settings for an action",
+        "type": "object",
+        "properties": {
+          "failure-allowed": {
+            "description": "Allow this action to fail",
+            "type": "boolean"
+          },
+          "run-async": {
+            "description": "This action should be executes asynchronously",
+            "type": "boolean"
+          },
+          "working-directory": {
+            "description": "Define a special working directory for the command to execute",
+            "type": "string"
+          }
+        }
+      },
+      "required": ["run"]
+    },
+    "condition": {
+      "description": "A command that determines if the action will be executed",
+      "type": "object",
+      "properties": {
+        "run": {
+          "description": "The command to execute",
+          "type": "string"
+        },
+        "options": {
+          "description": "Options for the command to execute",
+          "$ref": "#/$defs/options"
+        }
+      },
+      "required": ["run"]
+    },
+    "options": {
+      "description": "Options for Actions or Conditions",
+      "additionalProperties": {
+        "anyOf": [
+          { "type": "string" },
+          { "type": "number" },
+          { "type": "boolean" },
+          { "type": "array" }
+        ]
+      }
+    }
+  },
+  "required": ["hooks"]
+}
