@@ -9,7 +9,7 @@ type Action struct {
 
 func CreateActionFromJson(json *JsonAction) *Action {
 	return &Action{
-		run:        *json.Run,
+		run:        json.Run,
 		settings:   createActionSettingsFromJson(json.Settings),
 		conditions: createConditionsFromJson(json.Conditions),
 		options:    createOptionsFromJson(json.Options),

@@ -10,7 +10,7 @@ type JsonHook struct {
 }
 
 type JsonAction struct {
-	Run        *string                 `json:"run,omitempty"`
+	Run        string                  `json:"run,omitempty"`
 	Conditions []*JsonCondition        `json:"conditions,omitempty"`
 	Options    *map[string]interface{} `json:"options,omitempty"`
 	Settings   *JsonActionSettings     `json:"config,omitempty"`
@@ -24,7 +24,7 @@ type JsonActionSettings struct {
 }
 
 type JsonCondition struct {
-	Run     *string                 `json:"run,omitempty"`
+	Run     string                  `json:"run,omitempty"`
 	Options *map[string]interface{} `json:"options,omitempty"`
 }
 

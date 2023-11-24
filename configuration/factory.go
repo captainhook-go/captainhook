@@ -62,6 +62,9 @@ func (f *Factory) loadFromFile(c *Configuration) error {
 		hookConfig := c.HookConfig(hookName)
 		hookConfig.isEnabled = true
 		for _, actionJson := range hookConfigJson.Actions {
+			if !f.isValidAction(actionJson) {
+				return fmt.Errorf("invalid action config in %s", hookName)
+			}
 			hookConfig.AddAction(CreateActionFromJson(actionJson))
 		}
 	}
@@ -191,6 +194,18 @@ func (f *Factory) copyActionsFromTo(from *Hook, to *Hook) {
 	for _, action := range from.GetActions() {
 		to.AddAction(action)
 	}
+}
+
+func (f *Factory) isValidAction(actionJson *JsonAction) bool {
+	if len(actionJson.Run) == 0 {
+		return false
+	}
+	for _, condition := range actionJson.Conditions {
+		if len(condition.Run) == 0 {
+			return false
+		}
+	}
+	return true
 }
 
 func NewFactory() *Factory {

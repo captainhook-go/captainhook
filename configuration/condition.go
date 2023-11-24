@@ -31,7 +31,7 @@ func createConditionFromJson(json *JsonCondition) *Condition {
 		o = createOptionsFromJson(json.Options)
 	}
 
-	c := Condition{run: *json.Run, options: o}
+	c := Condition{run: json.Run, options: o}
 
 	return &c
 }
