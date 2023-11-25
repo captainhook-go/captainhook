@@ -25,6 +25,7 @@ var (
 			"success": debug.NewSuccess,
 		},
 		"file": {
+			"blocksecrets":        file.NewBlockSecrets,
 			"doesnotcontainregex": file.NewDoesNotContainRegex,
 			"isnotempty":          file.NewIsNotEmpty,
 			"maxsize":             file.NewMaxSize,
