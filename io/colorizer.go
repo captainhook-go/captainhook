@@ -5,68 +5,92 @@ import (
 	"strings"
 )
 
-var Reset string
-var Red string
-var Green string
-var Yellow string
-var Blue string
-var Purple string
-var Cyan string
-var Gray string
-var White string
-
-func init() {
-	if runtime.GOOS == "windows" {
-		DeactivateColors()
-	} else {
-		ActivateColors()
-	}
-}
+var Color = NewColorizer()
 
 func ColorStatus(on bool) {
 	if on {
-		ActivateColors()
+		Color.activate()
 	} else {
-		DeactivateColors()
+		Color.deactivate()
 	}
 }
 
-func ActivateColors() {
-	Reset = "\033[0m"
-	Red = "\033[31m"
-	Green = "\033[32m"
-	Yellow = "\033[33m"
-	Blue = "\033[34m"
-	Purple = "\033[35m"
-	Cyan = "\033[36m"
-	Gray = "\033[37m"
-	White = "\033[97m"
-}
-
-func DeactivateColors() {
-	Reset = ""
-	Red = ""
-	Green = ""
-	Yellow = ""
-	Blue = ""
-	Purple = ""
-	Cyan = ""
-	Gray = ""
-	White = ""
-}
-
 func Colorize(text string) string {
-	text = strings.Replace(text, "<info>", Cyan, -1)
-	text = strings.Replace(text, "</info>", Reset, -1)
-	text = strings.Replace(text, "<comment>", Yellow, -1)
-	text = strings.Replace(text, "</comment>", Reset, -1)
-	text = strings.Replace(text, "<headline>", Purple, -1)
-	text = strings.Replace(text, "</headline>", Reset, -1)
-	text = strings.Replace(text, "<ok>", Green, -1)
-	text = strings.Replace(text, "</ok>", Reset, -1)
-	text = strings.Replace(text, "<warning>", Red, -1)
-	text = strings.Replace(text, "</warning>", Reset, -1)
-	text = strings.Replace(text, "<strong>", Blue, -1)
-	text = strings.Replace(text, "</strong>", Reset, -1)
+	return Color.Colorize(text)
+}
+
+// Colorizer adds ascii color to a string
+type Colorizer struct {
+	canColorize bool
+	status      bool
+	colors      map[string]string
+	tags        map[string]string
+}
+
+// Colorize only adds color to a string if the terminal supports it
+func (c *Colorizer) Colorize(text string) string {
+	if c.status && c.canColorize {
+		return c.colorizeText(text)
+	}
+	return c.removeTags(text)
+}
+
+// activate activates display of colors
+func (c *Colorizer) activate() {
+	c.status = true
+}
+
+// deactivate deactivates display of colors
+func (c *Colorizer) deactivate() {
+	c.status = false
+}
+
+// colorizeText replaces <tag> with ascii color codes
+func (c *Colorizer) colorizeText(text string) string {
+	for tag, color := range c.tags {
+		text = strings.Replace(text, "<"+tag+">", c.colors[color], -1)
+		text = strings.Replace(text, "</"+tag+">", c.colors["Reset"], -1)
+	}
 	return text
+}
+
+// removeTags removes all known tags from a string
+func (c *Colorizer) removeTags(text string) string {
+	for tag := range c.tags {
+		text = strings.Replace(text, "<"+tag+">", "", -1)
+		text = strings.Replace(text, "</"+tag+">", "", -1)
+	}
+	return text
+}
+
+// NewColorizer creates a new Colorizer and checks if the current terminal supports colors
+// Currently windows is just a hard disable
+func NewColorizer() *Colorizer {
+	isAbleToColorize := true
+	if runtime.GOOS == "windows" {
+		isAbleToColorize = false
+	}
+	return &Colorizer{
+		isAbleToColorize,
+		true,
+		map[string]string{
+			"Reset":  "\033[0m",
+			"Red":    "\033[31m",
+			"Green":  "\033[32m",
+			"Yellow": "\033[33m",
+			"Blue":   "\033[34m",
+			"Purple": "\033[35m",
+			"Cyan":   "\033[36m",
+			"Gray":   "\033[37m",
+			"White":  "\033[97m",
+		},
+		map[string]string{
+			"info":     "Cyan",
+			"comment":  "Yellow",
+			"headline": "Purple",
+			"ok":       "Green",
+			"warning":  "red",
+			"strong":   "blue",
+		},
+	}
 }
