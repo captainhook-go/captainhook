@@ -42,14 +42,14 @@ func (a *ActionRunner) Run(hook string, action *configuration.Action) *ActionRes
 		events.NewActionStartedEvent(app.NewContext(a.appIO, a.conf, a.repo), action),
 	)
 	if errDispatchStart != nil {
-		return NewActionResult(action, info.ACTION_FAILED, nil, errDispatchStart, cIO)
+		return NewActionResult(action, info.ActionFailed, nil, errDispatchStart, cIO)
 	}
 
 	if !a.doConditionsApply(hook, action.Conditions(), cIO) {
 		errDispatchSkipped := a.eventDispatcher.DispatchActionSkippedEvent(
 			events.NewActionSkippedEvent(app.NewContext(a.appIO, a.conf, a.repo), action),
 		)
-		return NewActionResult(action, info.ACTION_SKIPPED, nil, errDispatchSkipped, cIO)
+		return NewActionResult(action, info.ActionSkipped, nil, errDispatchSkipped, cIO)
 	}
 
 	errRun := a.runAction(hook, action, cIO)
@@ -59,12 +59,12 @@ func (a *ActionRunner) Run(hook string, action *configuration.Action) *ActionRes
 		errDispatchFailed := a.eventDispatcher.DispatchActionFailedEvent(
 			events.NewActionFailedEvent(app.NewContext(a.appIO, a.conf, a.repo), action, errRun),
 		)
-		return NewActionResult(action, info.ACTION_FAILED, errRun, errDispatchFailed, cIO)
+		return NewActionResult(action, info.ActionFailed, errRun, errDispatchFailed, cIO)
 	}
 	errDispatchSuccess := a.eventDispatcher.DispatchActionSucceededEvent(
 		events.NewActionSucceededEvent(app.NewContext(a.appIO, a.conf, a.repo), action),
 	)
-	return NewActionResult(action, info.ACTION_SUCCEEDED, errRun, errDispatchSuccess, cIO)
+	return NewActionResult(action, info.ActionSucceeded, errRun, errDispatchSuccess, cIO)
 }
 
 func (a *ActionRunner) runAction(hook string, action *configuration.Action, cIO *io.CollectorIO) error {

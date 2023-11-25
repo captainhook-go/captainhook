@@ -76,11 +76,11 @@ func (p *DefaultPrinter) printActionLog(log *hooks.ActionLog) {
 		for _, log := range log.Logs() {
 			opening := "<ok>"
 			closing := "</ok>"
-			if log.Status == info.ACTION_FAILED {
+			if log.Status == info.ActionFailed {
 				opening = "<warning>"
 				closing = "</warning>"
 			}
-			if log.Status == info.ACTION_SKIPPED {
+			if log.Status == info.ActionSkipped {
 				opening = "<comment>"
 				closing = "</comment>"
 			}
