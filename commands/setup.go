@@ -6,16 +6,23 @@ import (
 	"github.com/spf13/cobra"
 )
 
+// configurationAware is for all commands that need to read or write a configuration
 func configurationAware(cmd *cobra.Command) {
 	var configPath = info.Config
 	cmd.Flags().StringP("configuration", "c", configPath, "path to your CaptainHook config")
 }
 
+// repositoryAware is for all commands that need a repository to execute git commands or access the .git directory
 func repositoryAware(cmd *cobra.Command) {
 	var repoPath = ""
 	cmd.Flags().StringP("repository", "r", repoPath, "path to your git repository")
 }
 
+// setUpConfig creates a Configuration struct
+// It uses a JsonAppSettings struct because it has nullable properties.
+// This way we can figure out what settings were actually set and which were not later.
+// This is important since the command line options should supersede all other ways of
+// configuring the Cap'n.
 func setUpConfig(cmd *cobra.Command) (*configuration.Configuration, error) {
 	nullableSettings := &configuration.JsonAppSettings{}
 
@@ -37,6 +44,7 @@ func setUpConfig(cmd *cobra.Command) (*configuration.Configuration, error) {
 	return conf, nil
 }
 
+// detectColor is checking the `--no-color` option and sets the configuration accordingly
 func detectColor(cmd *cobra.Command, settings *configuration.JsonAppSettings) {
 	noColor := getNoColor(cmd)
 	if noColor {
@@ -50,6 +58,7 @@ func getNoColor(cmd *cobra.Command) bool {
 	return noColor
 }
 
+// detectGitDir is checking the `--repository` option and sets the configuration accordingly
 func detectGitDir(cmd *cobra.Command, settings *configuration.JsonAppSettings) {
 	repoOption := getGitDit(cmd)
 	if len(repoOption) > 0 {
@@ -66,6 +75,7 @@ func getGitDit(cmd *cobra.Command) string {
 	return repoPath
 }
 
+// detectVerbosity is checking the `--verbose` and `--debug` options and sets the configuration accordingly
 func detectVerbosity(cmd *cobra.Command, settings *configuration.JsonAppSettings) {
 	v := getVerbosity(cmd)
 	if v != "normal" {
@@ -90,6 +100,10 @@ func getVerbosity(cmd *cobra.Command) string {
 	return verbosity
 }
 
+// mapArgs is mapping the command arguments into a named map
+// To not require the knowledge on which position an argument came in everywhere arguments can now be accessed by name.
+// Instead of `.getArgument(0)` wen can write `.getArgument("message-file")`
+// In addition the current command gets added again under the index "command".
 func mapArgs(names []string, args []string, cmd string) map[string]string {
 	m := make(map[string]string)
 	for index, name := range names {

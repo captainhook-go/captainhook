@@ -1,5 +1,6 @@
 package info
 
+// Names of all hook arguments to map them from position to name
 const (
 	ArgCommitMsgFile = "message-file"
 	ArgGitCommand    = "git-command"
@@ -26,6 +27,7 @@ var (
 	}
 )
 
+// HookArguments returns the arguments for a given hook
 func HookArguments(hook string) []string {
 	args, ok := HookArgs[hook]
 	if !ok {
@@ -34,6 +36,8 @@ func HookArguments(hook string) []string {
 	return args
 }
 
+// AllHookArguments returns a slice of all available arguments
+// It is used to detect if a placeholder config is correct
 func AllHookArguments() []string {
 	return []string{
 		ArgCommitMsgFile,

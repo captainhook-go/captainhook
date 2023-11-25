@@ -18,7 +18,7 @@ func GetValidHooks() []string {
 	return validHooks
 }
 
-// GetNativeHooks is returning all hook native to git
+// GetNativeHooks is returning all hooks native to git
 func GetNativeHooks() []string {
 	return []string{
 		PreCommit,
@@ -39,7 +39,7 @@ func GetVirtualHooks() []string {
 	}
 }
 
-// VirtualHook returns the virtual hook a native hook triggers.
+// VirtualHook returns the virtual hook triggered by a given native hook
 // Examples:
 // - post-checkout triggers post-change
 // - post-merge triggers post-change
