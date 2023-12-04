@@ -48,20 +48,16 @@
   <p>Here's a list of all <em>CaptainHook's</em> built-in <em>Actions</em>.</p>
 
   <ul>
-    <li><a href="#msg-regex">Commit message Validation with regex</a></li>
-    <li><a href="#msg-rules">Commit message Validation with rules</a></li>
+    <li><a href="#msg-beams">Commit message validation with the Beams rules</a></li>
+    <li><a href="#msg-regex">Commit message validation with regex</a></li>
     <li><a href="#msg-issue-key">Inject issue key from branch name</a></li>
     <li><a href="#msg-file-write">Write invalid commit message to a file</a></li>
     <li><a href="#msg-file-read">Load commit message from file</a></li>
-    <li><a href="#check-lock-file">Composer lock file checks</a></li>
-    <li><a href="#linting">PHP syntax check</a></li>
-    <li><a href="#test-coverage">Enforce PHPUnit test coverage</a></li>
     <li><a href="#notify">Git commit message notifications</a></li>
+    <li><a href="#file-block-secrets">Block secrets from being committed</a></li>
     <li><a href="#file-size">Check file size</a></li>
-    <li><a href="#file-empty">Prevent committing any content to files</a></li>
     <li><a href="#file-not-empty">Prevent committing empty files</a></li>
     <li><a href="#file-does-not-contain">Prevent committing specific content to files</a></li>
-    <li><a href="#file-exists">Ensure a files exists</a></li>
     <li><a href="#branch-naming">Enforce branch naming</a></li>
     <li><a href="#branch-fixup">Block pushing of squash or fixup commits</a></li>
   </ul>
@@ -155,6 +151,20 @@
 
   <h3>Pre-Commit / Pre-Push</h3>
 
+  <h4 id="file-block-secrets">Block secrets from being committed to the repository</h4>
+  <p>
+    You can use <em>presets</em> provided by CaptainHook or define your own blocked patterns.
+    You can define an allow list of accepted secrets to allow certain secrets to be committed.
+  </p>
+  <pre><code class="javascript">{
+  "run": "CaptainHook::File.BlockSecrets",
+  "options: {
+    "presets": ["Aws", "GitHub", "Stripe", "Google"],
+    "blocked": ["pattern1", "pattern2"],
+    "allowed": ["patternA"]
+  }
+}</code></pre>
+
   <h4 id="file-size">Check if files are too big</h4>
   <p>
     Make sure you do not commit files that are bigger than a configured size limit.<br>
@@ -197,7 +207,7 @@
   }
 }</code></pre>
 
-  <h4 id="enforce-branch-naming">Enforce branch naming rules</h4>
+  <h4 id="branch-naming">Enforce branch naming rules</h4>
   <p>
     Make sure branch names match a configured regex.
   </p>
@@ -224,7 +234,7 @@
   <h3>Post-Merge, Post-Rewrite, Post-Checkout</h3>
 
   <h4 id="notify">Display notifications if you merge or checkout commits with notifications</h4>
-  <p>
+  <div>
     Trigger notifications with git commit messages. Use <em>git-notify:</em> in your commit message to display
     notifications after merge, rebase or checkout.<br>
     Inspired by: <a href="https://github.com/jevakallio/git-notify">git-notify from Jani Eväkallio</a>
@@ -233,7 +243,7 @@ Update dev tooling
 
 git-notify: WARNING
 Please update your dev tooling</pre>
-  </p>
+  </div>
   <pre><code class="javascript">{
   "run": "CaptainHook::Notify.GitNotify",
   "options": {
