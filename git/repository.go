@@ -23,29 +23,6 @@ type Repository struct {
 	gitDir string
 }
 
-func NewRepository(gitDir string) (*Repository, error) {
-	repoPath := path.Dir(gitDir)
-	if !isPathARepository(gitDir) {
-		err := fmt.Errorf("repository not found in: %s", gitDir)
-		return nil, err
-	}
-	dotGitDir := gitDir
-	if isGitSubmodule(dotGitDir) {
-		// For submodules hooks are stored in the parents .git/modules directory
-		dotGitContents, err := os.ReadFile(dotGitDir)
-		if err != nil {
-			return nil, err
-		}
-		r, _ := regexp.Compile("^gitdir:\\s*(.+)$")
-		match := r.FindAllStringSubmatch(string(dotGitContents), -1)
-		if len(match) > 0 {
-			dotGitDir = fmt.Sprintf("%s/%s", repoPath, match[1])
-		}
-	}
-	r := Repository{root: repoPath, gitDir: dotGitDir}
-	return &r, nil
-}
-
 func (r *Repository) Path() string {
 	return r.root
 }
@@ -148,8 +125,32 @@ func (r *Repository) CommitsBetween(from string, to string) []*types.Commit {
 	return commits
 }
 
+func NewRepository(gitDir string) (*Repository, error) {
+	repoPath := path.Dir(gitDir)
+	if !isPathARepository(gitDir) {
+		err := fmt.Errorf("repository not found in: %s", gitDir)
+		return nil, err
+	}
+	dotGitDir := gitDir
+	if isGitSubmodule(dotGitDir) {
+		// For submodules hooks are stored in the parents .git/modules directory
+		dotGitContents, err := os.ReadFile(dotGitDir)
+		if err != nil {
+			return nil, err
+		}
+		r, _ := regexp.Compile("^gitdir:\\s*(.+)$")
+		match := r.FindAllStringSubmatch(string(dotGitContents), -1)
+		if len(match) > 0 {
+			dotGitDir = fmt.Sprintf("%s/%s", repoPath, match[1])
+		}
+	}
+	r := Repository{root: repoPath, gitDir: dotGitDir}
+	return &r, nil
+}
+
+// isPathARepository tries to answer the question if a directory is a git repository
+// It checks at least the two most obvious files that should exist in a .git directory.
 func isPathARepository(repoPath string) bool {
-	// check at least the two most obvious files
 	pathSlice := []string{
 		repoPath + "/config",
 		repoPath + "/HEAD",
