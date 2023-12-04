@@ -89,8 +89,8 @@ func NewColorizer() *Colorizer {
 			"comment":  "Yellow",
 			"headline": "Purple",
 			"ok":       "Green",
-			"warning":  "red",
-			"strong":   "blue",
+			"warning":  "Red",
+			"strong":   "Blue",
 		},
 	}
 }
