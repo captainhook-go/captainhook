@@ -23,9 +23,6 @@ func NewDefaultPrinter(appIO io.IO) *DefaultPrinter {
 
 func (p *DefaultPrinter) HookStarted(event *events.HookStarted) {
 	p.appIO.Write("<comment>"+event.Config.Name()+":</comment>", true, io.NORMAL)
-	if len(event.Config.GetActions()) == 0 {
-		p.appIO.Write(" - no actions to execute", true, io.NORMAL)
-	}
 }
 
 func (p *DefaultPrinter) HookSucceeded(event *events.HookSucceeded) {

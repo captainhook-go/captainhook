@@ -43,9 +43,10 @@ func NewHookRunner(hook string, appIO io.IO, config *configuration.Configuration
 
 // Run executes the HookRunner
 func (h *HookRunner) Run() error {
+	hookConfig := h.prepareHookConfig()
 	var err error
 	err = h.eventDispatcher.DispatchHookStartedEvent(
-		events.NewHookStartedEvent(app.NewContext(h.appIO, h.config, h.repo), h.prepareHookConfig()),
+		events.NewHookStartedEvent(app.NewContext(h.appIO, h.config, h.repo), hookConfig),
 	)
 	if err != nil {
 		h.appIO.Write(err.Error(), true, io.NORMAL)
@@ -56,7 +57,12 @@ func (h *HookRunner) Run() error {
 		return nil
 	}
 
-	errActions := h.runActions()
+	if len(hookConfig.GetActions()) == 0 {
+		h.appIO.Write(" - no actions to execute", true, io.NORMAL)
+		return nil
+	}
+
+	errActions := h.runActions(hookConfig)
 	if errActions != nil {
 		return errActions
 	}
@@ -70,7 +76,7 @@ func (h *HookRunner) shouldHooksBeSkipped() bool {
 	for _, envName := range []string{"CAPTAINHOOK_SKIP_HOOKS", "CI"} {
 		skip := os.Getenv(envName)
 		if skip == "1" {
-			h.appIO.Write(" - skipped because of ENV variable "+envName+" is set to 1", true, io.NORMAL)
+			h.appIO.Write(" - skipped because ENV variable "+envName+" is set to 1", true, io.NORMAL)
 			return true
 		}
 	}
@@ -92,10 +98,9 @@ func (h *HookRunner) shouldHooksBeSkipped() bool {
 //   - fail at first error
 //   - execute all before failing
 //   - execute all asynchronously before failing
-func (h *HookRunner) runActions() error {
+func (h *HookRunner) runActions(hookConfig *configuration.Hook) error {
 	var err error
 	start := time.Now()
-	hookConfig := h.prepareHookConfig()
 
 	if h.config.FailOnFirstError() {
 		err = h.runActionsFailFast(hookConfig)
