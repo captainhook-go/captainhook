@@ -25,7 +25,7 @@ import (
 //	    "regex": "([A-Z]+\\-[0-9]+)",
 //	    "into": "body",
 //	    "mode": "append",
-//	    "prefix": "append",
+//	    "prefix": "issue: ",
 //	    "force": true
 //	  }
 //	}
