@@ -16,15 +16,6 @@ type ConditionRunner struct {
 	repo *git.Repository
 }
 
-func NewConditionRunner(cIO io.IO, conf *configuration.Configuration, repo *git.Repository) *ConditionRunner {
-	c := ConditionRunner{
-		cIO,
-		conf,
-		repo,
-	}
-	return &c
-}
-
 // Run executes the ConditionRunner
 func (c *ConditionRunner) Run(hook string, condition *configuration.Condition) bool {
 	conditionToExecute, err := c.crateCondition(condition)
@@ -63,4 +54,13 @@ func (c *ConditionRunner) createInternalCondition(condition *configuration.Condi
 // createExternalCondition creates a condition that runs the configured command
 func (c *ConditionRunner) createExternalCondition() (hooks.Condition, error) {
 	return conditions.NewExternalCommand(c.cIO, c.conf, c.repo), nil
+}
+
+func NewConditionRunner(cIO io.IO, conf *configuration.Configuration, repo *git.Repository) *ConditionRunner {
+	c := ConditionRunner{
+		cIO,
+		conf,
+		repo,
+	}
+	return &c
 }

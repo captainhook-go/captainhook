@@ -25,22 +25,6 @@ type HookRunner struct {
 	actionLog       *hooks.ActionLog
 }
 
-func NewHookRunner(hook string, appIO io.IO, config *configuration.Configuration, repo *git.Repository) *HookRunner {
-	h := HookRunner{
-		hook:            hook,
-		appIO:           appIO,
-		config:          config,
-		repo:            repo,
-		eventDispatcher: events.NewDispatcher(),
-		actionLog:       hooks.NewActionLog(),
-	}
-
-	defaultPrinter := printer.NewDefaultPrinter(appIO)
-	defaultPrinter.RegisterSubscribers(h.eventDispatcher)
-
-	return &h
-}
-
 // Run executes the HookRunner
 func (h *HookRunner) Run() error {
 	start := time.Now()
@@ -217,4 +201,20 @@ func (h *HookRunner) prepareHookConfig() *configuration.Hook {
 		}
 	}
 	return hookConfig
+}
+
+func NewHookRunner(hook string, appIO io.IO, config *configuration.Configuration, repo *git.Repository) *HookRunner {
+	h := HookRunner{
+		hook:            hook,
+		appIO:           appIO,
+		config:          config,
+		repo:            repo,
+		eventDispatcher: events.NewDispatcher(),
+		actionLog:       hooks.NewActionLog(),
+	}
+
+	defaultPrinter := printer.NewDefaultPrinter(appIO)
+	defaultPrinter.RegisterSubscribers(h.eventDispatcher)
+
+	return &h
 }

@@ -10,6 +10,10 @@ import (
 	"text/template"
 )
 
+// Installer is responsible to write the hook files into your local .git/hooks directory
+// Normally it makes sure you don't overwrite your existing git hooks.
+// If you don't want to be bothered to acknowledge every hook you can use
+// the Force function to activate the `force` mode
 type Installer struct {
 	appIO         io.IO
 	config        *configuration.Configuration
@@ -20,30 +24,22 @@ type Installer struct {
 	backupEnabled bool
 }
 
-func NewInstaller(appIO io.IO, config *configuration.Configuration, repo *git.Repository) *Installer {
-	return &Installer{
-		appIO:         appIO,
-		config:        config,
-		repo:          repo,
-		force:         false,
-		skipExisting:  false,
-		onlyEnabled:   false,
-		backupEnabled: false,
-	}
-}
-
+// SkipExisting makes sure you don't overwrite existing hooks
 func (i *Installer) SkipExisting(skip bool) {
 	i.skipExisting = skip
 }
 
+// OnlyEnabled makes sure you only install hooks that are activated in the configuration
 func (i *Installer) OnlyEnabled(enabled bool) {
 	i.onlyEnabled = enabled
 }
 
+// Force makes sure to install all hooks without asking any questions
 func (i *Installer) Force(force bool) {
 	i.force = force
 }
 
+// EnableBackup makes sure existing hooks will be moved away to keep a backup
 func (i *Installer) EnableBackup(backup bool) {
 	i.backupEnabled = backup
 }
@@ -93,7 +89,6 @@ func (i *Installer) installHook(hook string, ask bool) error {
 
 func (i *Installer) writeHookFile(hook string) error {
 	doIt := true
-
 	// if hook is configured and no force option is set
 	// ask the user if overwriting the hook is ok
 	if i.needConfirmationToOverwrite(hook) {
@@ -188,4 +183,16 @@ func (i *Installer) HookTemplate() string {
 		"INTERACTIVE=\"{{ if .INTERACTION }}--no-interaction {{ end }}\"\n" +
 		"\n" +
 		"{{ .RUN_PATH }}captainhook $INTERACTIVE--configuration={{ .CONFIGURATION }} hook {{ .HOOK_NAME }} \"$@\" <&0\n\n"
+}
+
+func NewInstaller(appIO io.IO, config *configuration.Configuration, repo *git.Repository) *Installer {
+	return &Installer{
+		appIO:         appIO,
+		config:        config,
+		repo:          repo,
+		force:         false,
+		skipExisting:  false,
+		onlyEnabled:   false,
+		backupEnabled: false,
+	}
 }

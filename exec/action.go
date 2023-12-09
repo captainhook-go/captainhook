@@ -20,15 +20,6 @@ type ActionRunner struct {
 	eventDispatcher *events.Dispatcher
 }
 
-func NewActionRunner(
-	appIO io.IO,
-	conf *configuration.Configuration,
-	repo *git.Repository,
-	dispatcher *events.Dispatcher,
-) *ActionRunner {
-	return &ActionRunner{appIO: appIO, conf: conf, repo: repo, eventDispatcher: dispatcher}
-}
-
 // RunAsync run the action concurrently and send the result to a channel
 func (a *ActionRunner) RunAsync(hook string, action *configuration.Action, channel chan *ActionResult) {
 	channel <- a.Run(hook, action)
@@ -67,6 +58,9 @@ func (a *ActionRunner) Run(hook string, action *configuration.Action) *ActionRes
 	return NewActionResult(action, info.ActionSucceeded, errRun, errDispatchSuccess, cIO)
 }
 
+// runAction checks if the action is not restricted from running during this hook
+// If the action is applicable it executes it
+// If not it triggers an ActionSkippedEvent
 func (a *ActionRunner) runAction(hook string, action *configuration.Action, cIO *io.CollectorIO) error {
 	actionToExecute, err := a.createAction(action, cIO)
 	if err != nil {
@@ -86,6 +80,9 @@ func (a *ActionRunner) runAction(hook string, action *configuration.Action, cIO 
 	return actionToExecute.Run(action)
 }
 
+// createAction creates the Action struct
+// Either some special Action for some internal functionality or the generic ExternalCommand Action to execute some
+// custom executable.
 func (a *ActionRunner) createAction(action *configuration.Action, cIO *io.CollectorIO) (hooks.Action, error) {
 	if isInternalFunctionality(action.Run()) {
 		return a.createInternalAction(action, cIO)
@@ -93,6 +90,7 @@ func (a *ActionRunner) createAction(action *configuration.Action, cIO *io.Collec
 	return a.createExternalAction(cIO)
 }
 
+// createInternalAction creates one of CaptainHooks integrated actions
 func (a *ActionRunner) createInternalAction(action *configuration.Action, cIO *io.CollectorIO) (hooks.Action, error) {
 	path := splitInternalPath(action.Run())
 	actionGenerator, err := actions.ActionCreationFunc(path)
@@ -102,10 +100,12 @@ func (a *ActionRunner) createInternalAction(action *configuration.Action, cIO *i
 	return actionGenerator(cIO, a.conf, a.repo), nil
 }
 
+// createExternalAction creates the Action that executes external executables
 func (a *ActionRunner) createExternalAction(cIO *io.CollectorIO) (hooks.Action, error) {
 	return actions.NewExternalCommand(cIO, a.conf, a.repo), nil
 }
 
+// doConditionsApply answers if an Action should be executed for a specific hook
 func (a *ActionRunner) doConditionsApply(hook string, conditions []*configuration.Condition, cIO *io.CollectorIO) bool {
 	conditionRunner := NewConditionRunner(cIO, a.conf, a.repo)
 	for _, condition := range conditions {
@@ -114,4 +114,13 @@ func (a *ActionRunner) doConditionsApply(hook string, conditions []*configuratio
 		}
 	}
 	return true
+}
+
+func NewActionRunner(
+	appIO io.IO,
+	conf *configuration.Configuration,
+	repo *git.Repository,
+	dispatcher *events.Dispatcher,
+) *ActionRunner {
+	return &ActionRunner{appIO: appIO, conf: conf, repo: repo, eventDispatcher: dispatcher}
 }
