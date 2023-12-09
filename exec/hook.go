@@ -43,6 +43,7 @@ func NewHookRunner(hook string, appIO io.IO, config *configuration.Configuration
 
 // Run executes the HookRunner
 func (h *HookRunner) Run() error {
+	start := time.Now()
 	hookConfig := h.prepareHookConfig()
 	var err error
 	err = h.eventDispatcher.DispatchHookStartedEvent(
@@ -53,19 +54,18 @@ func (h *HookRunner) Run() error {
 		return err
 	}
 
-	if h.shouldHooksBeSkipped() {
-		return nil
+	if !h.shouldHooksBeSkipped() {
+		errActions := h.runActions(hookConfig, start)
+		if errActions != nil {
+			return errActions
+		}
 	}
 
-	if len(hookConfig.GetActions()) == 0 {
-		h.appIO.Write(" - no actions to execute", true, io.NORMAL)
-		return nil
-	}
-
-	errActions := h.runActions(hookConfig)
-	if errActions != nil {
-		return errActions
-	}
+	_ = h.eventDispatcher.DispatchHookSucceededEvent(
+		events.NewHookSucceededEvent(
+			app.NewContext(h.appIO, h.config, h.repo), hookConfig, h.actionLog, time.Since(start),
+		),
+	)
 	return nil
 }
 
@@ -98,9 +98,13 @@ func (h *HookRunner) shouldHooksBeSkipped() bool {
 //   - fail at first error
 //   - execute all before failing
 //   - execute all asynchronously before failing
-func (h *HookRunner) runActions(hookConfig *configuration.Hook) error {
+func (h *HookRunner) runActions(hookConfig *configuration.Hook, start time.Time) error {
 	var err error
-	start := time.Now()
+
+	if len(hookConfig.GetActions()) == 0 {
+		h.appIO.Write(" - no actions to execute", true, io.NORMAL)
+		return nil
+	}
 
 	if h.config.FailOnFirstError() {
 		err = h.runActionsFailFast(hookConfig)
@@ -109,23 +113,16 @@ func (h *HookRunner) runActions(hookConfig *configuration.Hook) error {
 	} else {
 		err = h.runActionsFailLate(hookConfig)
 	}
-	executionTime := time.Since(start)
 
 	if err != nil {
 		_ = h.eventDispatcher.DispatchHookFailedEvent(
 			events.NewHookFailedEvent(
-				app.NewContext(h.appIO, h.config, h.repo), hookConfig, h.actionLog, executionTime, err,
+				app.NewContext(h.appIO, h.config, h.repo), hookConfig, h.actionLog, time.Since(start), err,
 			),
 		)
 		return err
 	}
-
-	_ = h.eventDispatcher.DispatchHookSucceededEvent(
-		events.NewHookSucceededEvent(
-			app.NewContext(h.appIO, h.config, h.repo), hookConfig, h.actionLog, executionTime,
-		),
-	)
-	return err
+	return nil
 }
 
 func (h *HookRunner) runActionsFailFast(hookConfig *configuration.Hook) error {
