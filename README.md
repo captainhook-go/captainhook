@@ -3,7 +3,7 @@
 ![Go Version](https://img.shields.io/badge/go%20version-%3E=1.21-61CFDD.svg?style=flat-square)
 
 
-# CaptainHook [BETA]
+# CaptainHook
 
 <img src="https://captainhook-go.github.io/captainhook/gfx/ch.png" alt="CaptainHook logo" align="right" width="200"/>
 
@@ -63,12 +63,19 @@ Here's an example *captainhook.json* configuration file.
     "pre-commit": {
       "actions": [
         {
-          "run": "go test"
+          "run": "unittest"
         }
        ]
     },
     "pre-push": {
-      "actions": []
+      "actions": [
+        {
+          "run": "CaptainHook::Branch.PreventPushOfFixupAndSquashCommits",
+          "options": {
+            "branches-to-protect": ["main", "integration"]
+          }
+        }
+      ]
     }
   }
 }
