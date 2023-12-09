@@ -1,6 +1,7 @@
 ![Version](https://img.shields.io/github/v/release/captainhook-go/captainhook?style=flat-square&label=version)
 [![Go Report Card](https://goreportcard.com/badge/github.com/captainhook-go/captainhook?style=flat-square)](https://goreportcard.com/report/github.com/captainhook-go/captainhook)
 ![Go Version](https://img.shields.io/badge/go%20version-%3E=1.21-61CFDD.svg?style=flat-square)
+[![Go Reference](https://pkg.go.dev/badge/github.com/captainhook-go/captainhook.svg?style=flat-square)](https://pkg.go.dev/github.com/captainhook-go/captainhook)
 
 
 # CaptainHook
