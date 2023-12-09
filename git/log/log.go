@@ -15,6 +15,7 @@ const (
 		"</commit>"
 )
 
+// AbbrevCommit is used to display only shortened commit hashes
 func AbbrevCommit(g *types.Cmd) {
 	g.AddOption("--abbrev-commit")
 }
@@ -25,6 +26,7 @@ func AuthoredBy(name string) func(g *types.Cmd) {
 	}
 }
 
+// Format is used to set the --format option
 func Format(format string) func(g *types.Cmd) {
 	return func(g *types.Cmd) {
 		g.AddOption("--format='" + format + "'")
@@ -33,7 +35,7 @@ func Format(format string) func(g *types.Cmd) {
 
 func ParseXML(out string) ([]*types.Commit, error) {
 	var log []*types.Commit
-	xmlLog, err := types.ParseLogXML(out)
+	xmlLog, err := types.ParseLogXml(out)
 	if err != nil {
 		return log, err
 	}
@@ -43,6 +45,7 @@ func ParseXML(out string) ([]*types.Commit, error) {
 	return log, nil
 }
 
+// FromTo defines the range of the git log
 func FromTo(from, to string) func(g *types.Cmd) {
 	if to == "" {
 		to = "HEAD"
@@ -52,6 +55,7 @@ func FromTo(from, to string) func(g *types.Cmd) {
 	}
 }
 
+// InTimeFrame adds --after and --before options
 func InTimeFrame(after, before string) func(g *types.Cmd) {
 	return func(g *types.Cmd) {
 		g.AddOption("--after=" + after)
@@ -59,6 +63,7 @@ func InTimeFrame(after, before string) func(g *types.Cmd) {
 	}
 }
 
+// NameOnly is used to output only file names
 func NameOnly(g *types.Cmd) {
 	g.AddOption("--name-only")
 }
@@ -71,6 +76,7 @@ func NoCommitID(g *types.Cmd) {
 	g.AddOption("--no-commit-id")
 }
 
+// NoMerges is used to exclude merges from the log
 func NoMerges(g *types.Cmd) {
 	g.AddOption("--no-merges")
 }
