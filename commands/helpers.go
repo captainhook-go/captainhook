@@ -40,7 +40,7 @@ func newSystemErrorF(format string, a ...interface{}) commandError {
 
 // Catch some of the obvious user errors from Cobra.
 // We don't want to show the usage message for every error.
-// The below may be to generic. Time will show.
+// The below may be too generic. Time will show.
 var userErrorRegexp = regexp.MustCompile("argument|flag|shorthand")
 
 func isUserError(err error) bool {
