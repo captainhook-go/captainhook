@@ -45,7 +45,7 @@ func (c *CustomValueIsTruthy) IsTrue(condition *configuration.Condition) bool {
 	return io.AnswerToBool(value)
 }
 
-func NewCustomValueIsTruthy(appIO io.IO, conf *configuration.Configuration, repo *git.Repository) hooks.Condition {
+func NewCustomValueIsTruthy(appIO io.IO, conf *configuration.Configuration, repo git.Repo) hooks.Condition {
 	return &CustomValueIsTruthy{
 		hookBundle: hooks.NewHookBundle(appIO, conf, repo, []string{}),
 	}

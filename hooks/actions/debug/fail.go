@@ -17,7 +17,7 @@ import (
 //	}
 type Fail struct{}
 
-func NewFail(appIO io.IO, conf *configuration.Configuration, repo *git.Repository) hooks.Action {
+func NewFail(appIO io.IO, conf *configuration.Configuration, repo git.Repo) hooks.Action {
 	return newDebug(
 		hooks.NewHookBundle(appIO, conf, repo, []string{}),
 		func() error {

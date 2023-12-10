@@ -43,7 +43,7 @@ func (c *OnBranch) IsTrue(condition *configuration.Condition) bool {
 	return false
 }
 
-func NewOnBranch(appIO io.IO, conf *configuration.Configuration, repo *git.Repository) hooks.Condition {
+func NewOnBranch(appIO io.IO, conf *configuration.Configuration, repo git.Repo) hooks.Condition {
 	return &OnBranch{
 		hookBundle: hooks.NewHookBundle(appIO, conf, repo, []string{}),
 	}

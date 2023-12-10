@@ -9,11 +9,11 @@ import (
 type HookBundle struct {
 	AppIO       io.IO
 	Conf        *configuration.Configuration
-	Repo        *git.Repository
+	Repo        git.Repo
 	Restriction *Restriction
 }
 
-func NewHookBundle(appIO io.IO, conf *configuration.Configuration, repo *git.Repository, hooks []string) *HookBundle {
+func NewHookBundle(appIO io.IO, conf *configuration.Configuration, repo git.Repo, hooks []string) *HookBundle {
 	b := HookBundle{
 		AppIO:       appIO,
 		Conf:        conf,

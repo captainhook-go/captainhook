@@ -103,7 +103,7 @@ func (a *InjectIssueKeyFromBranch) injectIssueId(issueID, target, mode, prefix s
 
 }
 
-func NewInjectIssueKeyFromBranch(appIO io.IO, conf *configuration.Configuration, repo *git.Repository) hooks.Action {
+func NewInjectIssueKeyFromBranch(appIO io.IO, conf *configuration.Configuration, repo git.Repo) hooks.Action {
 	a := InjectIssueKeyFromBranch{
 		hookBundle: hooks.NewHookBundle(appIO, conf, repo, []string{info.PrepareCommitMsg}),
 	}

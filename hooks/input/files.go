@@ -10,7 +10,7 @@ import (
 // StagedOrChangedFiles will return a list of files
 //   - For `pre-commit` hooks it will return the staged files.
 //   - For `pre-push` hooks it will return the changed files.
-func StagedOrChangedFiles(appIO io.IO, repo *git.Repository) ([]string, error) {
+func StagedOrChangedFiles(appIO io.IO, repo git.Repo) ([]string, error) {
 	cmd := appIO.Argument(info.ArgCommand, "")
 	if cmd == "pre-commit" {
 		return repo.StagedFiles()
@@ -21,7 +21,7 @@ func StagedOrChangedFiles(appIO io.IO, repo *git.Repository) ([]string, error) {
 // ChangedFiles will return a lost of changed files
 // Depending on the executed hook it will use different detecting methods to
 // determine the `from` ad `to` references.
-func ChangedFiles(appIO io.IO, repo *git.Repository) ([]string, error) {
+func ChangedFiles(appIO io.IO, repo git.Repo) ([]string, error) {
 	ranges := DetectRanges(appIO)
 	if len(ranges) == 0 {
 		return []string{}, fmt.Errorf("could not detect ranges")

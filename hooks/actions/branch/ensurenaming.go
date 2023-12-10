@@ -49,7 +49,7 @@ func (a *EnsureNaming) Run(action *configuration.Action) error {
 	return nil
 }
 
-func NewEnsureNaming(appIO io.IO, conf *configuration.Configuration, repo *git.Repository) hooks.Action {
+func NewEnsureNaming(appIO io.IO, conf *configuration.Configuration, repo git.Repo) hooks.Action {
 	a := PreventPushOfFixupAndSquashCommits{
 		hookBundle: hooks.NewHookBundle(appIO, conf, repo, []string{info.PrePush}),
 	}

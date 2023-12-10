@@ -13,7 +13,7 @@ import (
 type ConditionRunner struct {
 	cIO  io.IO
 	conf *configuration.Configuration
-	repo *git.Repository
+	repo git.Repo
 }
 
 // Run executes the ConditionRunner
@@ -56,7 +56,7 @@ func (c *ConditionRunner) createExternalCondition() (hooks.Condition, error) {
 	return conditions.NewExternalCommand(c.cIO, c.conf, c.repo), nil
 }
 
-func NewConditionRunner(cIO io.IO, conf *configuration.Configuration, repo *git.Repository) *ConditionRunner {
+func NewConditionRunner(cIO io.IO, conf *configuration.Configuration, repo git.Repo) *ConditionRunner {
 	c := ConditionRunner{
 		cIO,
 		conf,

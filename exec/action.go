@@ -16,7 +16,7 @@ import (
 type ActionRunner struct {
 	appIO           io.IO
 	conf            *configuration.Configuration
-	repo            *git.Repository
+	repo            git.Repo
 	eventDispatcher *events.Dispatcher
 }
 
@@ -119,7 +119,7 @@ func (a *ActionRunner) doConditionsApply(hook string, conditions []*configuratio
 func NewActionRunner(
 	appIO io.IO,
 	conf *configuration.Configuration,
-	repo *git.Repository,
+	repo git.Repo,
 	dispatcher *events.Dispatcher,
 ) *ActionRunner {
 	return &ActionRunner{appIO: appIO, conf: conf, repo: repo, eventDispatcher: dispatcher}

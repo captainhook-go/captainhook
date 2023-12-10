@@ -50,7 +50,7 @@ func (a *CacheOnFail) Subscribe(dispatcher *events.Dispatcher, action *configura
 	return nil
 }
 
-func NewCacheOnFail(appIO io.IO, conf *configuration.Configuration, repo *git.Repository) hooks.Action {
+func NewCacheOnFail(appIO io.IO, conf *configuration.Configuration, repo git.Repo) hooks.Action {
 	a := CacheOnFail{
 		hookBundle: hooks.NewHookBundle(appIO, conf, repo, []string{info.CommitMsg}),
 	}

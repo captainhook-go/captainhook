@@ -95,6 +95,6 @@ func (a *BlockSecrets) getRegexPatterns() ([]string, error) {
 	return regs, nil
 }
 
-func NewBlockSecrets(appIO io.IO, conf *configuration.Configuration, repo *git.Repository) hooks.Action {
+func NewBlockSecrets(appIO io.IO, conf *configuration.Configuration, repo git.Repo) hooks.Action {
 	return &BlockSecrets{hookBundle: hooks.NewHookBundle(appIO, conf, repo, []string{info.PreCommit, info.PrePush})}
 }

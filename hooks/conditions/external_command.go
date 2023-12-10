@@ -35,7 +35,7 @@ func (c *ExternalCommand) IsTrue(condition *configuration.Condition) bool {
 	return true
 }
 
-func NewExternalCommand(appIO io.IO, conf *configuration.Configuration, repo *git.Repository) hooks.Condition {
+func NewExternalCommand(appIO io.IO, conf *configuration.Configuration, repo git.Repo) hooks.Condition {
 	return &ExternalCommand{
 		hookBundle: hooks.NewHookBundle(appIO, conf, repo, []string{}),
 	}

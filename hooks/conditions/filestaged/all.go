@@ -43,7 +43,7 @@ func (c *All) IsTrue(condition *configuration.Condition) bool {
 	return util.ContainsAllStrings(stagedFiles, mustContainAll)
 }
 
-func NewAll(appIO io.IO, conf *configuration.Configuration, repo *git.Repository) hooks.Condition {
+func NewAll(appIO io.IO, conf *configuration.Configuration, repo git.Repo) hooks.Condition {
 	return &All{
 		hookBundle: hooks.NewHookBundle(appIO, conf, repo, []string{info.PreCommit}),
 	}

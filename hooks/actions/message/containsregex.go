@@ -48,7 +48,7 @@ func (a *ContainsRegex) Run(action *configuration.Action) error {
 	return nil
 }
 
-func NewContainsRegex(appIO io.IO, conf *configuration.Configuration, repo *git.Repository) hooks.Action {
+func NewContainsRegex(appIO io.IO, conf *configuration.Configuration, repo git.Repo) hooks.Action {
 	a := ContainsRegex{
 		hookBundle: hooks.NewHookBundle(appIO, conf, repo, []string{info.CommitMsg}),
 	}

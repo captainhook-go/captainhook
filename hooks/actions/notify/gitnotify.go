@@ -89,7 +89,7 @@ func (a *GitNotify) showNotification(msg string) {
 	a.hookBundle.AppIO.Write(footer, true, io.NORMAL)
 }
 
-func NewGitNotify(appIO io.IO, conf *configuration.Configuration, repo *git.Repository) hooks.Action {
+func NewGitNotify(appIO io.IO, conf *configuration.Configuration, repo git.Repo) hooks.Action {
 	a := GitNotify{
 		hookBundle: hooks.NewHookBundle(appIO, conf, repo, []string{info.PostRewrite, info.PostCheckout, info.PostMerge}),
 	}

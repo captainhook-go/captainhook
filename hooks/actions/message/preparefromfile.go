@@ -78,7 +78,7 @@ func (a *PrepareFromFile) createCommitMessage(msg *types.CommitMessage, content 
 	)
 }
 
-func NewPrepareFromFile(appIO io.IO, conf *configuration.Configuration, repo *git.Repository) hooks.Action {
+func NewPrepareFromFile(appIO io.IO, conf *configuration.Configuration, repo git.Repo) hooks.Action {
 	a := PrepareFromFile{
 		hookBundle: hooks.NewHookBundle(appIO, conf, repo, []string{info.PrepareCommitMsg}),
 	}

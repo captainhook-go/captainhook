@@ -9,7 +9,7 @@ import (
 type Context struct {
 	appIO io.IO
 	conf  *configuration.Configuration
-	repo  *git.Repository
+	repo  git.Repo
 }
 
 func (e *Context) IO() io.IO {
@@ -20,11 +20,11 @@ func (e *Context) Config() *configuration.Configuration {
 	return e.conf
 }
 
-func (e *Context) Repository() *git.Repository {
+func (e *Context) Repository() git.Repo {
 	return e.repo
 }
 
-func NewContext(appIO io.IO, conf *configuration.Configuration, repo *git.Repository) *Context {
+func NewContext(appIO io.IO, conf *configuration.Configuration, repo git.Repo) *Context {
 	e := Context{
 		appIO: appIO,
 		conf:  conf,

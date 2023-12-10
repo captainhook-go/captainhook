@@ -20,7 +20,7 @@ type HookRunner struct {
 	hook            string
 	appIO           io.IO
 	config          *configuration.Configuration
-	repo            *git.Repository
+	repo            git.Repo
 	eventDispatcher *events.Dispatcher
 	actionLog       *hooks.ActionLog
 }
@@ -203,7 +203,7 @@ func (h *HookRunner) prepareHookConfig() *configuration.Hook {
 	return hookConfig
 }
 
-func NewHookRunner(hook string, appIO io.IO, config *configuration.Configuration, repo *git.Repository) *HookRunner {
+func NewHookRunner(hook string, appIO io.IO, config *configuration.Configuration, repo git.Repo) *HookRunner {
 	h := HookRunner{
 		hook:            hook,
 		appIO:           appIO,

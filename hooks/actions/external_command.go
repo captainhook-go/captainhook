@@ -30,7 +30,7 @@ func (a *ExternalCommand) Run(action *configuration.Action) error {
 	return ext.ExecuteCommand(a.hookBundle.AppIO, commandToExecute)
 }
 
-func NewExternalCommand(appIO io.IO, conf *configuration.Configuration, repo *git.Repository) hooks.Action {
+func NewExternalCommand(appIO io.IO, conf *configuration.Configuration, repo git.Repo) hooks.Action {
 	a := ExternalCommand{
 		hookBundle: hooks.NewHookBundle(appIO, conf, repo, []string{}),
 	}

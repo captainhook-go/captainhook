@@ -53,7 +53,7 @@ func (a *DoesNotContainRegex) Run(action *configuration.Action) error {
 	return nil
 }
 
-func NewDoesNotContainRegex(appIO io.IO, conf *configuration.Configuration, repo *git.Repository) hooks.Action {
+func NewDoesNotContainRegex(appIO io.IO, conf *configuration.Configuration, repo git.Repo) hooks.Action {
 	a := DoesNotContainRegex{
 		hookBundle: hooks.NewHookBundle(appIO, conf, repo, []string{info.PreCommit}),
 	}

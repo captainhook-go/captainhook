@@ -110,7 +110,7 @@ func (a *PreventPushOfFixupAndSquashCommits) createFailureMessage(commits []*typ
 		strings.Join(out, "\n")
 }
 
-func NewPreventPushOfFixupAndSquashCommits(appIO io.IO, conf *configuration.Configuration, repo *git.Repository) hooks.Action {
+func NewPreventPushOfFixupAndSquashCommits(appIO io.IO, conf *configuration.Configuration, repo git.Repo) hooks.Action {
 	a := PreventPushOfFixupAndSquashCommits{
 		hookBundle:         hooks.NewHookBundle(appIO, conf, repo, []string{info.PrePush}),
 		blockFixupCommits:  true,

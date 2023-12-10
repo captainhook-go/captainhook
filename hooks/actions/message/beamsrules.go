@@ -86,7 +86,7 @@ func (a *BeamsRules) outputMessage(msg *types.CommitMessage) {
 	a.hookBundle.AppIO.Write(strings.Repeat("=", 72), true, io.NORMAL)
 }
 
-func NewBeamsRules(appIO io.IO, conf *configuration.Configuration, repo *git.Repository) hooks.Action {
+func NewBeamsRules(appIO io.IO, conf *configuration.Configuration, repo git.Repo) hooks.Action {
 	a := BeamsRules{
 		hookBundle: hooks.NewHookBundle(appIO, conf, repo, []string{info.CommitMsg}),
 	}

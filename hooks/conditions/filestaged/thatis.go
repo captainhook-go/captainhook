@@ -71,7 +71,7 @@ func (c *ThatIs) filterByDirectory(condition *configuration.Condition, files []s
 	return util.FilterByDirectory(files, inDir)
 }
 
-func NewThatIs(appIO io.IO, conf *configuration.Configuration, repo *git.Repository) hooks.Condition {
+func NewThatIs(appIO io.IO, conf *configuration.Configuration, repo git.Repo) hooks.Condition {
 	return &ThatIs{
 		hookBundle: hooks.NewHookBundle(appIO, conf, repo, []string{info.PreCommit}),
 	}

@@ -17,7 +17,7 @@ import (
 type Installer struct {
 	appIO         io.IO
 	config        *configuration.Configuration
-	repo          *git.Repository
+	repo          git.Repo
 	force         bool
 	skipExisting  bool
 	onlyEnabled   bool
@@ -185,7 +185,7 @@ func (i *Installer) HookTemplate() string {
 		"{{ .RUN_PATH }}captainhook $INTERACTIVE--configuration={{ .CONFIGURATION }} hook {{ .HOOK_NAME }} \"$@\" <&0\n\n"
 }
 
-func NewInstaller(appIO io.IO, config *configuration.Configuration, repo *git.Repository) *Installer {
+func NewInstaller(appIO io.IO, config *configuration.Configuration, repo git.Repo) *Installer {
 	return &Installer{
 		appIO:         appIO,
 		config:        config,

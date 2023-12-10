@@ -15,7 +15,7 @@ import (
 )
 
 var (
-	actionCreationConfig = map[string]map[string]func(appIO io.IO, conf *configuration.Configuration, repo *git.Repository) hooks.Action{
+	actionCreationConfig = map[string]map[string]func(appIO io.IO, conf *configuration.Configuration, repo git.Repo) hooks.Action{
 		"branch": {
 			"ensurenaming":                       branch.NewEnsureNaming,
 			"preventpushoffixupandsquashcommits": branch.NewPreventPushOfFixupAndSquashCommits,
@@ -45,7 +45,7 @@ var (
 )
 
 // ActionCreationFunc is returning a function to create the configured action
-func ActionCreationFunc(path []string) (func(appIO io.IO, conf *configuration.Configuration, repo *git.Repository) hooks.Action, error) {
+func ActionCreationFunc(path []string) (func(appIO io.IO, conf *configuration.Configuration, repo git.Repo) hooks.Action, error) {
 	if len(path) != 2 {
 		return nil, errors.New("invalid actions functionality")
 	}

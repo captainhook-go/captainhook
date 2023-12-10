@@ -41,7 +41,7 @@ func (a *IsNotEmpty) Run(action *configuration.Action) error {
 	return nil
 }
 
-func NewIsNotEmpty(appIO io.IO, conf *configuration.Configuration, repo *git.Repository) hooks.Action {
+func NewIsNotEmpty(appIO io.IO, conf *configuration.Configuration, repo git.Repo) hooks.Action {
 	a := IsNotEmpty{
 		hookBundle: hooks.NewHookBundle(appIO, conf, repo, []string{}),
 	}

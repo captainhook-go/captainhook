@@ -14,7 +14,7 @@ import (
 )
 
 var (
-	conditionCreationConfig = map[string]map[string]func(appIO io.IO, conf *configuration.Configuration, repo *git.Repository) hooks.Condition{
+	conditionCreationConfig = map[string]map[string]func(appIO io.IO, conf *configuration.Configuration, repo git.Repo) hooks.Condition{
 		"inconfig": {
 			"customvalueistruthy": inconfig.NewCustomValueIsTruthy,
 			"customvalueisfalsy":  inconfig.NewCustomValueIsFalsy,
@@ -35,7 +35,7 @@ var (
 	}
 )
 
-func ConditionCreationFunc(path []string) (func(appIO io.IO, conf *configuration.Configuration, repo *git.Repository) hooks.Condition, error) {
+func ConditionCreationFunc(path []string) (func(appIO io.IO, conf *configuration.Configuration, repo git.Repo) hooks.Condition, error) {
 	if len(path) != 2 {
 		return nil, errors.New("invalid condition functionality")
 	}

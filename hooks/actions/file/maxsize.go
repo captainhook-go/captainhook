@@ -86,7 +86,7 @@ func (a *MaxSize) toBytes(value string) int64 {
 	return number * int64(math.Round(unitBytes))
 }
 
-func NewMaxSize(appIO io.IO, conf *configuration.Configuration, repo *git.Repository) hooks.Action {
+func NewMaxSize(appIO io.IO, conf *configuration.Configuration, repo git.Repo) hooks.Action {
 	a := MaxSize{
 		hookBundle: hooks.NewHookBundle(appIO, conf, repo, []string{}),
 	}

@@ -19,7 +19,7 @@ import (
 //	}
 type Success struct{}
 
-func NewSuccess(appIO io.IO, conf *configuration.Configuration, repo *git.Repository) hooks.Action {
+func NewSuccess(appIO io.IO, conf *configuration.Configuration, repo git.Repo) hooks.Action {
 	return newDebug(
 		hooks.NewHookBundle(appIO, conf, repo, []string{}),
 		func() error {
