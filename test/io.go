@@ -3,48 +3,62 @@ package test
 import "github.com/captainhook-go/captainhook/io"
 
 type IOMock struct {
+	stdIn []string
+	args  map[string]string
 }
 
-func (InOut *IOMock) Verbosity() int {
+func (inOut *IOMock) SetStdIn(input []string) {
+	inOut.stdIn = input
+}
+
+func (inOut *IOMock) SetArguments(args map[string]string) {
+	inOut.args = args
+}
+
+func (inOut *IOMock) Verbosity() int {
 	return 0
 }
 
-func (InOut *IOMock) Arguments() map[string]string {
+func (inOut *IOMock) Arguments() map[string]string {
 	return map[string]string{}
 }
 
-func (InOut *IOMock) Argument(name, defaultValue string) string {
-	return ""
+func (inOut *IOMock) Argument(name, defaultValue string) string {
+	val, ok := inOut.args[name]
+	if !ok {
+		return defaultValue
+	}
+	return val
 }
 
-func (InOut *IOMock) StandardInput() []string {
-	return []string{}
+func (inOut *IOMock) StandardInput() []string {
+	return inOut.stdIn
 }
 
-func (InOut *IOMock) Input() io.Input {
-	return io.NewStdIn(map[string]string{})
+func (inOut *IOMock) Input() io.Input {
+	return io.NewStdIn(inOut.args)
 }
 
-func (InOut *IOMock) IsInteractive() bool {
+func (inOut *IOMock) IsInteractive() bool {
 	return true
 }
 
-func (InOut *IOMock) IsDebug() bool {
+func (inOut *IOMock) IsDebug() bool {
 	return true
 }
 
-func (InOut *IOMock) IsQuiet() bool {
+func (inOut *IOMock) IsQuiet() bool {
 	return true
 }
 
-func (InOut *IOMock) IsVerbose() bool {
+func (inOut *IOMock) IsVerbose() bool {
 	return true
 }
 
-func (InOut *IOMock) Write(message string, newline bool, verbosity int) {
+func (inOut *IOMock) Write(message string, newline bool, verbosity int) {
 
 }
 
-func (InOut *IOMock) Ask(message string, defaultValue string) string {
+func (inOut *IOMock) Ask(message string, defaultValue string) string {
 	return ""
 }

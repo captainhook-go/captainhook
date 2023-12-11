@@ -8,7 +8,6 @@ import (
 	"github.com/captainhook-go/captainhook/hooks/util"
 	"github.com/captainhook-go/captainhook/info"
 	"github.com/captainhook-go/captainhook/io"
-	"strings"
 )
 
 // All makes sure an action is only executed if all the configured files are changed.
@@ -46,8 +45,7 @@ func (c *All) IsTrue(condition *configuration.Condition) bool {
 		c.hookBundle.AppIO.Write("Condition FileChanged.ThatIs failed: "+err.Error(), true, io.NORMAL)
 		return false
 	}
-	files := condition.Options().AsString("files", "")
-	mustContain := strings.Split(files, ",")
+	mustContain := condition.Options().AsSliceOfStrings("files")
 	return util.ContainsAllStrings(changedFiles, mustContain)
 }
 

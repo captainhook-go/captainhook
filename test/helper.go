@@ -7,7 +7,7 @@ import (
 	"github.com/captainhook-go/captainhook/io"
 )
 
-func CreateFakeIO() io.IO {
+func CreateFakeIO() *IOMock {
 	return &IOMock{}
 }
 
