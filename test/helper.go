@@ -15,7 +15,7 @@ func CreateFakeConfig() *configuration.Configuration {
 	return configuration.NewConfiguration("captain.json", false)
 }
 
-func CreateFakeRepo() git.Repo {
+func CreateFakeRepo() *RepoMock {
 	return &RepoMock{path: "./", branch: "main"}
 }
 

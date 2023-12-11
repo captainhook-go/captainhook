@@ -1,22 +1,38 @@
 package test
 
-import "github.com/captainhook-go/captainhook/git/types"
+import (
+	"errors"
+	"github.com/captainhook-go/captainhook/git/types"
+)
 
 type RepoMock struct {
-	path   string
-	branch string
-	files  []string
-	log    []*types.Commit
+	triggerFileError bool
+	path             string
+	branch           string
+	fileList         []string
+	log              []*types.Commit
 }
 
-func (r *RepoMock) setBranch(name string) *RepoMock {
+func (r *RepoMock) SetBranch(name string) *RepoMock {
 	r.branch = name
 	return r
 }
 
-func (r *RepoMock) setFiles(files []string) *RepoMock {
-	r.files = files
+func (r *RepoMock) SetFiles(files []string) *RepoMock {
+	r.fileList = files
 	return r
+}
+
+func (r *RepoMock) SetFilesError(triggerError bool) *RepoMock {
+	r.triggerFileError = triggerError
+	return r
+}
+
+func (r *RepoMock) files() ([]string, error) {
+	if r.triggerFileError {
+		return []string{}, errors.New("files error")
+	}
+	return r.fileList, nil
 }
 
 func (r *RepoMock) Path() string {
@@ -52,11 +68,11 @@ func (r *RepoMock) IsMerging() bool {
 }
 
 func (r *RepoMock) StagedFiles() ([]string, error) {
-	return r.files, nil
+	return r.files()
 }
 
 func (r *RepoMock) ChangedFiles(from, to string) ([]string, error) {
-	return r.files, nil
+	return r.files()
 }
 
 func (r *RepoMock) BranchName() string {

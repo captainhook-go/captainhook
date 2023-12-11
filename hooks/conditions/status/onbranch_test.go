@@ -47,3 +47,17 @@ func TestBranchMainNotAllowed(t *testing.T) {
 		t.Errorf("Condition should not apply on wrong branch")
 	}
 }
+
+func TestApplicableFor(t *testing.T) {
+	inOut := test.CreateFakeIO()
+	conf := test.CreateFakeConfig()
+	repo := test.CreateFakeRepo()
+
+	action := NewOnBranch(inOut, conf, repo)
+	if !action.IsApplicableFor("pre-commit") {
+		t.Errorf("Condition should be applicable for 'pre-commit'")
+	}
+	if !action.IsApplicableFor("pre-push") {
+		t.Errorf("Condition should be applicable for 'pre-push'")
+	}
+}
