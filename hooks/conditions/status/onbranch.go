@@ -31,16 +31,16 @@ func (c *OnBranch) IsApplicableFor(hook string) bool {
 }
 
 func (c *OnBranch) IsTrue(condition *configuration.Condition) bool {
-	requiredBranch := condition.Options().AsString("value", "")
+	requiredBranch := condition.Options().AsString("name", "")
 	if requiredBranch == "" {
 		c.hookBundle.AppIO.Write("Condition Status.OnBranch option 'name' is missing", true, io.NORMAL)
-		return true
+		return false
 	}
 	currentBranch := c.hookBundle.Repo.BranchName()
-	if requiredBranch == currentBranch {
-		return true
+	if requiredBranch != currentBranch {
+		return false
 	}
-	return false
+	return true
 }
 
 func NewOnBranch(appIO io.IO, conf *configuration.Configuration, repo git.Repo) hooks.Condition {
