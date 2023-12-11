@@ -1,8 +1,12 @@
-# ignore the compile binary
+# ignore the compiled binary
 /captainhook
 
 # ignore the local captainhook.json configuration
 /captainhook.json
 /captainhook.config.json
+
+# ignore goreleaser build directory
 /dist/
-/tests/
+
+# ignore locat test files for now
+/test/files
