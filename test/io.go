@@ -26,19 +26,19 @@ func (InOut *IOMock) Input() io.Input {
 }
 
 func (InOut *IOMock) IsInteractive() bool {
-	return false
+	return true
 }
 
 func (InOut *IOMock) IsDebug() bool {
-	return false
+	return true
 }
 
 func (InOut *IOMock) IsQuiet() bool {
-	return false
+	return true
 }
 
 func (InOut *IOMock) IsVerbose() bool {
-	return false
+	return true
 }
 
 func (InOut *IOMock) Write(message string, newline bool, verbosity int) {
