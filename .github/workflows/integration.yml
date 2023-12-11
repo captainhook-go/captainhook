@@ -1,0 +1,16 @@
+name: "continuous-integration"
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    name: CI build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Go
+        uses: actions/setup-go@v4.1.0
+        with:
+          go-version: "1.21"
+      - name: Run tests
+        run: go test ./...
