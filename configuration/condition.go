@@ -13,6 +13,10 @@ func (c *Condition) Options() *Options {
 	return c.options
 }
 
+func NewCondition(cmd string, o *Options) *Condition {
+	return &Condition{run: cmd, options: o}
+}
+
 func createConditionsFromJson(jsonConditions []*JsonCondition) []*Condition {
 	var conditions []*Condition
 	if jsonConditions == nil {
@@ -30,8 +34,5 @@ func createConditionFromJson(json *JsonCondition) *Condition {
 	if json.Options != nil {
 		o = createOptionsFromJson(json.Options)
 	}
-
-	c := Condition{run: json.Run, options: o}
-
-	return &c
+	return NewCondition(json.Run, o)
 }

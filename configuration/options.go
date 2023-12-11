@@ -94,12 +94,15 @@ func (o Options) All() map[string]interface{} {
 	return o.options
 }
 
+func NewOptions(someMap map[string]interface{}) *Options {
+	return &Options{options: someMap}
+}
+
 func createOptionsFromJson(jsonOptions *map[string]interface{}) *Options {
 	options := map[string]interface{}{}
 
 	if jsonOptions != nil {
 		options = *jsonOptions
 	}
-	o := Options{options}
-	return &o
+	return NewOptions(options)
 }
