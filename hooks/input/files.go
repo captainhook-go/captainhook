@@ -18,9 +18,9 @@ func StagedOrChangedFiles(appIO io.IO, repo git.Repo) ([]string, error) {
 	return ChangedFiles(appIO, repo)
 }
 
-// ChangedFiles will return a lost of changed files
-// Depending on the executed hook it will use different detecting methods to
-// determine the `from` ad `to` references.
+// ChangedFiles will return a list of changed files
+// It uses a Detector that depending on the executed hook will use different methods to
+// detect the `from` ad `to` references.
 func ChangedFiles(appIO io.IO, repo git.Repo) ([]string, error) {
 	ranges := DetectRanges(appIO)
 	if len(ranges) == 0 {
