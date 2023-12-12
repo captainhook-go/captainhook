@@ -41,8 +41,7 @@ func (a *InjectIssueKeyFromBranch) Run(action *configuration.Action) error {
 	a.hookBundle.AppIO.Write("inject issue key from branch", true, io.VERBOSE)
 
 	branch := a.hookBundle.Repo.BranchName()
-	options := action.Options()
-	pattern := options.AsString("regex", "([A-Za-z]+\\-[0-9]+)")
+	pattern := action.Options().AsString("regex", "([A-Za-z]+\\-[0-9]+)")
 	msgFile := a.hookBundle.AppIO.Argument(info.ArgCommitMsgFile, "")
 
 	msg, err := a.hookBundle.Repo.CommitMessage(msgFile)
@@ -58,10 +57,12 @@ func (a *InjectIssueKeyFromBranch) Run(action *configuration.Action) error {
 	// can we actually find an issue id?
 	match := r.FindStringSubmatch(branch)
 	if match == nil {
-		if options.AsBool("force", false) {
-			return errors.New("no issue key found in branch name")
-		}
-		return nil
+		return a.noMatchFound(action.Options())
+	}
+
+	if len(match) < 2 {
+		a.hookBundle.AppIO.Write("issue key must be in regex group (ISSUE-KEY)", true, io.NORMAL)
+		return a.noMatchFound(action.Options())
 	}
 
 	issueID := match[1]
@@ -69,7 +70,7 @@ func (a *InjectIssueKeyFromBranch) Run(action *configuration.Action) error {
 	if strings.Contains(msg.Subject()+msg.Body(), issueID) {
 		return nil
 	}
-	return a.hookBundle.Repo.PrepareCommitMessage(msgFile, a.createNewCommitMessage(options, msg, issueID))
+	return a.hookBundle.Repo.PrepareCommitMessage(msgFile, a.createNewCommitMessage(action.Options(), msg, issueID))
 }
 
 func (a *InjectIssueKeyFromBranch) createNewCommitMessage(options *configuration.Options, msg *types.CommitMessage, issueID string) *types.CommitMessage {
@@ -101,6 +102,13 @@ func (a *InjectIssueKeyFromBranch) injectIssueId(issueID, target, mode, prefix s
 	}
 	return target + prefix + issueID
 
+}
+
+func (a *InjectIssueKeyFromBranch) noMatchFound(options *configuration.Options) error {
+	if options.AsBool("force", false) {
+		return errors.New("no issue key found in branch name")
+	}
+	return nil
 }
 
 func NewInjectIssueKeyFromBranch(appIO io.IO, conf *configuration.Configuration, repo git.Repo) hooks.Action {
