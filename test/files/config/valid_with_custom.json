@@ -1,0 +1,37 @@
+{
+  "config": {
+    "custom": {
+      "foo": "true",
+      "fiz": "false"
+    }
+  },
+  "hooks": {
+    "commit-msg": {
+      "actions": []
+    },
+    "post-change": {
+      "actions": []
+    },
+    "post-checkout": {
+      "actions": []
+    },
+    "post-commit": {
+      "actions": []
+    },
+    "post-merge": {
+      "actions": []
+    },
+    "post-rewrite": {
+      "actions": []
+    },
+    "pre-commit": {
+      "actions": []
+    },
+    "pre-push": {
+      "actions": []
+    },
+    "prepare-commit-msg": {
+      "actions": []
+    }
+  }
+}

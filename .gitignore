@@ -8,5 +8,5 @@
 # ignore goreleaser build directory
 /dist/
 
-# ignore locat test files for now
-/test/files
+# ignore coverage
+/build/
