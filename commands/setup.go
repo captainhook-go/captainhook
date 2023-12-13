@@ -15,7 +15,7 @@ func configurationAware(cmd *cobra.Command) {
 // repositoryAware is for all commands that need a repository to execute git commands or access the .git directory
 func repositoryAware(cmd *cobra.Command) {
 	var repoPath = ""
-	cmd.Flags().StringP("repository", "r", repoPath, "path to your git repository")
+	cmd.Flags().StringP("git-directory", "g", repoPath, "path to your .git directory")
 }
 
 // setUpConfig creates a Configuration struct
@@ -58,17 +58,17 @@ func getNoColor(cmd *cobra.Command) bool {
 	return noColor
 }
 
-// detectGitDir is checking the `--repository` option and sets the configuration accordingly
+// detectGitDir is checking the `--git-directory` option and sets the configuration accordingly
 func detectGitDir(cmd *cobra.Command, settings *configuration.JsonAppSettings) {
-	repoOption := getGitDit(cmd)
+	repoOption := getGitDir(cmd)
 	if len(repoOption) > 0 {
 		settings.GitDirectory = &repoOption
 	}
 }
 
-func getGitDit(cmd *cobra.Command) string {
+func getGitDir(cmd *cobra.Command) string {
 	repoPath := ""
-	repoOption, _ := cmd.Flags().GetString("repository")
+	repoOption, _ := cmd.Flags().GetString("git-directory")
 	if len(repoOption) > 0 {
 		repoPath = repoOption
 	}
