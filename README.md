@@ -36,7 +36,7 @@ go install github.com/captainhook-go/captainhook/cmd/captainhook@latest
 
 ## Setup
 
-After installing CaptainHook go to your project directory and use the *captainhook* init command to create a configuration file.
+After installing CaptainHook, navigate to your project directory and use the *captainhook* init command to create a configuration file.
 ```bash
 cd my-project-repo
 captainhook init
