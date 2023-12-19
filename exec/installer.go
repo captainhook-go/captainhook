@@ -7,6 +7,7 @@ import (
 	"github.com/captainhook-go/captainhook/io"
 	"os"
 	"sort"
+	"strings"
 	"text/template"
 )
 
@@ -59,12 +60,13 @@ func (i *Installer) Run() error {
 			return err
 		}
 	}
+	i.appIO.Write("<ok>hooks installed successfully</ok>", true, io.NORMAL)
 	return nil
 }
 
 func (i *Installer) installHook(hook string, ask bool) error {
 	if i.shouldHookBeSkipped(hook) {
-		hint := "  <info>" + hook + "</info> is already installed"
+		hint := "  <info>" + hook + "</info>" + strings.Repeat(" ", 30-len(hook)) + "skipped"
 		if i.appIO.IsDebug() {
 			hint = ", remove the --skip-existing option to overwrite."
 		}
@@ -109,7 +111,7 @@ func (i *Installer) writeHookFile(hook string) error {
 		file, _ := os.Create(i.repo.HooksDir() + "/" + hook)
 		defer file.Close()
 
-		i.appIO.Write("  installing <info>"+hook+"</info> to "+i.repo.HooksDir()+"/"+hook, true, io.VERBOSE)
+		i.appIO.Write("  <info>"+hook+"</info>"+strings.Repeat(" ", 30-len(hook))+"<ok>installed</ok>", true, io.VERBOSE)
 		tplErr := tpl.Execute(file, vars)
 		if tplErr != nil {
 			return tplErr
