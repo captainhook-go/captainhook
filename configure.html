@@ -59,12 +59,16 @@
       </p>
 
       <pre><code class="javascript">{
-  "commit-msg": {
-    // a hook config block
+  "config": {
+    // captainhook settings area
   },
-  "pre-commit": {
-    // another hook config block
-  },
+  "hooks": {
+    "commit-msg": {
+      // a hook config block
+    },
+    "pre-commit": {
+      // another hook config block
+    },
   // ...
 }</code></pre>
 
@@ -73,7 +77,7 @@
         Each hook configuration consists of two elements, an on/off switch and a list of actions to execute.
       </p>
 
-      <pre><code class="javascript">'commit-msg': {
+      <pre><code class="javascript">"commit-msg": {
   "enabled": true,
   "actions": []
 }</code></pre>
@@ -84,9 +88,9 @@
       </p>
 
       <h3 id="actions">Actions</h3>
-      <h4>CLI commands</h4>
+      <h4>Commands</h4>
       <p>
-        Actions can be two things, firstly you can run any cli command, as long as it uses exit codes to notify the
+        Actions can be two things, firstly you can run any command, as long as it uses exit codes to notify the
         caller about its success. If you, for example, run <em>go test</em> and a test fails, it will exit with status
         code 1, so <em>CaptainHook</em> knows that it should stop the currently running git command with an error.
       </p>
@@ -96,7 +100,7 @@
     "enabled": true,
     "actions": [
       {
-        "run": "go test"
+        "run": "go test ./.."
       }
     ]
   }
@@ -109,8 +113,8 @@
 
       <h5 id="placeholders">Placeholders</h5>
       <p>
-        You can use placeholders in CLI actions that will get replaced by the Cap'n before execution. This way you can
-        access the original hook arguments and some other neat stuff.
+        You can use placeholders in the <em>run</em> section of an actions. They will get replaced by the Cap'n before execution.
+        This way you can access the original hook arguments and some other neat stuff.
         You can either refer to them by a shorthand<em>{$ARGUMENT}</em> or the standard way <em>{$ARG|value-of:ARGUMENT}</em>.
       </p>
       <h5>Shorthand placeholders</h5>
@@ -281,7 +285,7 @@
       <h4>Internal functionality</h4>
       <p>
         Secondly you can execute some <em>CaptainHook</em> functionality.
-        So let's have a look at how to configure those.
+        So let's have a look at how to configure this.
       </p>
 
       <pre><code class="javascript">{
@@ -302,23 +306,25 @@
         message doesn't match your regular expression your commit fails.
       </p>
       <p>
-        Here's a <a href="actions.html">list of all available actions</a>.
+        Here's a <a href="actions.html">list of all included actions</a>.
       </p>
 
       <h3 id="conditions">Conditions</h3>
       <p>
         You can add conditions to an <em>action</em> configuration.
-        This becomes useful for example if you want to run tasks automatically but only if someone conditions apply.
+        This becomes useful for example if you want to run tasks automatically but only if some conditions apply.
       </p>
       <p>
-        To make sure you catch every change in your repository just use the <em>CaptainHook</em> hook <em>post-change</em> (not an official git hook)
+        For example to make sure you catch every change in of your dependencies in your application you can use
+        the <em>CaptainHook</em> hook <em>post-change</em> (not an official git hook)
         which gets triggered by gits <em>post-merge</em>, <em>post-checkout</em> and <em>post-rewrite</em> hooks.
+        You can use it to install all required dependencies but only if someone changed the <em>go.mod</em> or <em>go.sum</em> files.
       </p>
       <pre><code class="javascript">{
   "post-change": {
     "actions": [
       {
-        "run": "go mod -u",
+        "run": "go mod download",
         "conditions": [
           {
             "run": "CaptainHook::FileChanged.Any",
