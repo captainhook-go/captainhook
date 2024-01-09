@@ -27,7 +27,7 @@ func (c *ExternalCommand) IsTrue(condition *configuration.Condition) bool {
 	if commandToExecute != condition.Run() {
 		c.hookBundle.AppIO.Write("<comment>cmd:</comment>\n"+commandToExecute, true, io.VERBOSE)
 	}
-	err := ext.ExecuteCommand(c.hookBundle.AppIO, condition.Run())
+	err := ext.ExecuteCommand(c.hookBundle.AppIO, commandToExecute)
 	if err != nil {
 		c.hookBundle.AppIO.Write(err.Error(), true, io.NORMAL)
 		return false
