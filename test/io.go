@@ -5,6 +5,7 @@ import "github.com/captainhook-go/captainhook/io"
 type IOMock struct {
 	stdIn []string
 	args  map[string]string
+	Out   []string
 }
 
 func (inOut *IOMock) SetStdIn(input []string) {
@@ -56,7 +57,7 @@ func (inOut *IOMock) IsVerbose() bool {
 }
 
 func (inOut *IOMock) Write(message string, newline bool, verbosity int) {
-
+	inOut.Out = append(inOut.Out, message)
 }
 
 func (inOut *IOMock) Ask(message string, defaultValue string) string {
