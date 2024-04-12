@@ -193,8 +193,8 @@ func (i *Installer) HookTemplate() string {
 		"    INTERACTIVE=\"\"\n" +
 		"fi\n" +
 		"\n" +
-		"{{ .RUN_PATH }}captainhook $INTERACTIVE--configuration={{ .CONFIGURATION }} " +
-		"hook {{ .HOOK_NAME }} --input=\"$input\" \"$@\" <&0\n\n"
+		"{{ .RUN_PATH }}captainhook $INTERACTIVE--configuration={{ .CONFIGURATION }} --input=\"$input\" " +
+		"hook {{ .HOOK_NAME }} \"$@\" <&0\n\n"
 }
 
 func NewInstaller(appIO io.IO, config *configuration.Configuration, repo git.Repo) *Installer {
