@@ -19,7 +19,7 @@ var (
 	detectors = map[string]func(appIO io.IO) []*types.Range{
 		"pre-push": func(appIO io.IO) []*types.Range {
 			var ranges []*types.Range
-			for _, line := range appIO.StandardInput() {
+			for _, line := range io.SplitLines(appIO.Option("input", "")) {
 				if len(line) == 0 {
 					continue
 				}
@@ -37,7 +37,7 @@ var (
 		},
 		"post-rewrite": func(appIO io.IO) []*types.Range {
 			var ranges []*types.Range
-			for _, input := range appIO.StandardInput() {
+			for _, input := range io.SplitLines(appIO.Option("input", "")) {
 				if len(input) > 0 {
 					parts := strings.Split(strings.TrimSpace(input), " ")
 					id := "HEAD@{1}"

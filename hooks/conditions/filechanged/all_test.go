@@ -9,7 +9,7 @@ import (
 func TestAllFilesAreChanged(t *testing.T) {
 	inOut := test.CreateFakeIO()
 	inOut.SetArguments(map[string]string{"command": "pre-push"})
-	inOut.SetStdIn([]string{"refs/heads/main 12345 refs/heads/main 09876"})
+	inOut.SetOptions(map[string]string{"input": "refs/heads/main 12345 refs/heads/main 09876"})
 	conf := test.CreateFakeConfig()
 	repo := test.CreateFakeRepo()
 	repo.SetFiles([]string{"foo", "bar", "baz"})
@@ -26,7 +26,7 @@ func TestAllFilesAreChanged(t *testing.T) {
 func TestNotAllChangedFiles(t *testing.T) {
 	inOut := test.CreateFakeIO()
 	inOut.SetArguments(map[string]string{"command": "pre-push"})
-	inOut.SetStdIn([]string{"12345 refs/heads/main 09876 refs/heads/main"})
+	inOut.SetOptions(map[string]string{"input": "refs/heads/main 12345 refs/heads/main 09876"})
 	conf := test.CreateFakeConfig()
 	repo := test.CreateFakeRepo()
 	repo.SetFiles([]string{"foo", "bar", "baz"})
@@ -43,7 +43,7 @@ func TestNotAllChangedFiles(t *testing.T) {
 func TestAllChangedFilesDetectionFailed(t *testing.T) {
 	inOut := test.CreateFakeIO()
 	inOut.SetArguments(map[string]string{"command": "pre-push"})
-	inOut.SetStdIn([]string{""})
+	inOut.SetOptions(map[string]string{"input": ""})
 	conf := test.CreateFakeConfig()
 	repo := test.CreateFakeRepo()
 	repo.SetFilesError(true)
@@ -60,7 +60,7 @@ func TestAllChangedFilesDetectionFailed(t *testing.T) {
 func TestAllChangedFilesFailed(t *testing.T) {
 	inOut := test.CreateFakeIO()
 	inOut.SetArguments(map[string]string{"command": "pre-push"})
-	inOut.SetStdIn([]string{"12345 refs/heads/main 09876 refs/heads/main"})
+	inOut.SetOptions(map[string]string{"input": "refs/heads/main 12345 refs/heads/main 09876"})
 	conf := test.CreateFakeConfig()
 	repo := test.CreateFakeRepo()
 	repo.SetFilesError(true)

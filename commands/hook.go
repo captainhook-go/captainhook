@@ -80,15 +80,23 @@ func setupHookSubCommand(hook string) *cobra.Command {
 				DisplayCommandError(errRepo)
 			}
 
+			input, _ := cmd.Flags().GetString("input")
+			opts := map[string]string{
+				"input": input,
+			}
+
 			io.ColorStatus(conf.AnsiColors())
-			appIO := io.NewDefaultIO(conf.Verbosity(), mapArgs(info.HookArguments(hook), args, hook))
+			appIO := io.NewDefaultIO(conf.Verbosity(), opts, mapArgs(info.HookArguments(hook), args, hook))
 			runner := exec.NewHookRunner(hook, appIO, conf, repo)
+
 			errRun := runner.Run()
 			if errRun != nil {
 				os.Exit(1)
 			}
 		},
 	}
+	var input = ""
+	cmd.Flags().StringP("input", "i", input, "original hook stdIn")
 
 	configurationAware(cmd)
 	repositoryAware(cmd)

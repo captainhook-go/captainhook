@@ -17,7 +17,7 @@ func setupInitCommand() *cobra.Command {
 			force, _ := cmd.Flags().GetBool("force")
 			config, _ := cmd.Flags().GetString("configuration")
 
-			appIO := io.NewDefaultIO(configuration.MapVerbosity(getVerbosity(cmd)), make(map[string]string))
+			appIO := io.NewDefaultIO(configuration.MapVerbosity(getVerbosity(cmd)), map[string]string{}, make(map[string]string))
 
 			initializer := exec.NewInitializer(appIO)
 			initializer.UseConfig(config)

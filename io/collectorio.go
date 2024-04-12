@@ -20,9 +20,18 @@ func (c *CollectorIO) Verbosity() int {
 	return c.verbosity
 }
 
+func (c *CollectorIO) Options() map[string]string {
+	return c.input.Options()
+}
+
+func (c *CollectorIO) Option(name, defaultValue string) string {
+	return c.input.Option(name, defaultValue)
+}
+
 func (c *CollectorIO) Arguments() map[string]string {
 	return c.input.Arguments()
 }
+
 func (c *CollectorIO) Argument(name, defaultValue string) string {
 	return c.input.Argument(name, defaultValue)
 }

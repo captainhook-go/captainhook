@@ -4,6 +4,7 @@ import "github.com/captainhook-go/captainhook/io"
 
 type IOMock struct {
 	stdIn []string
+	opts  map[string]string
 	args  map[string]string
 	Out   []string
 }
@@ -16,8 +17,24 @@ func (inOut *IOMock) SetArguments(args map[string]string) {
 	inOut.args = args
 }
 
+func (inOut *IOMock) SetOptions(args map[string]string) {
+	inOut.opts = args
+}
+
 func (inOut *IOMock) Verbosity() int {
 	return 0
+}
+
+func (inOut *IOMock) Options() map[string]string {
+	return map[string]string{}
+}
+
+func (inOut *IOMock) Option(name, defaultValue string) string {
+	val, ok := inOut.opts[name]
+	if !ok {
+		return defaultValue
+	}
+	return val
 }
 
 func (inOut *IOMock) Arguments() map[string]string {
@@ -37,7 +54,7 @@ func (inOut *IOMock) StandardInput() []string {
 }
 
 func (inOut *IOMock) Input() io.Input {
-	return io.NewStdIn(inOut.args)
+	return io.NewStdIn(inOut.opts, inOut.args)
 }
 
 func (inOut *IOMock) IsInteractive() bool {

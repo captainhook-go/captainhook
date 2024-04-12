@@ -27,7 +27,7 @@ func setupUninstallCommand() *cobra.Command {
 				DisplayCommandError(errRepo)
 			}
 
-			appIO := io.NewDefaultIO(conf.Verbosity(), make(map[string]string))
+			appIO := io.NewDefaultIO(conf.Verbosity(), map[string]string{}, map[string]string{})
 
 			unInstaller := exec.NewUninstaller(appIO, conf, repo)
 			unInstaller.Force(force)

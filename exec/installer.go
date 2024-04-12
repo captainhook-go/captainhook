@@ -183,8 +183,18 @@ func (i *Installer) HookTemplate() string {
 		"# installed by CaptainHook {{ .VERSION }}\n" +
 		"\n" +
 		"INTERACTIVE=\"{{ if .INTERACTION }}--no-interaction {{ end }}\"\n" +
+		"# read original hook stdIn to pass it in as --input option\n" +
+		"input=$(cat)\n" +
 		"\n" +
-		"{{ .RUN_PATH }}captainhook $INTERACTIVE--configuration={{ .CONFIGURATION }} hook {{ .HOOK_NAME }} \"$@\" <&0\n\n"
+		"if [ -t 1 ]; then\n" +
+		"    # If we're in a terminal, redirect stdout and stderr to /dev/tty and\n" +
+		"    # read stdin from /dev/tty. Allow interactive mode for CaptainHook.\n" +
+		"    exec >/dev/tty 2>/dev/tty </dev/tty\n" +
+		"    INTERACTIVE=\"\"\n" +
+		"fi\n" +
+		"\n" +
+		"{{ .RUN_PATH }}captainhook $INTERACTIVE--configuration={{ .CONFIGURATION }} " +
+		"hook {{ .HOOK_NAME }} --input=\"$input\" \"$@\" <&0\n\n"
 }
 
 func NewInstaller(appIO io.IO, config *configuration.Configuration, repo git.Repo) *Installer {

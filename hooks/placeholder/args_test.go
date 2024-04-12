@@ -10,12 +10,13 @@ import (
 
 func TestArgs(t *testing.T) {
 	argMap := map[string]string{"message-file": "bar.txt"}
+	optMap := map[string]string{"input": ""}
 	expected := "bar.txt"
 
 	config := configuration.NewConfiguration("foo", false)
 	repo, _ := git.NewRepository(".git")
 	ctx := app.NewContext(
-		io.NewDefaultIO(io.NORMAL, argMap),
+		io.NewDefaultIO(io.NORMAL, optMap, argMap),
 		config,
 		repo,
 	)

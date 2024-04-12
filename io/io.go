@@ -9,6 +9,8 @@ const (
 
 type IO interface {
 	Verbosity() int
+	Options() map[string]string
+	Option(name, defaultValue string) string
 	Arguments() map[string]string
 	Argument(name, defaultValue string) string
 	StandardInput() []string

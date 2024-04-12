@@ -28,7 +28,7 @@ func setupInstallCommand() *cobra.Command {
 				DisplayCommandError(errRepo)
 			}
 
-			appIO := io.NewDefaultIO(conf.Verbosity(), make(map[string]string))
+			appIO := io.NewDefaultIO(conf.Verbosity(), map[string]string{}, map[string]string{})
 
 			installer := exec.NewInstaller(appIO, conf, repo)
 			installer.SkipExisting(skip)

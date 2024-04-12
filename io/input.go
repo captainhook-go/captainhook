@@ -8,6 +8,8 @@ import (
 
 type Input interface {
 	Data() []string
+	Option(name, defaultValue string) string
+	Options() map[string]string
 	Argument(name, defaultValue string) string
 	Arguments() map[string]string
 	Ask(message, defaultValue string) string
@@ -16,6 +18,7 @@ type Input interface {
 type StdIn struct {
 	stdInLoaded bool
 	stdInData   []string
+	options     map[string]string
 	arguments   map[string]string
 }
 
@@ -37,6 +40,18 @@ func (s *StdIn) Argument(name, defaultValue string) string {
 
 func (s *StdIn) Arguments() map[string]string {
 	return s.arguments
+}
+
+func (s *StdIn) Option(name, defaultValue string) string {
+	value, ok := s.options[name]
+	if !ok {
+		value = defaultValue
+	}
+	return value
+}
+
+func (s *StdIn) Options() map[string]string {
+	return s.options
 }
 
 func (s *StdIn) Ask(message, defaultValue string) string {
@@ -81,6 +96,6 @@ func (s *StdIn) isPiped() bool {
 	return (stat.Mode() & os.ModeCharDevice) == 0
 }
 
-func NewStdIn(args map[string]string) *StdIn {
-	return &StdIn{arguments: args, stdInLoaded: false}
+func NewStdIn(opts map[string]string, args map[string]string) *StdIn {
+	return &StdIn{options: opts, arguments: args, stdInLoaded: false}
 }

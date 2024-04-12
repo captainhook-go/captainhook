@@ -9,7 +9,7 @@ import (
 func TestAnyFilesAreStaged(t *testing.T) {
 	inOut := test.CreateFakeIO()
 	inOut.SetArguments(map[string]string{"command": "pre-push"})
-	inOut.SetStdIn([]string{"refs/heads/main 12345 refs/heads/main 09876"})
+	inOut.SetOptions(map[string]string{"input": "refs/heads/main 12345 refs/heads/main 09876"})
 	conf := test.CreateFakeConfig()
 	repo := test.CreateFakeRepo()
 	repo.SetFiles([]string{"foo", "bar", "baz"})
@@ -19,14 +19,14 @@ func TestAnyFilesAreStaged(t *testing.T) {
 
 	action := NewAny(inOut, conf, repo)
 	if !action.IsTrue(condition) {
-		t.Errorf("All files should be staged")
+		t.Errorf("At least one file should be staged")
 	}
 }
 
 func TestAnyNoFilesAreStaged(t *testing.T) {
 	inOut := test.CreateFakeIO()
 	inOut.SetArguments(map[string]string{"command": "pre-push"})
-	inOut.SetStdIn([]string{"refs/heads/main 12345 refs/heads/main 09876"})
+	inOut.SetOptions(map[string]string{"input": "refs/heads/main 12345 refs/heads/main 09876"})
 	conf := test.CreateFakeConfig()
 	repo := test.CreateFakeRepo()
 	repo.SetFiles([]string{"foo", "bar", "baz"})
@@ -43,7 +43,7 @@ func TestAnyNoFilesAreStaged(t *testing.T) {
 func TestAnyStagedFilesFailed(t *testing.T) {
 	inOut := test.CreateFakeIO()
 	inOut.SetArguments(map[string]string{"command": "pre-push"})
-	inOut.SetStdIn([]string{"refs/heads/main 12345 refs/heads/main 09876"})
+	inOut.SetOptions(map[string]string{"input": "refs/heads/main 12345 refs/heads/main 09876"})
 	conf := test.CreateFakeConfig()
 	repo := test.CreateFakeRepo()
 	repo.SetFilesError(true)
@@ -60,7 +60,7 @@ func TestAnyStagedFilesFailed(t *testing.T) {
 func TestAnyStagedFilesDetectFailed(t *testing.T) {
 	inOut := test.CreateFakeIO()
 	inOut.SetArguments(map[string]string{"command": "pre-push"})
-	inOut.SetStdIn([]string{""})
+	inOut.SetOptions(map[string]string{"input": ""})
 	conf := test.CreateFakeConfig()
 	repo := test.CreateFakeRepo()
 

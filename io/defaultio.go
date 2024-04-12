@@ -9,13 +9,21 @@ type DefaultIO struct {
 	input     Input
 }
 
-func NewDefaultIO(verbosity int, arguments map[string]string) *DefaultIO {
-	io := DefaultIO{verbosity: verbosity, input: NewStdIn(arguments)}
+func NewDefaultIO(verbosity int, options map[string]string, arguments map[string]string) *DefaultIO {
+	io := DefaultIO{verbosity: verbosity, input: NewStdIn(options, arguments)}
 	return &io
 }
 
 func (d *DefaultIO) Verbosity() int {
 	return d.verbosity
+}
+
+func (d *DefaultIO) Options() map[string]string {
+	return d.input.Options()
+}
+
+func (d *DefaultIO) Option(name, defaultValue string) string {
+	return d.input.Option(name, defaultValue)
 }
 
 func (d *DefaultIO) Arguments() map[string]string {

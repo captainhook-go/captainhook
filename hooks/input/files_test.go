@@ -21,7 +21,7 @@ func TestStagedOrChangedFilesWithStaged(t *testing.T) {
 func TestStagedOrChangedFilesWithChanged(t *testing.T) {
 	inOut := test.CreateFakeIO()
 	inOut.SetArguments(map[string]string{"command": "pre-push"})
-	inOut.SetStdIn([]string{"refs/heads/main 12345 refs/heads/main 09876"})
+	inOut.SetOptions(map[string]string{"input": "refs/heads/main 12345 refs/heads/main 09876"})
 	repo := test.CreateFakeRepo()
 	repo.SetFiles([]string{"foo", "bar", "baz"})
 
@@ -35,7 +35,7 @@ func TestStagedOrChangedFilesWithChanged(t *testing.T) {
 func TestStagedOrChangedFilesWithBrokenInput(t *testing.T) {
 	inOut := test.CreateFakeIO()
 	inOut.SetArguments(map[string]string{"command": "pre-push"})
-	inOut.SetStdIn([]string{""})
+	inOut.SetOptions(map[string]string{"input": ""})
 	repo := test.CreateFakeRepo()
 	repo.SetFiles([]string{"foo", "bar", "baz"})
 

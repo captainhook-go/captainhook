@@ -17,7 +17,7 @@ func TestEnvVarFound(t *testing.T) {
 	config := configuration.NewConfiguration("foo", false)
 	repo, _ := git.NewRepository(".git")
 	ctx := app.NewContext(
-		io.NewDefaultIO(io.NORMAL, map[string]string{}),
+		io.NewDefaultIO(io.NORMAL, map[string]string{}, map[string]string{}),
 		config,
 		repo,
 	)
@@ -38,7 +38,7 @@ func TestEnvVarDefault(t *testing.T) {
 	config := configuration.NewConfiguration("foo", false)
 	repo, _ := git.NewRepository(".git")
 	ctx := app.NewContext(
-		io.NewDefaultIO(io.NORMAL, map[string]string{}),
+		io.NewDefaultIO(io.NORMAL, map[string]string{}, map[string]string{}),
 		config,
 		repo,
 	)
