@@ -1,6 +1,7 @@
 package exec
 
 import (
+	"errors"
 	"fmt"
 	"github.com/captainhook-go/captainhook/configuration"
 	"github.com/captainhook-go/captainhook/events"
@@ -10,7 +11,9 @@ import (
 	"github.com/captainhook-go/captainhook/hooks/app"
 	"github.com/captainhook-go/captainhook/info"
 	"github.com/captainhook-go/captainhook/io"
+	"github.com/hashicorp/go-version"
 	"os"
+	"regexp"
 	"sync"
 	"time"
 )
@@ -28,8 +31,15 @@ type HookRunner struct {
 // Run executes the HookRunner
 func (h *HookRunner) Run() error {
 	start := time.Now()
-	hookConfig := h.prepareHookConfig()
 	var err error
+
+	err = h.checkHookScript()
+	if err != nil {
+		h.appIO.Write(err.Error(), true, io.NORMAL)
+		return err
+	}
+
+	hookConfig := h.prepareHookConfig()
 	err = h.eventDispatcher.DispatchHookStartedEvent(
 		events.NewHookStartedEvent(app.NewContext(h.appIO, h.config, h.repo), hookConfig),
 	)
@@ -201,6 +211,33 @@ func (h *HookRunner) prepareHookConfig() *configuration.Hook {
 		}
 	}
 	return hookConfig
+}
+
+// checkHookScript checks if the installed hook script is created by a recent enough version
+func (h *HookRunner) checkHookScript() error {
+	scriptFile := h.repo.HooksDir() + "/" + h.hook
+	scriptData, _ := io.ReadFile(scriptFile)
+	scriptText := string(scriptData)
+
+	pattern := `installed by CaptainHook (\d+\.\d+\.\d+)`
+	re := regexp.MustCompile(pattern)
+	match := re.FindStringSubmatch(scriptText)
+
+	if len(match) < 1 {
+		return nil
+	}
+
+	installer, _ := version.NewVersion(match[1])
+	required, _ := version.NewVersion(info.MinRequiredInstaller)
+
+	if !installer.GreaterThanOrEqual(required) {
+		return errors.New(
+			"your hook scripts are out of date\n" +
+				"please re-install your hooks by running\n" +
+				"  captainhook install",
+		)
+	}
+	return nil
 }
 
 func NewHookRunner(hook string, appIO io.IO, config *configuration.Configuration, repo git.Repo) *HookRunner {
