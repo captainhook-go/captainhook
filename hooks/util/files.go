@@ -49,3 +49,8 @@ func ContainsAnyString(haystack []string, needles []string) bool {
 	}
 	return false
 }
+
+// RelativePathFromTo returns the relative path from directory `from` to the file `to`
+func RelativePathFromTo(from string, to string) string {
+	return strings.Replace(to, from, ".", 1)
+}
