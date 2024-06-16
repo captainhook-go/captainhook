@@ -11,6 +11,7 @@ import (
 	"github.com/captainhook-go/captainhook/io"
 	"os"
 	"path"
+	"path/filepath"
 	"regexp"
 )
 
@@ -25,6 +26,15 @@ type Repository struct {
 
 func (r *Repository) Path() string {
 	return r.root
+}
+
+// AbsPath returns the absolute path to the repository and the relative path as fallback
+func (r *Repository) AbsPath() string {
+	absPath, err := filepath.Abs(r.root)
+	if err != nil {
+		return r.root
+	}
+	return absPath
 }
 
 func (r *Repository) GitDir() string {

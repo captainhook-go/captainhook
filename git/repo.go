@@ -8,6 +8,9 @@ type Repo interface {
 	// Path returns the path to the repositories root directory
 	Path() string
 
+	// AbsPath returns the absolute path to the root directory
+	AbsPath() string
+
 	// GitDir returns the path to the .git directory of the repository
 	GitDir() string
 
