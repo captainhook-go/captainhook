@@ -3,9 +3,11 @@ package exec
 import (
 	"github.com/captainhook-go/captainhook/configuration"
 	"github.com/captainhook-go/captainhook/git"
+	"github.com/captainhook-go/captainhook/hooks/util"
 	"github.com/captainhook-go/captainhook/info"
 	"github.com/captainhook-go/captainhook/io"
 	"os"
+	"os/exec"
 	"sort"
 	"strings"
 	"text/template"
@@ -101,7 +103,7 @@ func (i *Installer) writeHookFile(hook string) error {
 	if doIt {
 		vars := make(map[string]interface{})
 		vars["HOOK_NAME"] = hook
-		vars["RUN_PATH"] = i.config.RunPath()
+		vars["RUN_PATH"] = i.determineRunPath()
 		vars["INTERACTION"] = false
 		vars["VERSION"] = info.Version
 		vars["CONFIGURATION"] = i.config.Path()
@@ -111,11 +113,11 @@ func (i *Installer) writeHookFile(hook string) error {
 		file, _ := os.Create(i.repo.HooksDir() + "/" + hook)
 		defer file.Close()
 
-		i.appIO.Write("  <info>"+hook+"</info>"+strings.Repeat(" ", 30-len(hook))+"<ok>installed</ok>", true, io.VERBOSE)
 		tplErr := tpl.Execute(file, vars)
 		if tplErr != nil {
 			return tplErr
 		}
+		i.appIO.Write("  <info>"+hook+"</info>"+strings.Repeat(" ", 30-len(hook))+"<ok>installed</ok>", true, io.VERBOSE)
 		return os.Chmod(file.Name(), 0700)
 	}
 	return nil
@@ -177,6 +179,43 @@ func (i *Installer) backupHook(hook string) {
 	return
 }
 
+func (i *Installer) determineRunPath() string {
+	if i.config.RunPath() != "" {
+		return i.config.RunPath() + info.Executable
+	}
+	if i.isExecutableInPath(info.Executable) {
+		return info.Executable
+	}
+
+	// path is not configured and executable is not findable via $PATH
+	// now we have to figure it out
+	absExecPath := i.execPath()
+	absGitRoot := i.repo.AbsPath()
+	if i.isExecutableInsideGitRepo(absExecPath, absGitRoot) {
+		return util.RelativePathFromTo(absGitRoot, absExecPath)
+	}
+	// this is the last resort, just use the absolute path to the executable
+	return absExecPath
+}
+
+func (i *Installer) isExecutableInPath(executable string) bool {
+	_, err := exec.LookPath(executable)
+	return err == nil
+}
+
+func (i *Installer) isExecutableInsideGitRepo(absExec string, absGitRoot string) bool {
+	return strings.Contains(absExec, absGitRoot)
+}
+
+// execPath returns the path to the currently running executable
+func (i *Installer) execPath() string {
+	execPath, err := os.Executable()
+	if err != nil {
+		return ""
+	}
+	return execPath
+}
+
 func (i *Installer) HookTemplate() string {
 	return "#!/bin/sh\n" +
 		"\n" +
@@ -193,7 +232,7 @@ func (i *Installer) HookTemplate() string {
 		"    INTERACTIVE=\"\"\n" +
 		"fi\n" +
 		"\n" +
-		"{{ .RUN_PATH }}captainhook $INTERACTIVE--configuration={{ .CONFIGURATION }} --input=\"$input\" " +
+		"{{ .RUN_PATH }} $INTERACTIVE--configuration={{ .CONFIGURATION }} --input=\"$input\" " +
 		"hook {{ .HOOK_NAME }} \"$@\" <&0\n\n"
 }
 
