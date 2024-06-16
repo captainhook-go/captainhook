@@ -39,6 +39,10 @@ func (r *RepoMock) Path() string {
 	return r.path
 }
 
+func (r *RepoMock) AbsPath() string {
+	return r.path
+}
+
 func (r *RepoMock) GitDir() string {
 	return r.Path() + "/.git"
 }
