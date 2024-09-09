@@ -1,5 +1,5 @@
 # yaml-language-server: $schema=https://goreleaser.com/static/schema.json
-version: 1
+version: 2
 
 env_files:
   github_token: ~/Documents/Keys/goreleaser.token
@@ -45,7 +45,8 @@ brews:
       owner: captainhook-go
       name: homebrew-captainhook
       branch: main
-    folder: Formula
+
+    directory: Formula
     url_template: "https://github.com/captainhook-go/captainhook/releases/download/{{ .Tag }}/{{ .ArtifactName }}"
     commit_author:
       name: "Sebastian Feldmann"
