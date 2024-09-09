@@ -28,6 +28,9 @@ var (
 			files, _ := aContext.Repository().StagedFiles()
 			return &FileList{name: "STAGED_FILES", context: aContext, files: files}
 		},
+		"STDIN": func(aContext *app.Context) Replacer {
+			return &StdIn{context: aContext}
+		},
 	}
 )
 
