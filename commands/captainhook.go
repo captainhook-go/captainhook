@@ -71,5 +71,6 @@ func init() {
 	rootCmd.AddCommand(setupInitCommand())
 	rootCmd.AddCommand(setupInstallCommand())
 	rootCmd.AddCommand(setupUninstallCommand())
+	rootCmd.AddCommand(setupInfoCommand())
 	rootCmd.AddCommand(hookCommand)
 }
