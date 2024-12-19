@@ -120,6 +120,7 @@ func (c *Configuration) overwriteSettings(json *JsonAppSettings) {
 
 func MapVerbosity(verbosity string) int {
 	verbosityMap := map[string]int{
+		"quiet":   io.QUIET,
 		"normal":  io.NORMAL,
 		"verbose": io.VERBOSE,
 		"debug":   io.DEBUG,
@@ -133,6 +134,7 @@ func MapVerbosity(verbosity string) int {
 
 func UnMapVerbosity(verbosity int) string {
 	verbosityMap := map[int]string{
+		io.QUIET:   "quiet",
 		io.NORMAL:  "normal",
 		io.VERBOSE: "verbose",
 		io.DEBUG:   "debug",
