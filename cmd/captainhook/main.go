@@ -1,14 +1,15 @@
 /*
-CaptainHook is a git hook manager and can be used to easily share git hooks with teammates.
+CaptainHook is a git hook manager to easily configure and share your git hooks with teammates.
 
-The Cap'n works with a json configuration file to easily configure actions that should
-get executed during git hooks. It offers a lot of features like commit message validation
+The Cap'n works with a json configuration file where you configure actions that should
+get executed during git hooks. The Cap'n has a lot of build-in features like commit message validation
 or only executing actions if some conditions apply.
 
-Once you committed the config file to the repository all your teammates have
-to do is run `captainhook install` and they all have the same git hook setup.
+To set up the Cap'n you have to run the `init` command to create a configuration
+file followed by the `install` command to activate your local git hooks.
 
-To use the Cap'n you have to run the `init` and the `install` command.
+Once you committed the config file to the repository your teammates just have to install the Cap'n
+and to run `captainhook install` and they all have the same git hook setup.
 
 Usage:
 
