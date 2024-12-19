@@ -24,8 +24,9 @@ type JsonActionSettings struct {
 }
 
 type JsonCondition struct {
-	Run     string                  `json:"run,omitempty"`
-	Options *map[string]interface{} `json:"options,omitempty"`
+	Run        string                  `json:"run,omitempty"`
+	Options    *map[string]interface{} `json:"options,omitempty"`
+	Conditions []*JsonCondition        `json:"conditions,omitempty"`
 }
 
 type JsonAppSettings struct {

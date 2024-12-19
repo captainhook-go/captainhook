@@ -141,6 +141,13 @@
         "options": {
           "description": "Options for the command to execute",
           "$ref": "#/$defs/options"
+        },
+        "conditions": {
+          "description": "List of sub conditions, only applicable for AND and OR conditions",
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/condition"
+          }
         }
       },
       "required": ["run"]
