@@ -111,6 +111,11 @@ func (c *ConfigInfo) displayConditions(conditions []*configuration.Condition, pr
 
 func (c *ConfigInfo) displayCondition(condition *configuration.Condition, prefix string) {
 	c.appIO.Write(prefix+"    - "+condition.Run(), true, io.NORMAL)
+
+	for _, subC := range condition.Conditions() {
+		c.displayCondition(subC, prefix+"  ")
+	}
+
 	if c.shouldDisplay("options") {
 		if len(condition.Options().All()) == 0 {
 			return
