@@ -13,7 +13,7 @@ func TestAllFilesAreStaged(t *testing.T) {
 	repo.SetFiles([]string{"foo", "bar", "baz"})
 
 	options := configuration.NewOptions(map[string]interface{}{"files": []interface{}{"foo", "bar"}})
-	condition := configuration.NewCondition("CaptainHook::StagedFiles.All", options)
+	condition := configuration.NewCondition("CaptainHook::StagedFiles.All", options, []*configuration.Condition{})
 
 	action := NewAll(inOut, conf, repo)
 	if !action.IsTrue(condition) {
@@ -28,7 +28,7 @@ func TestNotAllFilesAreStaged(t *testing.T) {
 	repo.SetFiles([]string{"foo", "bar", "baz"})
 
 	options := configuration.NewOptions(map[string]interface{}{"files": []interface{}{"foo", "fiz"}})
-	condition := configuration.NewCondition("CaptainHook::StagedFiles.All", options)
+	condition := configuration.NewCondition("CaptainHook::StagedFiles.All", options, []*configuration.Condition{})
 
 	action := NewAll(inOut, conf, repo)
 	if action.IsTrue(condition) {
@@ -43,7 +43,7 @@ func TestAllStagedFilesFailed(t *testing.T) {
 	repo.SetFilesError(true)
 
 	options := configuration.NewOptions(map[string]interface{}{"files": []interface{}{"foo", "fiz"}})
-	condition := configuration.NewCondition("CaptainHook::StagedFiles.All", options)
+	condition := configuration.NewCondition("CaptainHook::StagedFiles.All", options, []*configuration.Condition{})
 
 	action := NewAll(inOut, conf, repo)
 	if action.IsTrue(condition) {

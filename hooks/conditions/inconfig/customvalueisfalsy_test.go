@@ -12,7 +12,7 @@ func TestCustomValueIsFalsy(t *testing.T) {
 	repo := test.CreateFakeRepo()
 
 	options := configuration.NewOptions(map[string]interface{}{"value": "fiz"})
-	condition := configuration.NewCondition("CaptainHook::InConfig.CustomValueIsFalsy", options)
+	condition := configuration.NewCondition("CaptainHook::InConfig.CustomValueIsFalsy", options, []*configuration.Condition{})
 
 	action := NewCustomValueIsFalsy(inOut, conf, repo)
 	if !action.IsTrue(condition) {
@@ -26,7 +26,7 @@ func TestCustomValueIsNotFalsy(t *testing.T) {
 	repo := test.CreateFakeRepo()
 
 	options := configuration.NewOptions(map[string]interface{}{"value": "foo"})
-	condition := configuration.NewCondition("CaptainHook::InConfig.CustomValueIsFalsy", options)
+	condition := configuration.NewCondition("CaptainHook::InConfig.CustomValueIsFalsy", options, []*configuration.Condition{})
 
 	action := NewCustomValueIsFalsy(inOut, conf, repo)
 	if action.IsTrue(condition) {

@@ -15,7 +15,7 @@ func TestAllFilesAreChanged(t *testing.T) {
 	repo.SetFiles([]string{"foo", "bar", "baz"})
 
 	options := configuration.NewOptions(map[string]interface{}{"files": []interface{}{"foo", "bar"}})
-	condition := configuration.NewCondition("CaptainHook::ChangedFiles.All", options)
+	condition := configuration.NewCondition("CaptainHook::ChangedFiles.All", options, []*configuration.Condition{})
 
 	action := NewAll(inOut, conf, repo)
 	if !action.IsTrue(condition) {
@@ -32,7 +32,7 @@ func TestNotAllChangedFiles(t *testing.T) {
 	repo.SetFiles([]string{"foo", "bar", "baz"})
 
 	options := configuration.NewOptions(map[string]interface{}{"files": []interface{}{"foo", "fiz"}})
-	condition := configuration.NewCondition("CaptainHook::ChangedFiles.All", options)
+	condition := configuration.NewCondition("CaptainHook::ChangedFiles.All", options, []*configuration.Condition{})
 
 	action := NewAll(inOut, conf, repo)
 	if action.IsTrue(condition) {
@@ -49,7 +49,7 @@ func TestAllChangedFilesDetectionFailed(t *testing.T) {
 	repo.SetFilesError(true)
 
 	options := configuration.NewOptions(map[string]interface{}{"files": []interface{}{"foo", "fiz"}})
-	condition := configuration.NewCondition("CaptainHook::ChangedFiles.All", options)
+	condition := configuration.NewCondition("CaptainHook::ChangedFiles.All", options, []*configuration.Condition{})
 
 	action := NewAll(inOut, conf, repo)
 	if action.IsTrue(condition) {
@@ -66,7 +66,7 @@ func TestAllChangedFilesFailed(t *testing.T) {
 	repo.SetFilesError(true)
 
 	options := configuration.NewOptions(map[string]interface{}{"files": []interface{}{"foo", "fiz"}})
-	condition := configuration.NewCondition("CaptainHook::ChangedFiles.All", options)
+	condition := configuration.NewCondition("CaptainHook::ChangedFiles.All", options, []*configuration.Condition{})
 
 	action := NewAll(inOut, conf, repo)
 	if action.IsTrue(condition) {

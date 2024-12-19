@@ -12,7 +12,7 @@ func TestBranchConfigMissing(t *testing.T) {
 	repo := test.CreateFakeRepo()
 
 	options := configuration.NewOptions(map[string]interface{}{})
-	condition := configuration.NewCondition("CaptainHook::Status.OnBranch", options)
+	condition := configuration.NewCondition("CaptainHook::Status.OnBranch", options, []*configuration.Condition{})
 
 	action := NewOnBranch(inOut, conf, repo)
 	if action.IsTrue(condition) {
@@ -26,7 +26,7 @@ func TestBranchMainAllowed(t *testing.T) {
 	repo := test.CreateFakeRepo()
 
 	options := configuration.NewOptions(map[string]interface{}{"name": "main"})
-	condition := configuration.NewCondition("CaptainHook::Status.OnBranch", options)
+	condition := configuration.NewCondition("CaptainHook::Status.OnBranch", options, []*configuration.Condition{})
 
 	action := NewOnBranch(inOut, conf, repo)
 	if !action.IsTrue(condition) {
@@ -40,7 +40,7 @@ func TestBranchMainNotAllowed(t *testing.T) {
 	repo := test.CreateFakeRepo()
 
 	options := configuration.NewOptions(map[string]interface{}{"name": "foo"})
-	condition := configuration.NewCondition("CaptainHook::Status.OnBranch", options)
+	condition := configuration.NewCondition("CaptainHook::Status.OnBranch", options, []*configuration.Condition{})
 
 	action := NewOnBranch(inOut, conf, repo)
 	if action.IsTrue(condition) {
