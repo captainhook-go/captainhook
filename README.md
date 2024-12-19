@@ -1,7 +1,9 @@
 ![Version](https://img.shields.io/github/v/release/captainhook-go/captainhook?style=flat-square&label=version)
+[![License](https://poser.pugx.org/captainhook/captainhook/license.svg?v=1)](https://packagist.org/packages/captainhook/captainhook)
 [![Go Report Card](https://goreportcard.com/badge/github.com/captainhook-go/captainhook?style=flat-square)](https://goreportcard.com/report/github.com/captainhook-go/captainhook)
 ![Go Version](https://img.shields.io/badge/go%20version-%3E=1.21-61CFDD.svg?style=flat-square)
 [![Go Reference](https://pkg.go.dev/badge/github.com/captainhook-go/captainhook.svg?style=flat-square)](https://pkg.go.dev/github.com/captainhook-go/captainhook)
+[![Mastodon](https://img.shields.io/badge/Mastodon-%40captainhook-purple.svg)](https://phpc.social/@captainhook)
 
 
 # CaptainHook
