@@ -4,8 +4,10 @@ import (
 	"github.com/captainhook-go/captainhook/configuration"
 	"github.com/captainhook-go/captainhook/git"
 	"github.com/captainhook-go/captainhook/hooks"
+	"github.com/captainhook-go/captainhook/hooks/app"
 	"github.com/captainhook-go/captainhook/hooks/conditions"
 	"github.com/captainhook-go/captainhook/io"
+	"strings"
 )
 
 // ConditionRunner executes conditions
@@ -18,14 +20,21 @@ type ConditionRunner struct {
 
 // Run executes the ConditionRunner
 func (c *ConditionRunner) Run(hook string, condition *configuration.Condition) bool {
-	conditionToExecute, err := c.crateCondition(condition)
+	if isLogicCondition(condition.Run()) {
+		return checkLogicCondition(app.NewContext(c.cIO, c.conf, c.repo), condition, hook)
+	}
 
+	if len(condition.Conditions()) > 0 {
+		c.cIO.Write("ConditionRunner: "+condition.Run()+" not allowed to have sub conditions", true, io.NORMAL)
+		return true
+	}
+
+	conditionToExecute, err := c.crateCondition(condition)
 	if err != nil {
 		return false
 	}
-
 	if !conditionToExecute.IsApplicableFor(hook) {
-		c.cIO.Write("ConditionRunner: "+condition.Run()+" nor applicable for hook "+hook, true, io.VERBOSE)
+		c.cIO.Write("ConditionRunner: "+condition.Run()+" not applicable for hook "+hook, true, io.VERBOSE)
 		return true
 	}
 	return conditionToExecute.IsTrue(condition)
@@ -63,4 +72,40 @@ func NewConditionRunner(cIO io.IO, conf *configuration.Configuration, repo git.R
 		repo,
 	}
 	return &c
+}
+
+func checkLogicCondition(context *app.Context, condition *configuration.Condition, hook string) bool {
+	if isAndCondition(condition.Run()) {
+		return DoAllConditionsApply(context, condition.Conditions(), hook)
+	}
+	return DoesAnyConditionApply(context, condition.Conditions(), hook)
+}
+
+func isAndCondition(run string) bool {
+	return strings.Contains(strings.ToLower(run), "logic.and")
+}
+
+func DoAllConditionsApply(context *app.Context, conditions []*configuration.Condition, hook string) bool {
+	conditionRunner := NewConditionRunner(context.IO(), context.Config(), context.Repository())
+	for _, condition := range conditions {
+		if !conditionRunner.Run(hook, condition) {
+			return false
+		}
+	}
+	return true
+}
+
+func DoesAnyConditionApply(context *app.Context, conditions []*configuration.Condition, hook string) bool {
+	conditionRunner := NewConditionRunner(context.IO(), context.Config(), context.Repository())
+
+	if len(conditions) < 1 {
+		return true
+	}
+
+	for _, condition := range conditions {
+		if conditionRunner.Run(hook, condition) {
+			return true
+		}
+	}
+	return false
 }

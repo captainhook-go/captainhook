@@ -1,8 +1,9 @@
 package configuration
 
 type Condition struct {
-	run     string
-	options *Options
+	run        string
+	options    *Options
+	conditions []*Condition
 }
 
 func (c *Condition) Run() string {
@@ -13,8 +14,12 @@ func (c *Condition) Options() *Options {
 	return c.options
 }
 
-func NewCondition(cmd string, o *Options) *Condition {
-	return &Condition{run: cmd, options: o}
+func (c *Condition) Conditions() []*Condition {
+	return c.conditions
+}
+
+func NewCondition(cmd string, o *Options, c []*Condition) *Condition {
+	return &Condition{run: cmd, options: o, conditions: c}
 }
 
 func createConditionsFromJson(jsonConditions []*JsonCondition) []*Condition {
@@ -30,9 +35,13 @@ func createConditionsFromJson(jsonConditions []*JsonCondition) []*Condition {
 
 func createConditionFromJson(json *JsonCondition) *Condition {
 	var o *Options
+	var c []*Condition
 
 	if json.Options != nil {
 		o = createOptionsFromJson(json.Options)
 	}
-	return NewCondition(json.Run, o)
+	if json.Conditions != nil {
+		c = createConditionsFromJson(json.Conditions)
+	}
+	return NewCondition(json.Run, o, c)
 }

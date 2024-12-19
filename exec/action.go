@@ -106,14 +106,10 @@ func (a *ActionRunner) createExternalAction(cIO *io.CollectorIO) (hooks.Action, 
 }
 
 // doConditionsApply answers if an Action should be executed for a specific hook
+// In order to be executed all conditions have to be true.
+// The only exception are conditions within a logic OR condition which is handled a layer blow.
 func (a *ActionRunner) doConditionsApply(hook string, conditions []*configuration.Condition, cIO *io.CollectorIO) bool {
-	conditionRunner := NewConditionRunner(cIO, a.conf, a.repo)
-	for _, condition := range conditions {
-		if !conditionRunner.Run(hook, condition) {
-			return false
-		}
-	}
-	return true
+	return DoAllConditionsApply(app.NewContext(cIO, a.conf, a.repo), conditions, hook)
 }
 
 func NewActionRunner(
