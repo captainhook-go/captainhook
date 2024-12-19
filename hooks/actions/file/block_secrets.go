@@ -35,7 +35,7 @@ func (a *BlockSecrets) IsApplicableFor(hook string) bool {
 }
 
 func (a *BlockSecrets) Run(action *configuration.Action) error {
-	a.hookBundle.AppIO.Write("checking if file does not contain regex", true, io.VERBOSE)
+	a.hookBundle.AppIO.Write("checking if file contains secrets", true, io.VERBOSE)
 
 	a.presets = action.Options().AsSliceOfStrings("presets")
 	a.blocked = action.Options().AsSliceOfStrings("blocked")
