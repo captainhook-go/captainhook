@@ -25,7 +25,7 @@ func (a *ExternalCommand) Run(action *configuration.Action) error {
 	)
 	// if there were placeholders replaced
 	if commandToExecute != action.Run() {
-		a.hookBundle.AppIO.Write("<comment>cmd:</comment>\n"+commandToExecute, true, io.VERBOSE)
+		a.hookBundle.AppIO.Write("<info>cmd:</info> "+commandToExecute, true, io.VERBOSE)
 	}
 	return ext.ExecuteCommand(a.hookBundle.AppIO, commandToExecute)
 }

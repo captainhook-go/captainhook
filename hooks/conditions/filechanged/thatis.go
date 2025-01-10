@@ -36,7 +36,7 @@ func (c *ThatIs) IsApplicableFor(hook string) bool {
 }
 
 func (c *ThatIs) IsTrue(condition *configuration.Condition) bool {
-	c.hookBundle.AppIO.Write("Condition: FileChanged.ThatIs", true, io.VERBOSE)
+	c.hookBundle.AppIO.Write("<info>Condition:</info> FileChanged.ThatIs", true, io.VERBOSE)
 	ranges := input.DetectRanges(c.hookBundle.AppIO)
 	if len(ranges) == 0 {
 		return false

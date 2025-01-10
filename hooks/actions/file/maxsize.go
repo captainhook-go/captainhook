@@ -45,6 +45,7 @@ func (a *MaxSize) Run(action *configuration.Action) error {
 		return err
 	}
 	for _, path := range files {
+		a.hookBundle.AppIO.Write(" - "+path, true, io.VERBOSE)
 		file, err := os.Open(path)
 		if err != nil {
 			// ignore error because file is most likely deleted

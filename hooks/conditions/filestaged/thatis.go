@@ -35,7 +35,7 @@ func (c *ThatIs) IsApplicableFor(hook string) bool {
 }
 
 func (c *ThatIs) IsTrue(condition *configuration.Condition) bool {
-	c.hookBundle.AppIO.Write("<comment>condition: FileStaged.ThatIs</comment>", true, io.VERBOSE)
+	c.hookBundle.AppIO.Write("<info>condition:</info> FileStaged.ThatIs", true, io.VERBOSE)
 	stagedFiles, err := c.hookBundle.Repo.StagedFiles()
 	if err != nil {
 		c.hookBundle.AppIO.Write("  FileStaged.ThatIs failed: "+err.Error(), true, io.NORMAL)

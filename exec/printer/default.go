@@ -70,24 +70,33 @@ func (p *DefaultPrinter) actionIntro(label string) string {
 
 func (p *DefaultPrinter) printActionLog(log *hooks.ActionLog) {
 	if log.HasLogs() {
+		addedOutput := false
 		for _, log := range log.Logs() {
-			opening := "<ok>"
-			closing := "</ok>"
+			icon := "✓"
+			color := "ok"
 			if log.Status == info.ActionFailed {
-				opening = "<warning>"
-				closing = "</warning>"
+				icon = "✕"
+				color = "warning"
 			}
 			if log.Status == info.ActionSkipped {
-				opening = "<comment>"
-				closing = "</comment>"
+				icon = "✓"
+				color = "comment"
 			}
 			if log.CollectorIO.HasCollectedMessagesForVerbosity(p.appIO.Verbosity()) {
+				addedOutput = true
 				p.appIO.Write("", true, io.NORMAL)
-				p.appIO.Write(fmt.Sprintf("%sAction: "+log.Conf.Run()+"%s", opening, closing), true, io.NORMAL)
+				p.appIO.Write("<"+color+">"+icon+" [ "+log.Conf.Label()+" ]</"+color+">", true, io.NORMAL)
+				if log.Conf.Label() != log.Conf.Run() {
+					p.appIO.Write("<info>run:</info> "+log.Conf.Run(), true, io.NORMAL)
+				}
 				for _, message := range log.CollectorIO.Messages() {
 					p.appIO.Write(message.Message, false, message.Verbosity)
 				}
 			}
+		}
+		// add an empty line at the ent before writing the execution summary
+		if addedOutput {
+			p.appIO.Write("", true, io.NORMAL)
 		}
 	}
 }
