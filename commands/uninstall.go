@@ -17,7 +17,7 @@ func setupUninstallCommand() *cobra.Command {
 			force, _ := cmd.Flags().GetBool("force")
 			backup, _ := cmd.Flags().GetBool("backup")
 
-			conf, err := setUpConfig(cmd)
+			conf, err := setUpConfig(cmd, false)
 			if err != nil {
 				DisplayCommandError(err)
 			}

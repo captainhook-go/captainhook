@@ -1,6 +1,7 @@
 package commands
 
 import (
+	"errors"
 	"github.com/captainhook-go/captainhook/configuration"
 	"github.com/captainhook-go/captainhook/info"
 	"github.com/spf13/cobra"
@@ -23,7 +24,7 @@ func repositoryAware(cmd *cobra.Command) {
 // This way we can figure out what settings were actually set and which were not later.
 // This is important since the command line options should supersede all other ways of
 // configuring the Cap'n.
-func setUpConfig(cmd *cobra.Command) (*configuration.Configuration, error) {
+func setUpConfig(cmd *cobra.Command, fileRequired bool) (*configuration.Configuration, error) {
 	nullableSettings := &configuration.JsonAppSettings{}
 
 	detectColor(cmd, nullableSettings)
@@ -40,6 +41,9 @@ func setUpConfig(cmd *cobra.Command) (*configuration.Configuration, error) {
 	conf, confErr := factory.CreateConfig(confPath, nullableSettings)
 	if confErr != nil {
 		return nil, confErr
+	}
+	if fileRequired && !conf.IsLoadedFromFile() {
+		return nil, errors.New("configuration file not found")
 	}
 	return conf, nil
 }

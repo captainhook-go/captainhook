@@ -19,7 +19,7 @@ func setupInfoCommand() *cobra.Command {
 			listOptions, _ := cmd.Flags().GetBool("list-options")
 			extended, _ := cmd.Flags().GetBool("extended")
 
-			conf, err := setUpConfig(cmd)
+			conf, err := setUpConfig(cmd, true)
 			if err != nil {
 				DisplayCommandError(err)
 			}

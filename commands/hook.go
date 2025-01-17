@@ -70,7 +70,7 @@ func setupHookSubCommand(hook string) *cobra.Command {
 		Short: "Execute " + hook + " actions",
 		Long:  "Execute all actions configured for " + hook,
 		Run: func(cmd *cobra.Command, args []string) {
-			conf, err := setUpConfig(cmd)
+			conf, err := setUpConfig(cmd, true)
 			if err != nil {
 				DisplayCommandError(err)
 			}

@@ -18,7 +18,7 @@ func setupInstallCommand() *cobra.Command {
 			skip, _ := cmd.Flags().GetBool("skip-existing")
 			onlyEnabled, _ := cmd.Flags().GetBool("only-enabled")
 
-			conf, err := setUpConfig(cmd)
+			conf, err := setUpConfig(cmd, true)
 			if err != nil {
 				DisplayCommandError(err)
 			}
