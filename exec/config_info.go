@@ -109,6 +109,7 @@ func (c *ConfigInfo) displayConditions(conditions []*configuration.Condition, pr
 	}
 }
 
+// displayCondition
 func (c *ConfigInfo) displayCondition(condition *configuration.Condition, prefix string) {
 	c.appIO.Write(prefix+"    - "+condition.Run(), true, io.NORMAL)
 
@@ -127,10 +128,15 @@ func (c *ConfigInfo) displayCondition(condition *configuration.Condition, prefix
 	}
 }
 
+// shouldHookBeDisplayed blocks the hook display if only a specific hook is requested
 func (c *ConfigInfo) shouldHookBeDisplayed(hook string) bool {
+	if c.hook != "" {
+		return c.hook == hook
+	}
 	return c.config.IsHookEnabled(hook)
 }
 
+// shouldDisplay indicates if a configuration part should be displayed depending on the configured settings
 func (c *ConfigInfo) shouldDisplay(configPart string) bool {
 	if len(c.show) == 0 {
 		return true
@@ -139,6 +145,7 @@ func (c *ConfigInfo) shouldDisplay(configPart string) bool {
 	return ok
 }
 
+// yesOrNo converts a boolean to a "yes" or "no" string
 func (c *ConfigInfo) yesOrNo(val bool) string {
 	if val {
 		return "✅ "

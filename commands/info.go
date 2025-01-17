@@ -36,9 +36,14 @@ func setupInfoCommand() *cobra.Command {
 			info.Display("conditions", listConditions)
 			info.Display("options", listOptions)
 			info.Extended(extended)
-			instError := info.Run()
 
-			if instError != nil {
+			if len(args) > 0 {
+				hook := args[0]
+				info.Hook(hook)
+			}
+			runError := info.Run()
+
+			if runError != nil {
 				os.Exit(1)
 			}
 		},
