@@ -34,8 +34,11 @@ func createConditionsFromJson(jsonConditions []*JsonCondition) []*Condition {
 }
 
 func createConditionFromJson(json *JsonCondition) *Condition {
-	var o *Options
 	var c []*Condition
+
+	// default value empty options
+	opts := map[string]interface{}{}
+	o := NewOptions(opts)
 
 	if json.Options != nil {
 		o = createOptionsFromJson(json.Options)
