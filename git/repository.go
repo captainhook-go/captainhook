@@ -20,8 +20,9 @@ const (
 )
 
 type Repository struct {
-	root   string
-	gitDir string
+	root     string
+	gitDir   string
+	hooksDir string
 }
 
 func (r *Repository) Path() string {
@@ -46,7 +47,14 @@ func (r *Repository) HookExists(hook string) bool {
 }
 
 func (r *Repository) HooksDir() string {
-	return r.gitDir + "/hooks"
+	if r.hooksDir == "" {
+		r.hooksDir = r.gitDir + "/hooks"
+		var hooksPath = r.ConfigValue("core.hooksPath", "")
+		if hooksPath != "" {
+			r.hooksDir = r.root + "/" + hooksPath
+		}
+	}
+	return r.hooksDir
 }
 
 func (r *Repository) CommitMessage(path string) (*types.CommitMessage, error) {
@@ -154,7 +162,7 @@ func NewRepository(gitDir string) (*Repository, error) {
 			dotGitDir = fmt.Sprintf("%s/%s", repoPath, match[1])
 		}
 	}
-	r := Repository{root: repoPath, gitDir: dotGitDir}
+	r := Repository{root: repoPath, gitDir: dotGitDir, hooksDir: ""}
 	return &r, nil
 }
 
