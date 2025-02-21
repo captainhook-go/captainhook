@@ -3,13 +3,15 @@ package git
 import (
 	"context"
 	"github.com/captainhook-go/captainhook/git/types"
+	"strings"
 )
 
 func command(ctx context.Context, name string, options ...types.Option) (string, error) {
 	g := types.NewCmd(name)
 	g.AddOptions(options...)
+	res, err := g.Exec(ctx, g.Command, g.Debug, g.Options...)
 
-	return g.Exec(ctx, g.Command, g.Debug, g.Options...)
+	return strings.TrimSpace(res), err
 }
 
 func SetExecutor(executor types.Executor) types.Option {
