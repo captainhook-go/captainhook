@@ -40,7 +40,7 @@ func (i *Initializer) Force(force bool) {
 
 // Run executes the Initializer
 func (i *Initializer) Run() error {
-	i.appIO.Write("Initializing CaptainHook", true, io.NORMAL)
+	i.appIO.Write("Initializing CaptainHook", true, io.VERBOSE)
 
 	gitRoot, gitErr := git.DetectGitDir()
 	if gitErr != nil {
